@@ -56,12 +56,12 @@
             border: 3px solid #ff4500;
             border-style: solid double;
             padding: 15px 40px;
-            border-radius: 8px 30px 8px 30px; /* Aggressive racing slant corners */
+            border-radius: 8px 30px 8px 30px;
             box-shadow: 
                 0 0 20px rgba(255, 69, 0, 0.3),
                 inset 0 0 15px rgba(0, 204, 255, 0.1);
             text-align: center;
-            transform: skewX(-6deg); /* Track-style italic lean */
+            transform: skewX(-6deg);
             position: relative;
         }
 
@@ -82,7 +82,6 @@
             line-height: 1;
             letter-spacing: -2px;
             margin: 0;
-            /* High-tech metal/fire gradient text */
             background: linear-gradient(to bottom, #ffffff 0%, #d1d1e0 45%, #ff4500 50%, #ffcc00 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -102,7 +101,7 @@
             text-shadow: 0 0 8px var(--accent-blue);
             border-top: 1px dashed rgba(255,255,255,0.2);
             padding-top: 6px;
-            transform: skewX(6deg); /* Straightens text out against badge lean */
+            transform: skewX(6deg);
         }
 
         /* WORKSPACE LAYOUT */
@@ -402,18 +401,126 @@
             box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
         }
 
-        .champion-box {
+        /* PODIUM FINISH SCREEN OVERLAY */
+        .podium-overlay {
             display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.98);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .podium-title {
+            font-family: var(--font-racing);
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ffcc00, #ff4500, #ffcc00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .podium-stage {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            height: 350px;
+            margin-bottom: 40px;
+        }
+
+        .podium-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
             font-family: var(--font-racing);
             text-align: center;
-            background: linear-gradient(90deg, #ffcc00, #ff4500, #ffcc00);
-            color: black;
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 2rem;
-            font-weight: 900;
         }
+
+        .podium-racer-info {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .podium-car-name {
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: #fff;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .podium-driver-name {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .pedestal {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .pedestal-rank {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .pedestal-trophy {
+            font-size: 2rem;
+            margin-top: 5px;
+        }
+
+        /* 1st Place Gold */
+        .podium-column.gold .pedestal {
+            height: 220px;
+            background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+            color: #000;
+            border-color: #fff7c2;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        .podium-column.gold .podium-car-name { color: #ffd700; font-size: 1.6rem; }
+
+        /* 2nd Place Silver */
+        .podium-column.silver .pedestal {
+            height: 160px;
+            background: linear-gradient(180deg, #e0e0e0 0%, #707070 100%);
+            color: #000;
+            border-color: #ffffff;
+        }
+        .podium-column.silver .podium-car-name { color: #e0e0e0; }
+
+        /* 3rd Place Bronze */
+        .podium-column.bronze .pedestal {
+            height: 110px;
+            background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%);
+            color: #fff;
+            border-color: #ffa54f;
+        }
+        .podium-column.bronze .podium-car-name { color: #cd7f32; }
 
         .clear-history-btn {
             background: transparent; border: 1px solid #555; color: #aaa;
@@ -426,12 +533,54 @@
         @media (max-width: 900px) {
             .app-layout { flex-direction: column-reverse; }
             .leaderboard-panel { width: 100%; box-sizing: border-box; }
+            .podium-stage { height: auto; align-items: flex-end; }
+            .podium-car-name { font-size: 1rem !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- CUSTOM LOGO AND BRAND HEADER -->
+    <div id="podium-modal" class="podium-overlay">
+        <div class="podium-title">🏁 PODIUM FINISHERS 🏁</div>
+        
+        <div class="podium-stage">
+            <div class="podium-column silver">
+                <div class="podium-racer-info">
+                    <span id="podium-silver-car" class="podium-car-name">-</span>
+                    <span id="podium-silver-driver" class="podium-driver-name">-</span>
+                </div>
+                <div class="pedestal">
+                    <span class="pedestal-rank">2</span>
+                    <span class="pedestal-trophy">🥈</span>
+                </div>
+            </div>
+
+            <div class="podium-column gold">
+                <div class="podium-racer-info">
+                    <span id="podium-gold-car" class="podium-car-name">-</span>
+                    <span id="podium-gold-driver" class="podium-driver-name">-</span>
+                </div>
+                <div class="pedestal">
+                    <span class="pedestal-rank">1</span>
+                    <span class="pedestal-trophy">🏆</span>
+                </div>
+            </div>
+
+            <div class="podium-column bronze">
+                <div class="podium-racer-info">
+                    <span id="podium-bronze-car" class="podium-car-name">-</span>
+                    <span id="podium-bronze-driver" class="podium-driver-name">-</span>
+                </div>
+                <div class="pedestal">
+                    <span class="pedestal-rank">3</span>
+                    <span class="pedestal-trophy">🥉</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="main-btn" onclick="closePodium()">Return to Staging Area</button>
+    </div>
+
     <header>
         <div class="logo-badge">
             <h1 class="logo-main">DCR</h1>
@@ -441,18 +590,13 @@
 
     <div class="app-layout">
         
-        <!-- HALL OF FAME SIDEBAR -->
         <div class="leaderboard-panel">
             <div class="leaderboard-title">🏆 Hall of Fame 🏆</div>
             <ul id="leaderboard-list" class="leaderboard-list"></ul>
             <button class="clear-history-btn" onclick="clearLeaderboard()">Clear Stats Board</button>
         </div>
 
-        <!-- MAIN APP TOURNAMENT CONTAINER -->
         <div class="container">
-            <div id="champion-banner" class="champion-box"></div>
-
-            <!-- STAGE 1: REGISTRATION -->
             <div id="setup-phase" class="setup-section">
                 <div class="form-group">
                     <label for="car-count">1. Number of Racing Entries:</label>
@@ -462,17 +606,18 @@
                 <div class="form-group" style="width: 100%;">
                     <label>2. Customize Roster Grid:</label>
                     <div id="roster-grid" class="roster-grid">
-                        <!-- Injected dynamically -->
-                    </div>
+                        </div>
                 </div>
                 
                 <button class="main-btn" onclick="buildTournament()">Split Grid & Create Brackets</button>
             </div>
 
-            <!-- STAGE 2: THE TRACK -->
             <div id="tournament-phase" class="tournament-section">
                 <div id="qualifier-header" class="bracket-heading" style="display:none;">Stage 1: Qualifier Bracket</div>
                 <div class="bracket-container" id="qualifier-bracket-container" style="display:none;"></div>
+
+                <div id="bronze-header" class="bracket-heading" style="display:none;">Consolation Race (3rd Place Bronze Decider)</div>
+                <div class="bracket-container" id="bronze-bracket-container" style="display:none;"></div>
 
                 <div class="bracket-heading">Stage 2: Championship Main Bracket</div>
                 <div class="bracket-container" id="main-bracket-container"></div>
@@ -489,9 +634,55 @@
         let mainBracketData = [];
         let qualifierData = [];
         let qualifierWinnersTargetMap = []; 
+        let bronzeMatchData = null; // Holds the 3rd place showdown match
 
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
         const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
+
+        function playEngineRev() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                const ctx = new AudioContext();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                osc.type = 'sawtooth';
+                
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(120, now);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.001, now);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.frequency.setValueAtTime(45, now);
+                gain.gain.linearRampToValueAtTime(0.25, now + 0.1);
+                filter.frequency.exponentialRampToValueAtTime(250, now + 0.2);
+
+                osc.frequency.exponentialRampToValueAtTime(190, now + 0.5);
+                filter.frequency.exponentialRampToValueAtTime(900, now + 0.5);
+                gain.gain.linearRampToValueAtTime(0.4, now + 0.4);
+
+                osc.frequency.setValueAtTime(110, now + 0.55);
+                
+                osc.frequency.exponentialRampToValueAtTime(240, now + 1.0);
+                filter.frequency.exponentialRampToValueAtTime(1400, now + 1.0);
+
+                gain.gain.setValueAtTime(0.35, now + 1.1);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.6);
+                
+                osc.stop(now + 1.7);
+            } catch (e) {
+                console.log("Audio preservation skipped.");
+            }
+        }
 
         function generateRosterInputs() {
             const count = parseInt(document.getElementById('car-count').value) || 6;
@@ -531,6 +722,7 @@
                 return;
             }
 
+            playEngineRev();
             racers.sort(() => Math.random() - 0.5);
 
             const totalRacers = racers.length;
@@ -542,6 +734,7 @@
 
             qualifierData = [];
             qualifierWinnersTargetMap = [];
+            bronzeMatchData = { racer1: null, racer2: null, winner: null }; // Clear bronze
 
             if (extraRacers.length > 0) {
                 let qualifierPool = [];
@@ -588,6 +781,8 @@
                 currentMainPool = Array(currentMainPool.length / 2).fill(null);
             }
 
+            document.getElementById('bronze-header').style.display = 'none';
+            document.getElementById('bronze-bracket-container').style.display = 'none';
             document.getElementById('setup-phase').style.display = 'none';
             document.getElementById('tournament-phase').style.display = 'block';
 
@@ -606,7 +801,18 @@
         }
 
         function advanceMain(roundIndex, matchIndex, winnerObj) {
-            mainBracketData[roundIndex][matchIndex].winner = winnerObj;
+            let currentMatch = mainBracketData[roundIndex][matchIndex];
+            currentMatch.winner = winnerObj;
+
+            // TRACK LOSERS IN SEMI-FINALS FOR THE 3RD PLACE BRONZE DECIDER
+            if (mainBracketData.length >= 2 && roundIndex === mainBracketData.length - 2) {
+                let loserObj = (currentMatch.racer1 === winnerObj) ? currentMatch.racer2 : currentMatch.racer1;
+                if (matchIndex === 0) bronzeMatchData.racer1 = loserObj;
+                if (matchIndex === 1) bronzeMatchData.racer2 = loserObj;
+                
+                document.getElementById('bronze-header').style.display = 'block';
+                document.getElementById('bronze-bracket-container').style.display = 'flex';
+            }
 
             let nextRoundIndex = roundIndex + 1;
             if (nextRoundIndex < mainBracketData.length) {
@@ -617,22 +823,56 @@
                     mainBracketData[nextRoundIndex][nextMatchTarget].racer2 = winnerObj;
                 }
             } else {
-                const banner = document.getElementById('champion-banner');
-                banner.style.display = 'block';
-                banner.innerHTML = `🏆 GRAND CHAMPION: ${winnerObj.car} (${winnerObj.driver}) 🏆`;
-                saveChampionToHistory(winnerObj);
+                // Final match finished, check if bronze is completed or skipped (if under 4 entries)
+                checkTournamentCompletion();
             }
             renderGrids();
         }
 
+        function advanceBronze(winnerObj) {
+            bronzeMatchData.winner = winnerObj;
+            renderGrids();
+            checkTournamentCompletion();
+        }
+
+        function checkTournamentCompletion() {
+            let finalsRound = mainBracketData[mainBracketData.length - 1][0];
+            if (!finalsRound.winner) return; // Finals not finished yet
+
+            // If there's a bronze match to be run but it isn't resolved yet, wait.
+            if (bronzeMatchData.racer1 && bronzeMatchData.racer2 && !bronzeMatchData.winner) {
+                return;
+            }
+
+            // Calculations for podium placement
+            let gold = finalsRound.winner;
+            let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
+            let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
+
+            // Save winner metrics to history
+            saveChampionToHistory(gold);
+
+            // Pop Open the Finished Podium Screen
+            document.getElementById('podium-gold-car').innerText = gold.car;
+            document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
+
+            document.getElementById('podium-silver-car').innerText = silver.car;
+            document.getElementById('podium-silver-driver').innerText = "Driver: " + silver.driver;
+
+            document.getElementById('podium-bronze-car').innerText = bronze.car;
+            document.getElementById('podium-bronze-driver').innerText = "Driver: " + bronze.driver;
+
+            document.getElementById('podium-modal').style.display = 'flex';
+        }
+
         function renderGrids() {
+            // Render Qualifiers
             const qContainer = document.getElementById('qualifier-bracket-container');
             qContainer.innerHTML = '';
             if(qualifierData.length > 0) {
                 const qRound = document.createElement('div');
                 qRound.className = 'round';
                 qRound.innerHTML = `<div class="round-title">Knockout Heats</div>`;
-
                 qualifierData[0].forEach((match, index) => {
                     const card = document.createElement('div');
                     card.className = `matchup ${!match.winner ? 'active' : ''}`;
@@ -643,14 +883,29 @@
                 qContainer.appendChild(qRound);
             }
 
+            // Render Consolation Bronze Match
+            const bContainer = document.getElementById('bronze-bracket-container');
+            bContainer.innerHTML = '';
+            if(bronzeMatchData && (bronzeMatchData.racer1 || bronzeMatchData.racer2)) {
+                const bRound = document.createElement('div');
+                bRound.className = 'round';
+                bRound.style.height = '140px';
+                bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
+                const card = document.createElement('div');
+                card.className = `matchup ${!bronzeMatchData.winner ? 'active' : ''}`;
+                card.appendChild(buildRacerRow(bronzeMatchData.racer1, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer1)));
+                card.appendChild(buildRacerRow(bronzeMatchData.racer2, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer2)));
+                bRound.appendChild(card);
+                bContainer.appendChild(bRound);
+            }
+
+            // Render Championship Rounds
             const mContainer = document.getElementById('main-bracket-container');
             mContainer.innerHTML = '';
-
             mainBracketData.forEach((round, roundIndex) => {
                 const column = document.createElement('div');
                 column.className = 'round';
-                column.innerHTML = `<div class="round-title">${roundIndex === mainBracketData.length - 1 ? 'Championship' : 'Round ' + (roundIndex + 1)}</div>`;
-
+                column.innerHTML = `<div class="round-title">${roundIndex === mainBracketData.length - 1 ? 'Championship Final' : 'Round ' + (roundIndex + 1)}</div>`;
                 round.forEach((match, matchIndex) => {
                     const card = document.createElement('div');
                     card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
@@ -737,8 +992,12 @@
             }
         }
 
+        function closePodium() {
+            document.getElementById('podium-modal').style.display = 'none';
+            resetTrack();
+        }
+
         function resetTrack() {
-            document.getElementById('champion-banner').style.display = 'none';
             document.getElementById('tournament-phase').style.display = 'none';
             document.getElementById('setup-phase').style.display = 'flex';
         }
