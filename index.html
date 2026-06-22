@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCR - Diecast Championship Racing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0b0d;
+            --card-bg: rgba(20, 20, 25, 0.9);
+            --accent-orange: #ff4500;
+            --accent-blue: #00ccff;
+            --accent-yellow: #ffcc00;
+            --text-color: #ffffff;
+            --border-color: #3a3a4a;
+            --font-racing: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(45deg, #151518 25%, transparent 25%), 
+                linear-gradient(-45deg, #151518 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #151518 75%), 
+                linear-gradient(-45deg, transparent 75%, #151518 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* CUSTOM LOGO AND HEADER STYLING */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 35px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #1a1a24 0%, #08080c 100%);
+            border: 3px solid #ff4500;
+            border-style: solid double;
+            padding: 15px 40px;
+            border-radius: 8px 30px 8px 30px; /* Aggressive racing slant corners */
+            box-shadow: 
+                0 0 20px rgba(255, 69, 0, 0.3),
+                inset 0 0 15px rgba(0, 204, 255, 0.1);
+            text-align: center;
+            transform: skewX(-6deg); /* Track-style italic lean */
+            position: relative;
+        }
+
+        .logo-badge::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .logo-main {
+            font-family: var(--font-racing);
+            font-weight: 900;
+            font-size: 4.5rem;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin: 0;
+            /* High-tech metal/fire gradient text */
+            background: linear-gradient(to bottom, #ffffff 0%, #d1d1e0 45%, #ff4500 50%, #ffcc00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.7));
+            text-transform: uppercase;
+        }
+
+        .logo-sub {
+            font-family: var(--font-racing);
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 6px;
+            margin-top: 5px;
+            display: block;
+            text-shadow: 0 0 8px var(--accent-blue);
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            padding-top: 6px;
+            transform: skewX(6deg); /* Straightens text out against badge lean */
+        }
+
+        /* WORKSPACE LAYOUT */
+        .app-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        .container {
+            flex: 3;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .container::before, .leaderboard-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue));
+        }
+
+        /* HALL OF FAME LEADERBOARD PANEL */
+        .leaderboard-panel {
+            flex: 1;
+            min-width: 300px;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .leaderboard-title {
+            font-family: var(--font-racing);
+            color: var(--accent-yellow);
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .leaderboard-item {
+            background: rgba(15, 15, 18, 0.8);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-item .driver-tag {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .leaderboard-item .wins-count {
+            background: var(--accent-orange);
+            color: #fff;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            font-family: var(--font-racing);
+        }
+
+        /* REGISTRATION GRID */
+        .setup-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 600px;
+            gap: 8px;
+        }
+
+        label {
+            font-family: var(--font-racing);
+            font-size: 0.9rem;
+            color: var(--accent-yellow);
+            text-transform: uppercase;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(10, 10, 12, 0.9);
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            outline: none;
+        }
+
+        .roster-grid {
+            width: 100%;
+            max-width: 650px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 5px;
+        }
+
+        .roster-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: rgba(15, 15, 18, 0.5);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #222;
+        }
+
+        .row-num {
+            font-family: var(--font-racing);
+            color: var(--accent-blue);
+            min-width: 25px;
+            font-weight: bold;
+        }
+
+        .roster-row input[type="text"] {
+            flex: 1;
+            background: #181820;
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        .roster-row input[type="text"]:focus {
+            border-color: var(--accent-orange);
+        }
+
+        /* BRACKET SYSTEMS */
+        .tournament-section {
+            display: none;
+        }
+
+        .bracket-heading {
+            font-family: var(--font-racing);
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent-yellow);
+            padding-left: 10px;
+        }
+
+        .bracket-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 40px;
+            overflow-x: auto;
+            padding: 20px 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #222;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 520px; 
+            min-width: 260px;
+        }
+
+        .round-title {
+            font-family: var(--font-racing);
+            text-align: center;
+            color: var(--accent-yellow);
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-size: 1rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .matchup {
+            background: rgba(15, 15, 18, 0.95);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .matchup.active {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.3);
+        }
+
+        .racer {
+            background: #222227;
+            padding: 10px 14px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .racer:hover {
+            background: #2e2e36;
+        }
+
+        .racer-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .racer-car {
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        .racer-driver {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .racer.winner {
+            background: rgba(0, 230, 115, 0.15);
+            color: #00ff7f;
+            border-color: #00ff7f;
+        }
+        .racer.winner .racer-driver { color: #80ffbf; }
+
+        .racer.loser {
+            opacity: 0.25;
+            text-decoration: line-through;
+            background: #131316;
+        }
+
+        .action-tag {
+            font-family: var(--font-racing);
+            font-weight: 900;
+            background: var(--accent-yellow);
+            color: #000;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border-radius: 3px;
+        }
+
+        button.main-btn {
+            font-family: var(--font-racing);
+            background: linear-gradient(135deg, var(--accent-orange), #b30000);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.1rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-style: italic;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+        }
+
+        .champion-box {
+            display: none;
+            font-family: var(--font-racing);
+            text-align: center;
+            background: linear-gradient(90deg, #ffcc00, #ff4500, #ffcc00);
+            color: black;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .clear-history-btn {
+            background: transparent; border: 1px solid #555; color: #aaa;
+            font-size: 0.75rem; padding: 6px 12px; margin-top: 15px; width: 100%;
+            cursor: pointer; font-family: var(--font-racing); text-transform: uppercase; border-radius: 4px;
+        }
+        .clear-history-btn:hover { background: rgba(255,0,0,0.2); color: #ff5555; border-color: #ff5555; }
+        .reset-btn { background: #2a2a30; border: 1px solid var(--border-color); color: white; padding: 10px 20px; font-family: var(--font-racing); cursor: pointer; border-radius: 4px;}
+
+        @media (max-width: 900px) {
+            .app-layout { flex-direction: column-reverse; }
+            .leaderboard-panel { width: 100%; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CUSTOM LOGO AND BRAND HEADER -->
+    <header>
+        <div class="logo-badge">
+            <h1 class="logo-main">DCR</h1>
+            <span class="logo-sub">Diecast Championship Racing</span>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        
+        <!-- HALL OF FAME SIDEBAR -->
+        <div class="leaderboard-panel">
+            <div class="leaderboard-title">🏆 Hall of Fame 🏆</div>
+            <ul id="leaderboard-list" class="leaderboard-list"></ul>
+            <button class="clear-history-btn" onclick="clearLeaderboard()">Clear Stats Board</button>
+        </div>
+
+        <!-- MAIN APP TOURNAMENT CONTAINER -->
+        <div class="container">
+            <div id="champion-banner" class="champion-box"></div>
+
+            <!-- STAGE 1: REGISTRATION -->
+            <div id="setup-phase" class="setup-section">
+                <div class="form-group">
+                    <label for="car-count">1. Number of Racing Entries:</label>
+                    <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
+                </div>
+                
+                <div class="form-group" style="width: 100%;">
+                    <label>2. Customize Roster Grid:</label>
+                    <div id="roster-grid" class="roster-grid">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+                
+                <button class="main-btn" onclick="buildTournament()">Split Grid & Create Brackets</button>
+            </div>
+
+            <!-- STAGE 2: THE TRACK -->
+            <div id="tournament-phase" class="tournament-section">
+                <div id="qualifier-header" class="bracket-heading" style="display:none;">Stage 1: Qualifier Bracket</div>
+                <div class="bracket-container" id="qualifier-bracket-container" style="display:none;"></div>
+
+                <div class="bracket-heading">Stage 2: Championship Main Bracket</div>
+                <div class="bracket-container" id="main-bracket-container"></div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="reset-btn" onclick="resetTrack()">Reset Complete Bracket</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let mainBracketData = [];
+        let qualifierData = [];
+        let qualifierWinnersTargetMap = []; 
+
+        const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
+        const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
+
+        function generateRosterInputs() {
+            const count = parseInt(document.getElementById('car-count').value) || 6;
+            const container = document.getElementById('roster-grid');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= count; i++) {
+                const row = document.createElement('div');
+                row.className = 'roster-row';
+
+                const carSeed = defaultCars[(i - 1) % defaultCars.length];
+                const driverSeed = defaultDrivers[(i - 1) % defaultDrivers.length];
+
+                row.innerHTML = `
+                    <div class="row-num">#${i}</div>
+                    <input type="text" class="input-car" placeholder="Car Name" value="${carSeed} ${Math.ceil(i/8)}">
+                    <input type="text" class="input-driver" placeholder="Driver Name" value="${driverSeed}">
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        function buildTournament() {
+            const rows = document.querySelectorAll('.roster-row');
+            let racers = [];
+
+            rows.forEach(row => {
+                const car = row.querySelector('.input-car').value.trim();
+                const driver = row.querySelector('.input-driver').value.trim();
+                if (car) {
+                    racers.push({ car: car, driver: driver || "Unknown Driver" });
+                }
+            });
+
+            if (racers.length < 2) {
+                alert("You need at least 2 cars to run a tournament!");
+                return;
+            }
+
+            racers.sort(() => Math.random() - 0.5);
+
+            const totalRacers = racers.length;
+            let mainBracketSize = Math.pow(2, Math.floor(Math.log2(totalRacers)));
+            if (mainBracketSize === totalRacers && totalRacers > 2) mainBracketSize = totalRacers;
+
+            let mainRacers = racers.slice(0, mainBracketSize);
+            let extraRacers = racers.slice(mainBracketSize);
+
+            qualifierData = [];
+            qualifierWinnersTargetMap = [];
+
+            if (extraRacers.length > 0) {
+                let qualifierPool = [];
+                for (let i = 0; i < extraRacers.length; i++) {
+                    let opponent = mainRacers.pop(); 
+                    qualifierPool.push(opponent);
+                    qualifierPool.push(extraRacers[i]);
+                    
+                    qualifierWinnersTargetMap.push({
+                        mainMatchIndex: Math.floor(mainRacers.length / 2),
+                        isRacer1: (mainRacers.length % 2 === 0)
+                    });
+                }
+
+                let qMatchups = [];
+                for(let i=0; i<qualifierPool.length; i+=2) {
+                    qMatchups.push({ racer1: qualifierPool[i], racer2: qualifierPool[i+1], winner: null });
+                }
+                qualifierData.push(qMatchups);
+                
+                document.getElementById('qualifier-header').style.display = 'block';
+                document.getElementById('qualifier-bracket-container').style.display = 'flex';
+            } else {
+                document.getElementById('qualifier-header').style.display = 'none';
+                document.getElementById('qualifier-bracket-container').style.display = 'none';
+            }
+
+            mainBracketData = [];
+            let currentMainPool = [...mainRacers];
+            for(let i=0; i < qualifierWinnersTargetMap.length; i++) {
+                currentMainPool.push(null); 
+            }
+
+            while (currentMainPool.length >= 2) {
+                let roundMatchups = [];
+                for (let i = 0; i < currentMainPool.length; i += 2) {
+                    roundMatchups.push({
+                        racer1: currentMainPool[i],
+                        racer2: currentMainPool[i+1],
+                        winner: null
+                    });
+                }
+                mainBracketData.push(roundMatchups);
+                currentMainPool = Array(currentMainPool.length / 2).fill(null);
+            }
+
+            document.getElementById('setup-phase').style.display = 'none';
+            document.getElementById('tournament-phase').style.display = 'block';
+
+            renderGrids();
+        }
+
+        function advanceQualifier(matchIndex, winnerObj) {
+            qualifierData[0][matchIndex].winner = winnerObj;
+            let targetMap = qualifierWinnersTargetMap[matchIndex];
+            if(targetMap.isRacer1) {
+                mainBracketData[0][targetMap.mainMatchIndex].racer1 = winnerObj;
+            } else {
+                mainBracketData[0][targetMap.mainMatchIndex].racer2 = winnerObj;
+            }
+            renderGrids();
+        }
+
+        function advanceMain(roundIndex, matchIndex, winnerObj) {
+            mainBracketData[roundIndex][matchIndex].winner = winnerObj;
+
+            let nextRoundIndex = roundIndex + 1;
+            if (nextRoundIndex < mainBracketData.length) {
+                let nextMatchTarget = Math.floor(matchIndex / 2);
+                if (matchIndex % 2 === 0) {
+                    mainBracketData[nextRoundIndex][nextMatchTarget].racer1 = winnerObj;
+                } else {
+                    mainBracketData[nextRoundIndex][nextMatchTarget].racer2 = winnerObj;
+                }
+            } else {
+                const banner = document.getElementById('champion-banner');
+                banner.style.display = 'block';
+                banner.innerHTML = `🏆 GRAND CHAMPION: ${winnerObj.car} (${winnerObj.driver}) 🏆`;
+                saveChampionToHistory(winnerObj);
+            }
+            renderGrids();
+        }
+
+        function renderGrids() {
+            const qContainer = document.getElementById('qualifier-bracket-container');
+            qContainer.innerHTML = '';
+            if(qualifierData.length > 0) {
+                const qRound = document.createElement('div');
+                qRound.className = 'round';
+                qRound.innerHTML = `<div class="round-title">Knockout Heats</div>`;
+
+                qualifierData[0].forEach((match, index) => {
+                    const card = document.createElement('div');
+                    card.className = `matchup ${!match.winner ? 'active' : ''}`;
+                    card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceQualifier(index, match.racer1)));
+                    card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceQualifier(index, match.racer2)));
+                    qRound.appendChild(card);
+                });
+                qContainer.appendChild(qRound);
+            }
+
+            const mContainer = document.getElementById('main-bracket-container');
+            mContainer.innerHTML = '';
+
+            mainBracketData.forEach((round, roundIndex) => {
+                const column = document.createElement('div');
+                column.className = 'round';
+                column.innerHTML = `<div class="round-title">${roundIndex === mainBracketData.length - 1 ? 'Championship' : 'Round ' + (roundIndex + 1)}</div>`;
+
+                round.forEach((match, matchIndex) => {
+                    const card = document.createElement('div');
+                    card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
+                    card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer1)));
+                    card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer2)));
+                    column.appendChild(card);
+                });
+                mContainer.appendChild(column);
+            });
+        }
+
+        function buildRacerRow(racerObj, winnerObj, clickCallback) {
+            const div = document.createElement('div');
+            div.className = 'racer';
+            if(!racerObj) {
+                div.innerHTML = `<span style="color:#4a4a5a; font-style:italic;">Staging...</span>`;
+                return div;
+            }
+
+            div.innerHTML = `
+                <div class="racer-details">
+                    <span class="racer-car">${racerObj.car}</span>
+                    <span class="racer-driver">Driver: ${racerObj.driver}</span>
+                </div>
+            `;
+
+            if(winnerObj) {
+                div.classList.add(winnerObj === racerObj ? 'winner' : 'loser');
+            } else {
+                div.onclick = clickCallback;
+                let tag = document.createElement('span');
+                tag.className = 'action-tag';
+                tag.innerText = 'WIN';
+                div.appendChild(tag);
+            }
+            return div;
+        }
+
+        function loadLeaderboard() {
+            const listContainer = document.getElementById('leaderboard-list');
+            listContainer.innerHTML = '';
+            
+            let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
+            scores.sort((a, b) => b.wins - a.wins);
+            let topTen = scores.slice(0, 10);
+
+            if(topTen.length === 0) {
+                listContainer.innerHTML = `<li style="color:#666; font-style:italic; text-align:center; padding:10px;">No trophies awarded yet!</li>`;
+                return;
+            }
+
+            topTen.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'leaderboard-item';
+                li.innerHTML = `
+                    <div>
+                        <b style="color:var(--accent-yellow)">#${index + 1}</b> ${item.car}<br>
+                        <span class="driver-tag">Driver: ${item.driver}</span>
+                    </div>
+                    <span class="wins-count">${item.wins} W</span>
+                `;
+                listContainer.appendChild(li);
+            });
+        }
+
+        function saveChampionToHistory(winnerObj) {
+            let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
+            let existingIdx = scores.findIndex(item => item.car === winnerObj.car && item.driver === winnerObj.driver);
+            
+            if(existingIdx > -1) {
+                scores[existingIdx].wins += 1;
+            } else {
+                scores.push({ car: winnerObj.car, driver: winnerObj.driver, wins: 1 });
+            }
+            
+            localStorage.setItem('hw_leaderboard_v2', JSON.stringify(scores));
+            loadLeaderboard();
+        }
+
+        function clearLeaderboard() {
+            if(confirm("Erase all driver history from the Hall of Fame?")) {
+                localStorage.removeItem('hw_leaderboard_v2');
+                loadLeaderboard();
+            }
+        }
+
+        function resetTrack() {
+            document.getElementById('champion-banner').style.display = 'none';
+            document.getElementById('tournament-phase').style.display = 'none';
+            document.getElementById('setup-phase').style.display = 'flex';
+        }
+
+        generateRosterInputs();
+        loadLeaderboard();
+    </script>
+</body>
+</html>
