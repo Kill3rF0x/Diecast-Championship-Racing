@@ -39,6 +39,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
         /* CUSTOM LOGO AND HEADER STYLING */
@@ -111,6 +112,8 @@
             max-width: 1400px;
             gap: 25px;
             align-items: flex-start;
+            flex: 1;
+            margin-bottom: 40px;
         }
 
         .container {
@@ -494,7 +497,6 @@
             margin-top: 5px;
         }
 
-        /* 1st Place Gold */
         .podium-column.gold .pedestal {
             height: 220px;
             background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
@@ -504,7 +506,6 @@
         }
         .podium-column.gold .podium-car-name { color: #ffd700; font-size: 1.6rem; }
 
-        /* 2nd Place Silver */
         .podium-column.silver .pedestal {
             height: 160px;
             background: linear-gradient(180deg, #e0e0e0 0%, #707070 100%);
@@ -513,7 +514,6 @@
         }
         .podium-column.silver .podium-car-name { color: #e0e0e0; }
 
-        /* 3rd Place Bronze */
         .podium-column.bronze .pedestal {
             height: 110px;
             background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%);
@@ -521,6 +521,52 @@
             border-color: #ffa54f;
         }
         .podium-column.bronze .podium-car-name { color: #cd7f32; }
+
+        /* TRACK SIDE BAR FOOTER FOR INSTAGRAM */
+        footer {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 0;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+
+        .instagram-link {
+            font-family: var(--font-racing);
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: #aaa;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(20, 20, 25, 0.6);
+            padding: 10px 24px;
+            border-radius: 30px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .instagram-link b {
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .instagram-link:hover {
+            color: #fff;
+            background: #000;
+            border-color: #e1306c;
+            box-shadow: 0 0 15px rgba(225, 48, 108, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .instagram-link:hover b {
+            color: #e1306c;
+            text-shadow: 0 0 10px rgba(225, 48, 108, 0.6);
+        }
 
         .clear-history-btn {
             background: transparent; border: 1px solid #555; color: #aaa;
@@ -540,6 +586,7 @@
 </head>
 <body>
 
+    <!-- PODIUM CELEBRATION MODAL -->
     <div id="podium-modal" class="podium-overlay">
         <div class="podium-title">🏁 PODIUM FINISHERS 🏁</div>
         
@@ -581,6 +628,7 @@
         <button class="main-btn" onclick="closePodium()">Return to Staging Area</button>
     </div>
 
+    <!-- CUSTOM LOGO AND BRAND HEADER -->
     <header>
         <div class="logo-badge">
             <h1 class="logo-main">DCR</h1>
@@ -590,13 +638,16 @@
 
     <div class="app-layout">
         
+        <!-- HALL OF FAME SIDEBAR -->
         <div class="leaderboard-panel">
             <div class="leaderboard-title">🏆 Hall of Fame 🏆</div>
             <ul id="leaderboard-list" class="leaderboard-list"></ul>
             <button class="clear-history-btn" onclick="clearLeaderboard()">Clear Stats Board</button>
         </div>
 
+        <!-- MAIN APP TOURNAMENT CONTAINER -->
         <div class="container">
+            <!-- STAGE 1: REGISTRATION -->
             <div id="setup-phase" class="setup-section">
                 <div class="form-group">
                     <label for="car-count">1. Number of Racing Entries:</label>
@@ -606,12 +657,14 @@
                 <div class="form-group" style="width: 100%;">
                     <label>2. Customize Roster Grid:</label>
                     <div id="roster-grid" class="roster-grid">
-                        </div>
+                        <!-- Injected dynamically -->
+                    </div>
                 </div>
                 
                 <button class="main-btn" onclick="buildTournament()">Split Grid & Create Brackets</button>
             </div>
 
+            <!-- STAGE 2: THE TRACK -->
             <div id="tournament-phase" class="tournament-section">
                 <div id="qualifier-header" class="bracket-heading" style="display:none;">Stage 1: Qualifier Bracket</div>
                 <div class="bracket-container" id="qualifier-bracket-container" style="display:none;"></div>
@@ -630,11 +683,18 @@
 
     </div>
 
+    <!-- SOCIAL MEDIA INTERACTIVE BAR FOOTER -->
+    <footer>
+        <a href="https://www.instagram.com/kill3r_f0x_0n3/" target="_blank" rel="noopener noreferrer" class="instagram-link">
+            📸 Follow Track Operations on Instagram: <b>@kill3r_f0x_0n3</b>
+        </a>
+    </footer>
+
     <script>
         let mainBracketData = [];
         let qualifierData = [];
         let qualifierWinnersTargetMap = []; 
-        let bronzeMatchData = null; // Holds the 3rd place showdown match
+        let bronzeMatchData = null;
 
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
         const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
@@ -680,7 +740,7 @@
                 
                 osc.stop(now + 1.7);
             } catch (e) {
-                console.log("Audio preservation skipped.");
+                console.log("Audio presentation skipped.");
             }
         }
 
@@ -734,7 +794,7 @@
 
             qualifierData = [];
             qualifierWinnersTargetMap = [];
-            bronzeMatchData = { racer1: null, racer2: null, winner: null }; // Clear bronze
+            bronzeMatchData = { racer1: null, racer2: null, winner: null };
 
             if (extraRacers.length > 0) {
                 let qualifierPool = [];
@@ -804,7 +864,6 @@
             let currentMatch = mainBracketData[roundIndex][matchIndex];
             currentMatch.winner = winnerObj;
 
-            // TRACK LOSERS IN SEMI-FINALS FOR THE 3RD PLACE BRONZE DECIDER
             if (mainBracketData.length >= 2 && roundIndex === mainBracketData.length - 2) {
                 let loserObj = (currentMatch.racer1 === winnerObj) ? currentMatch.racer2 : currentMatch.racer1;
                 if (matchIndex === 0) bronzeMatchData.racer1 = loserObj;
@@ -823,7 +882,6 @@
                     mainBracketData[nextRoundIndex][nextMatchTarget].racer2 = winnerObj;
                 }
             } else {
-                // Final match finished, check if bronze is completed or skipped (if under 4 entries)
                 checkTournamentCompletion();
             }
             renderGrids();
@@ -837,22 +895,18 @@
 
         function checkTournamentCompletion() {
             let finalsRound = mainBracketData[mainBracketData.length - 1][0];
-            if (!finalsRound.winner) return; // Finals not finished yet
+            if (!finalsRound.winner) return;
 
-            // If there's a bronze match to be run but it isn't resolved yet, wait.
             if (bronzeMatchData.racer1 && bronzeMatchData.racer2 && !bronzeMatchData.winner) {
                 return;
             }
 
-            // Calculations for podium placement
             let gold = finalsRound.winner;
             let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
             let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
 
-            // Save winner metrics to history
             saveChampionToHistory(gold);
 
-            // Pop Open the Finished Podium Screen
             document.getElementById('podium-gold-car').innerText = gold.car;
             document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
 
@@ -866,7 +920,6 @@
         }
 
         function renderGrids() {
-            // Render Qualifiers
             const qContainer = document.getElementById('qualifier-bracket-container');
             qContainer.innerHTML = '';
             if(qualifierData.length > 0) {
@@ -883,7 +936,6 @@
                 qContainer.appendChild(qRound);
             }
 
-            // Render Consolation Bronze Match
             const bContainer = document.getElementById('bronze-bracket-container');
             bContainer.innerHTML = '';
             if(bronzeMatchData && (bronzeMatchData.racer1 || bronzeMatchData.racer2)) {
@@ -896,10 +948,10 @@
                 card.appendChild(buildRacerRow(bronzeMatchData.racer1, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer1)));
                 card.appendChild(buildRacerRow(bronzeMatchData.racer2, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer2)));
                 bRound.appendChild(card);
+                bRound.appendChild(card);
                 bContainer.appendChild(bRound);
             }
 
-            // Render Championship Rounds
             const mContainer = document.getElementById('main-bracket-container');
             mContainer.innerHTML = '';
             mainBracketData.forEach((round, roundIndex) => {
