@@ -42,7 +42,6 @@
             box-sizing: border-box;
         }
 
-        /* NAVIGATION & AUTH HEADERS */
         .top-nav {
             width: 100%;
             max-width: 1400px;
@@ -111,7 +110,6 @@
             display: block;
         }
 
-        /* INFINITE SCROLLING TICKER (HALL OF FAME) */
         .ticker-wrapper {
             width: 100%;
             max-width: 1400px;
@@ -154,329 +152,73 @@
         }
         .ticker-clear-btn:hover { background: #000; color: var(--accent-yellow); }
 
-        .ticker-overflow {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
+        .ticker-overflow { flex: 1; display: flex; overflow: hidden; }
+        .leaderboard-ticker-track { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker-scrolling 25s linear infinite; }
+        .ticker-overflow:hover .leaderboard-ticker-track { animation-play-state: paused; }
+        @keyframes ticker-scrolling { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
 
-        .leaderboard-ticker-track {
-            display: flex;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: ticker-scrolling 25s linear infinite;
-        }
-
-        .ticker-overflow:hover .leaderboard-ticker-track {
-            animation-play-state: paused;
-        }
-
-        @keyframes ticker-scrolling {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
-        }
-
-        .ticker-item {
-            display: inline-flex;
-            align-items: center;
-            padding: 0 30px;
-            color: #fff;
-            border-right: 1px dashed var(--border-color);
-            font-size: 1.15rem;
-        }
+        .ticker-item { display: inline-flex; align-items: center; padding: 0 30px; color: #fff; border-right: 1px dashed var(--border-color); font-size: 1.15rem; }
         .ticker-rank { color: var(--accent-blue); font-family: var(--font-racing); margin-right: 8px; font-weight: bold;}
         .ticker-car { font-weight: bold; margin-right: 6px; color: #fff; }
         .ticker-driver { font-style: italic; color: #aaa; font-size: 0.95rem; margin-right: 12px;}
         .ticker-wins { background: var(--accent-orange); color: #fff; font-family: var(--font-racing); font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; }
 
-        /* WORKSPACE LAYOUT & CORES */
-        .app-layout {
-            display: flex;
-            width: 100%;
-            max-width: 1400px;
-            gap: 25px;
-            align-items: flex-start;
-            margin-bottom: 40px;
-        }
+        .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 25px; align-items: flex-start; margin-bottom: 40px; }
+        .container { flex: 2; background: var(--card-bg); backdrop-filter: blur(8px); padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); position: relative; }
+        .container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue)); }
 
-        .container {
-            flex: 2;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            border: 2px solid var(--border-color);
-            position: relative;
-        }
-
-        /* FRIENDS / CREW INTERFACE SIDE PANEL */
-        .crew-panel {
-            flex: 1;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            border: 2px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .panel-header {
-            font-family: var(--font-racing);
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            font-size: 1.1rem;
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .crew-box {
-            background: rgba(10, 10, 14, 0.6);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 6px;
-        }
-
-        .member-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #1f1f2e;
-        }
+        /* LOBBY SIDEBAR COMPONENT */
+        .crew-panel { flex: 1; background: var(--card-bg); backdrop-filter: blur(8px); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 20px; }
+        .panel-header { font-family: var(--font-racing); color: var(--accent-blue); text-transform: uppercase; font-size: 1.1rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .crew-box { background: rgba(10, 10, 14, 0.6); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; max-height: 200px; overflow-y: auto; }
+        .member-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1f1f2e; }
         .member-row:last-child { border-bottom: none; }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue));
-        }
-
-        /* AUTH MODAL SYSTEM */
-        .auth-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .auth-card {
-            background: #141419;
-            border: 2px solid var(--border-color);
-            padding: 30px;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.7);
-        }
-
-        .auth-card h3 {
-            font-family: var(--font-racing);
-            color: var(--accent-orange);
-            margin-top: 0;
-            text-transform: uppercase;
-        }
-
-        .auth-input {
-            width: 100%;
-            box-sizing: border-box;
-            background: #0b0b0d;
-            border: 1px solid var(--border-color);
-            color: #fff;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-family: var(--font-body);
-            font-size: 1.1rem;
-        }
-
-        .auth-switch-text {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-top: 15px;
-            text-align: center;
-            cursor: pointer;
-        }
+        /* AUTH MODAL */
+        .auth-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.95); z-index: 2000; justify-content: center; align-items: center; }
+        .auth-card { background: #141419; border: 2px solid var(--border-color); padding: 30px; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
+        .auth-card h3 { font-family: var(--font-racing); color: var(--accent-orange); margin-top: 0; text-transform: uppercase; }
+        .auth-input { width: 100%; box-sizing: border-box; background: #0b0b0d; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-family: var(--font-body); font-size: 1.1rem; }
+        .auth-switch-text { font-size: 0.9rem; color: #aaa; margin-top: 15px; text-align: center; cursor: pointer; }
         .auth-switch-text:hover { color: #fff; }
 
-        /* PERSISTENT RUNS HISTORY MODAL OVERLAY */
-        .history-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.96);
-            z-index: 3000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+        /* HISTORY MODAL */
+        .history-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.96); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
+        .history-card { background: #141419; border: 2px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 800px; height: 80vh; display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,0,0,0.8); overflow: hidden; }
+        .history-header { background: #1a1a24; padding: 20px; border-bottom: 2px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .history-header h3 { font-family: var(--font-racing); color: var(--accent-orange); margin: 0; text-transform: uppercase; }
+        .history-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .history-item-row { background: rgba(10, 10, 14, 0.6); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-blue); border-radius: 4px; padding: 15px; }
+        .history-meta-line { display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa; margin-bottom: 8px; font-family: var(--font-racing); }
+        .history-podium-line { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; font-size: 0.95rem; }
 
-        .history-card {
-            background: #141419;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 800px;
-            height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            overflow: hidden;
-        }
-
-        .history-header {
-            background: #1a1a24;
-            padding: 20px;
-            border-bottom: 2px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .history-header h3 {
-            font-family: var(--font-racing);
-            color: var(--accent-orange);
-            margin: 0;
-            text-transform: uppercase;
-        }
-
-        .history-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .history-item-row {
-            background: rgba(10, 10, 14, 0.6);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-blue);
-            border-radius: 4px;
-            padding: 15px;
-        }
-
-        .history-meta-line {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: #aaa;
-            margin-bottom: 8px;
-            font-family: var(--font-racing);
-        }
-
-        .history-podium-line {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 5px;
-            font-size: 0.95rem;
-        }
-
-        /* COUNTDOWN LAYER */
-        .race-animation-overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 14, 0.96);
-            border-radius: 12px;
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .christmas-tree {
-            background: #222;
-            padding: 20px 40px;
-            border-radius: 10px;
-            border: 4px solid #444;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-
+        /* COUNTDOWN TREE */
+        .race-animation-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 14, 0.96); border-radius: 12px; z-index: 100; justify-content: center; align-items: center; flex-direction: column; gap: 30px; }
+        .christmas-tree { background: #222; padding: 20px 40px; border-radius: 10px; border: 4px solid #444; display: flex; flex-direction: column; gap: 15px; align-items: center; }
         .light-row { display: flex; gap: 25px; }
         .light-bulb { width: 50px; height: 50px; border-radius: 50%; background: #111; border: 3px solid #000; }
         .light-bulb.red.active { background: #ff0000; box-shadow: 0 0 30px #ff0000; }
         .light-bulb.yellow.active { background: #ffff00; box-shadow: 0 0 30px #ffff00; }
         .light-bulb.green.active { background: #00ff00; box-shadow: 0 0 40px #00ff00; }
+        .animation-status-text { font-family: var(--font-racing); font-size: 1.8rem; color: #fff; text-transform: uppercase; }
 
-        .animation-status-text {
-            font-family: var(--font-racing);
-            font-size: 1.8rem;
-            color: #fff;
-            text-transform: uppercase;
-        }
-
-        /* STAGING AREA REGISTRATION GRID */
+        /* STAGING AND BRACKETS */
         .setup-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .form-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 8px; }
         label { font-family: var(--font-racing); font-size: 0.9rem; color: var(--accent-yellow); text-transform: uppercase; }
-        input[type="number"], .short-input {
-            width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff;
-            font-family: var(--font-body); font-size: 1.2rem; border: 2px solid var(--border-color);
-            border-radius: 6px; padding: 12px; outline: none;
-        }
-
-        .roster-grid {
-            width: 100%; max-width: 650px; max-height: 400px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 10px; padding-right: 5px;
-        }
-
-        .roster-row {
-            display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5);
-            padding: 8px 12px; border-radius: 6px; border: 1px solid #222;
-        }
-
+        input[type="number"], .short-input { width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff; font-family: var(--font-body); font-size: 1.2rem; border: 2px solid var(--border-color); border-radius: 6px; padding: 12px; outline: none; }
+        .roster-grid { width: 100%; max-width: 650px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
+        .roster-row { display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5); padding: 8px 12px; border-radius: 6px; border: 1px solid #222; }
         .row-num { font-family: var(--font-racing); color: var(--accent-blue); min-width: 25px; font-weight: bold; }
-        .roster-row input[type="text"] {
-            flex: 1; background: #181820; color: #fff; border: 1px solid var(--border-color);
-            padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none;
-        }
-
-        /* TOURNAMENT BRACKET GRAPHICS */
+        .roster-row input[type="text"] { flex: 1; background: #181820; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none; }
         .tournament-section { display: none; }
-        .bracket-heading {
-            font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase;
-            font-size: 1.4rem; margin-top: 20px; border-left: 4px solid var(--accent-yellow); padding-left: 10px;
-        }
-
-        .bracket-container {
-            display: flex; justify-content: flex-start; align-items: center; gap: 40px;
-            overflow-x: auto; padding: 20px 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 30px; border: 1px solid #222;
-        }
-
+        .bracket-heading { font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; font-size: 1.4rem; margin-top: 20px; border-left: 4px solid var(--accent-yellow); padding-left: 10px; }
+        .bracket-container { display: flex; justify-content: flex-start; align-items: center; gap: 40px; overflow-x: auto; padding: 20px 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
         .round { display: flex; flex-direction: column; justify-content: space-around; height: 520px; min-width: 260px; }
-        .round-title {
-            font-family: var(--font-racing); text-align: center; color: var(--accent-yellow);
-            font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 1rem;
-            border-bottom: 1px dashed var(--border-color); padding-bottom: 5px;
-        }
-
-        .matchup {
-            background: rgba(15, 15, 18, 0.95); border: 2px solid var(--border-color);
-            border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px;
-        }
-
+        .round-title { font-family: var(--font-racing); text-align: center; color: var(--accent-yellow); font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 1rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 5px; }
+        .matchup { background: rgba(15, 15, 18, 0.95); border: 2px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
         .matchup.active { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 204, 255, 0.3); }
-        .racer {
-            background: #222227; padding: 10px 14px; border-radius: 5px; display: flex;
-            justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
-        }
+        .racer { background: #222227; padding: 10px 14px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
         .racer:hover { background: #2e2e36; }
         .racer-car { font-weight: 700; font-size: 1.15rem; }
         .racer-driver { font-size: 0.85rem; color: #aaa; font-style: italic; }
@@ -484,23 +226,12 @@
         .racer.loser { opacity: 0.25; text-decoration: line-through; background: #131316; }
         .action-tag { font-family: var(--font-racing); background: var(--accent-yellow); color: #000; padding: 3px 8px; font-size: 0.75rem; border-radius: 3px; }
 
-        button.main-btn {
-            font-family: var(--font-racing); background: linear-gradient(135deg, var(--accent-orange), #b30000);
-            color: white; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: 900;
-            text-transform: uppercase; font-style: italic; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
-        }
-        button.action-inline-btn {
-            font-family: var(--font-racing); background: #222230; color: #fff; border: 1px solid var(--border-color);
-            padding: 8px 12px; font-size: 0.85rem; border-radius: 4px; cursor: pointer;
-        }
+        button.main-btn { font-family: var(--font-racing); background: linear-gradient(135deg, var(--accent-orange), #b30000); color: white; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: 900; text-transform: uppercase; font-style: italic; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4); }
+        button.action-inline-btn { font-family: var(--font-racing); background: #222230; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; }
         button.action-inline-btn:hover { border-color: var(--accent-orange); }
 
         /* PODIUM */
-        .podium-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px;
-        }
-
+        .podium-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
         .podium-title { font-family: var(--font-racing); font-size: 2.8rem; text-transform: uppercase; background: linear-gradient(90deg, #ffcc00, #ff4500, #ffcc00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; }
         .podium-stage { display: flex; align-items: flex-end; justify-content: center; gap: 20px; width: 100%; max-width: 800px; height: 350px; margin-bottom: 40px; }
         .podium-column { display: flex; flex-direction: column; align-items: center; width: 30%; font-family: var(--font-racing); }
@@ -508,7 +239,6 @@
         .podium-driver-name { font-family: var(--font-body); font-size: 1rem; color: #aaa; font-style: italic; }
         .pedestal { width: 100%; border-radius: 6px 6px 0 0; display: flex; flex-direction: column; align-items: center; padding-top: 20px; border: 2px solid rgba(255,255,255,0.1); }
         .pedestal-rank { font-size: 3.5rem; font-weight: 900; }
-
         .podium-column.gold .pedestal { height: 220px; background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%); color: #000; }
         .podium-column.silver .pedestal { height: 160px; background: linear-gradient(180deg, #e0e0e0 0%, #707070 100%); color: #000; }
         .podium-column.bronze .pedestal { height: 110px; background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%); color: #fff; }
@@ -661,6 +391,15 @@
                     <label style="font-size: 0.75rem; margin-top: 5px; color: var(--accent-blue)">Staged Crew Pitlane:</label>
                     <div id="crew-members-list" class="crew-box" style="font-size: 0.95rem;"></div>
                 </div>
+
+                <div id="friends-system-section" style="border-top: 1px dashed var(--border-color); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <label style="font-size: 0.85rem; color: var(--accent-yellow);">🏁 Crew Friends Tracker</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="friend-uid-input" class="short-input" placeholder="Friend's Handle ID" style="padding: 6px; font-size: 1rem;">
+                        <button class="action-inline-btn" onclick="addFriendByUsername()">Add</button>
+                    </div>
+                    <div id="friends-list-box" class="crew-box" style="font-size: 0.95rem; min-height: 80px;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -674,7 +413,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPuNf5LdgX_WYFH_cxUN8C46kJY56A7c4",
@@ -690,9 +429,19 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // PROFANITY FILTER BLOCKLIST
+        const BANNED_WORDS = ["asshole", "bitch", "bastard", "fuck", "shit", "cunt", "nigger", "faggot", "dick", "pussy"];
+        
+        function containsProfanity(text) {
+            const cleanText = text.toLowerCase().replace(/[^a-z0-9]/g, "");
+            return BANNED_WORDS.some(badWord => cleanText.includes(badWord));
+        }
+
         let currentUser = null;
+        let currentUserUsername = "";
         let authMode = "login";
         let crewListenerUnsubscribe = null;
+        let friendsListenerUnsubscribe = null;
         let connectedCrewMembersCache = [];
 
         onAuthStateChanged(auth, async (user) => {
@@ -703,17 +452,20 @@
 
             if (user) {
                 currentUser = user;
-                navBtn.innerText = `Sign Out (${user.email.split('@')[0]})`;
-                navBtn.onclick = () => {
-                    if(crewListenerUnsubscribe) crewListenerUnsubscribe();
-                    signOut(auth);
-                };
                 crewUnauth.style.display = 'none';
                 crewAuth.style.display = 'flex';
                 syncBtn.style.display = 'block';
                 await syncUserDataFromCloud();
+                navBtn.innerText = `Sign Out (${currentUserUsername || user.email.split('@')[0]})`;
+                navBtn.onclick = () => {
+                    if(crewListenerUnsubscribe) crewListenerUnsubscribe();
+                    if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
+                    signOut(auth);
+                };
+                setupFriendsListener();
             } else {
                 currentUser = null;
+                currentUserUsername = "";
                 navBtn.innerText = "Team Login";
                 navBtn.onclick = () => openAuthModal();
                 crewUnauth.style.display = 'block';
@@ -722,11 +474,11 @@
                 document.getElementById('crew-active-dashboard').style.display = 'none';
                 document.getElementById('crew-id-tag').innerText = '';
                 connectedCrewMembersCache = [];
+                if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
                 loadLeaderboard(); 
             }
         });
 
-        // LIVE HISTORY ENGINE ACCESSORS
         window.openHistoryModal = async function() {
             document.getElementById('history-modal').style.display = 'flex';
             const logBox = document.getElementById('history-logs-container');
@@ -739,7 +491,7 @@
                 
                 logBox.innerHTML = '';
                 if(querySnap.empty) {
-                    logBox.innerHTML = `<div style="color:#666; font-style:italic; text-align:center; padding-top:40px;">No persistent race records discovered on this user profile. Complete a bracket layout execution to construct cloud logs.</div>`;
+                    logBox.innerHTML = `<div style="color:#666; font-style:italic; text-align:center; padding-top:40px;">No persistent race records discovered on this user profile.</div>`;
                     return;
                 }
 
@@ -767,20 +519,16 @@
                     `;
                     logBox.appendChild(row);
                 });
-            } catch (err) {
-                logBox.innerHTML = `<div style="color:#ff4500;">History Index Error: ${err.message}</div>`;
-            }
+            } catch (err) { logBox.innerHTML = `<div style="color:#ff4500;">History Index Error: ${err.message}</div>`; }
         }
 
         window.closeHistoryModal = function() { document.getElementById('history-modal').style.display = 'none'; }
 
-        // CREW BUSINESS ACTIONS VIA FIREBASE
         window.connectToCrew = function() {
             const code = document.getElementById('crew-code-input').value.trim().toUpperCase();
             if(!code) return alert("Enter a crew identification code.");
 
             if(crewListenerUnsubscribe) crewListenerUnsubscribe();
-
             document.getElementById('crew-id-tag').innerText = "Code: " + code;
             document.getElementById('crew-active-dashboard').style.display = 'flex';
 
@@ -790,7 +538,7 @@
                 
                 let myEntry = membersList.find(m => m.uid === currentUser.uid);
                 if(!myEntry) {
-                    myEntry = { uid: currentUser.uid, name: currentUser.email.split('@')[0], car: "Bone Shaker" };
+                    myEntry = { uid: currentUser.uid, name: currentUserUsername || currentUser.email.split('@')[0], car: "Bone Shaker" };
                     membersList.push(myEntry);
                     await setDoc(doc(db, "crews", code), { members: membersList }, { merge: true });
                 }
@@ -825,13 +573,64 @@
             });
         }
 
+        // FRIENDS TRACKER MODULES
+        window.addFriendByUsername = async function() {
+            const targetUsername = document.getElementById('friend-uid-input').value.trim().toLowerCase();
+            if(!targetUsername) return alert("Please specify a user handle ID.");
+            if(targetUsername === currentUserUsername.toLowerCase()) return alert("You cannot add yourself to your track list.");
+
+            try {
+                const usernameRef = doc(db, "usernames", targetUsername);
+                const usernameSnap = await getDoc(usernameRef);
+                
+                if(!usernameSnap.exists()) {
+                    return alert("Racer profile handle index entry not found in active cloud directory.");
+                }
+
+                const friendUid = usernameSnap.data().uid;
+                const friendMainProfile = await getDoc(doc(db, "users", friendUid));
+                const exactUsername = friendMainProfile.data().username || targetUsername;
+
+                await setDoc(doc(db, "users", currentUser.uid, "friends", friendUid), {
+                    username: exactUsername,
+                    uid: friendUid,
+                    addedAt: serverTimestamp()
+                });
+
+                document.getElementById('friend-uid-input').value = "";
+                alert(`Successfully added @${exactUsername} to tracking monitor!`);
+            } catch(e) { alert("Error adding track follower: " + e.message); }
+        }
+
+        function setupFriendsListener() {
+            if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
+            
+            const friendsCollRef = collection(db, "users", currentUser.uid, "friends");
+            friendsListenerUnsubscribe = onSnapshot(friendsCollRef, (snapshot) => {
+                const container = document.getElementById('friends-list-box');
+                container.innerHTML = '';
+                
+                if(snapshot.empty) {
+                    container.innerHTML = `<div style="color:#555; text-align:center; padding:10px; font-style:italic;">No active connections linked.</div>`;
+                    return;
+                }
+
+                snapshot.forEach(friendDoc => {
+                    const friendData = friendDoc.data();
+                    const row = document.createElement('div');
+                    row.className = 'member-row';
+                    row.innerHTML = `<div><b style="color:var(--accent-blue);">@${friendData.username}</b><br><span style="font-size:0.75rem; color:#777;">ID: ${friendData.uid.substring(0,6).toUpperCase()}</span></div><span style="font-size:0.8rem; background:#1a1a24; padding:3px 6px; border-radius:3px; color:#aaa;">Tracked</span>`;
+                    container.appendChild(row);
+                });
+            });
+        }
+
         window.injectCrewToRoster = function() {
-            if(connectedCrewMembersCache.length === 0) return alert("No active crew profile linked or found in staging area!");
+            if(connectedCrewMembersCache.length === 0) return alert("No active crew profile linked!");
             document.getElementById('car-count').value = connectedCrewMembersCache.length;
             generateRosterInputs(connectedCrewMembersCache);
         }
 
-        // AUTH BASE MANAGEMENT
         window.openAuthModal = function() {
             authMode = "login";
             document.getElementById('auth-modal').style.display = 'flex';
@@ -846,11 +645,17 @@
         }
 
         window.closeAuthModal = function() { document.getElementById('auth-modal').style.display = 'none'; }
+        
         window.toggleAuthMode = function() {
             if(authMode === "login") {
                 authMode = "signup";
                 document.getElementById('auth-title').innerText = "Create Team Profile";
-                document.getElementById('auth-primary-btn').innerText = "Sign Up";
+                document.getElementById('auth-primary-btn').innerText = "Register Team";
+                document.getElementById('auth-inputs-area').innerHTML = `
+                    <input type="text" id="auth-username" class="auth-input" placeholder="Choose Unique User ID Handle (No Profanity)">
+                    <input type="email" id="auth-email" class="auth-input" placeholder="Racing Team Email">
+                    <input type="password" id="auth-password" class="auth-input" placeholder="Secure Password">
+                `;
                 document.getElementById('auth-switch-mode').innerText = "Already registered? Login here";
             } else { window.openAuthModal(); }
         }
@@ -872,14 +677,37 @@
                 if (authMode === "login") {
                     const pass = document.getElementById('auth-password').value;
                     await signInWithEmailAndPassword(auth, email, pass);
+                    closeAuthModal();
                 } else if (authMode === "signup") {
+                    const usernameInput = document.getElementById('auth-username').value.trim().toLowerCase();
                     const pass = document.getElementById('auth-password').value;
-                    await createUserWithEmailAndPassword(auth, email, pass);
+
+                    if(!usernameInput || usernameInput.length < 3) return alert("Handle must be 3+ characters.");
+                    if(containsProfanity(usernameInput)) return alert("Flagged: Choice of handle failed content filter checks.");
+
+                    // Enforce global uniqueness lock
+                    const usernameRef = doc(db, "usernames", usernameInput);
+                    const usernameSnap = await getDoc(usernameRef);
+                    if(usernameSnap.exists()) {
+                        return alert("Handle ID taken. Choose another.");
+                    }
+
+                    const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                    
+                    await setDoc(doc(db, "usernames", usernameInput), { uid: userCred.user.uid });
+                    await setDoc(doc(db, "users", userCred.user.uid), { 
+                        username: usernameInput,
+                        email: email,
+                        createdAt: serverTimestamp()
+                    });
+                    
+                    currentUserUsername = usernameInput;
+                    closeAuthModal();
                 } else if (authMode === "forgot") {
                     await sendPasswordResetEmail(auth, email);
                     alert("Password reset email dispatched to your inbox!");
+                    closeAuthModal();
                 }
-                closeAuthModal();
             } catch (err) { alert(err.message); }
         }
 
@@ -888,7 +716,9 @@
             const docRef = doc(db, "users", currentUser.uid);
             const docSnap = await getDoc(docRef);
             if(docSnap.exists()) {
-                localStorage.setItem('hw_leaderboard_v2', JSON.stringify(docSnap.data().leaderboard || []));
+                const userData = docSnap.data();
+                currentUserUsername = userData.username || "";
+                localStorage.setItem('hw_leaderboard_v2', JSON.stringify(userData.leaderboard || []));
             }
             loadLeaderboard();
         }
@@ -904,10 +734,8 @@
             loadLeaderboard();
 
             if(currentUser) {
-                // Update general Hall of Fame leaderboard records
                 await setDoc(doc(db, "users", currentUser.uid), { leaderboard: scores }, { merge: true });
 
-                // Construct a detailed timeline race execution payload
                 if(completeFieldSnapshot) {
                     const subCollRef = collection(db, "users", currentUser.uid, "races");
                     await addDoc(subCollRef, {
@@ -922,14 +750,8 @@
 
     <script>
         let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null; let registeredFieldCount = 0;
-        const revAudio = new Audio('rev.mp3');
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
         const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
-
-        function playEngineRev() {
-            revAudio.currentTime = 0;
-            revAudio.play().catch(e => console.log("Audio waiting for interaction context"));
-        }
 
         function startRaceSequence() {
             const rows = document.querySelectorAll('.roster-row');
@@ -942,17 +764,16 @@
             const statusText = document.getElementById('animation-text');
             overlay.style.display = 'flex';
             document.querySelectorAll('.light-bulb').forEach(l => l.classList.remove('active'));
-            playEngineRev();
 
             setTimeout(() => { statusText.innerText = "PRE-STAGED..."; document.getElementById('light-r1').classList.add('active'); document.getElementById('light-r2').classList.add('active'); }, 1500);
-            setTimeout(() => { statusText.innerText = "STAGED! READY..."; document.getElementById('light-y1').classList.add('active'); document.getElementById('light-y2').classList.add('active'); }, 4500);
+            setTimeout(() => { statusText.innerText = "STAGED! READY..."; document.getElementById('light-y1').classList.add('active'); document.getElementById('light-y2').classList.add('active'); }, 3000);
             setTimeout(() => { 
                 statusText.innerText = "GREEN LIGHT! GO!"; 
                 document.getElementById('light-r1').classList.remove('active'); document.getElementById('light-r2').classList.remove('active');
                 document.getElementById('light-y1').classList.remove('active'); document.getElementById('light-y2').classList.remove('active');
                 document.getElementById('light-g1').classList.add('active'); document.getElementById('light-g2').classList.add('active');
-            }, 6800);
-            setTimeout(() => { overlay.style.display = 'none'; buildTournament(); }, 8000);
+            }, 4500);
+            setTimeout(() => { overlay.style.display = 'none'; buildTournament(); }, 5500);
         }
 
         function generateRosterInputs(crewMembersData = null) {
@@ -1057,7 +878,6 @@
             let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
             let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
 
-            // Construct full statistical data profile context
             let raceLogSnapshot = {
                 totalEntries: registeredFieldCount,
                 podium: { gold: gold, silver: silver, bronze: bronze }
@@ -1122,7 +942,7 @@
             scores.sort((a, b) => b.wins - a.wins);
             
             if(scores.length === 0) { 
-                tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded. Run races to populate the leaderboard.</div>`; 
+                tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded.</div>`; 
                 return; 
             }
             scores.forEach((item, index) => {
