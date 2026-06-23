@@ -48,6 +48,7 @@
             max-width: 1400px;
             display: flex;
             justify-content: flex-end;
+            gap: 10px;
             margin-bottom: 10px;
         }
 
@@ -110,7 +111,7 @@
             display: block;
         }
 
-        /* NEW INFINITE SCROLLING TICKER (HALL OF FAME) */
+        /* INFINITE SCROLLING TICKER (HALL OF FAME) */
         .ticker-wrapper {
             width: 100%;
             max-width: 1400px;
@@ -162,11 +163,10 @@
         .leaderboard-ticker-track {
             display: flex;
             white-space: nowrap;
-            padding-left: 100%; /* Start scrolling from outside right boundary */
+            padding-left: 100%;
             animation: ticker-scrolling 25s linear infinite;
         }
 
-        /* Pause scroll on hover so users can easily read/inspect items */
         .ticker-overflow:hover .leaderboard-ticker-track {
             animation-play-state: paused;
         }
@@ -189,19 +189,18 @@
         .ticker-driver { font-style: italic; color: #aaa; font-size: 0.95rem; margin-right: 12px;}
         .ticker-wins { background: var(--accent-orange); color: #fff; font-family: var(--font-racing); font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; }
 
-        /* WORKSPACE LAYOUT */
+        /* WORKSPACE LAYOUT & CORES */
         .app-layout {
             display: flex;
             width: 100%;
             max-width: 1400px;
             gap: 25px;
             align-items: flex-start;
-            flex: 1;
             margin-bottom: 40px;
         }
 
         .container {
-            flex: 1;
+            flex: 2;
             background: var(--card-bg);
             backdrop-filter: blur(8px);
             padding: 30px;
@@ -211,6 +210,48 @@
             position: relative;
         }
 
+        /* FRIENDS / CREW INTERFACE SIDE PANEL */
+        .crew-panel {
+            flex: 1;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-header {
+            font-family: var(--font-racing);
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .crew-box {
+            background: rgba(10, 10, 14, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .member-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #1f1f2e;
+        }
+        .member-row:last-child { border-bottom: none; }
+
         .container::before {
             content: '';
             position: absolute;
@@ -218,7 +259,7 @@
             background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue));
         }
 
-        /* AUTH SEAMLESS MODAL PANEL */
+        /* AUTH MODAL SYSTEM */
         .auth-overlay {
             display: none;
             position: fixed;
@@ -268,7 +309,82 @@
         }
         .auth-switch-text:hover { color: #fff; }
 
-        /* COUNTDOWN ANIMATION SCREEN LAYER */
+        /* PERSISTENT RUNS HISTORY MODAL OVERLAY */
+        .history-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.96);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .history-card {
+            background: #141419;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+
+        .history-header {
+            background: #1a1a24;
+            padding: 20px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-header h3 {
+            font-family: var(--font-racing);
+            color: var(--accent-orange);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .history-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-item-row {
+            background: rgba(10, 10, 14, 0.6);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-blue);
+            border-radius: 4px;
+            padding: 15px;
+        }
+
+        .history-meta-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-family: var(--font-racing);
+        }
+
+        .history-podium-line {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        /* COUNTDOWN LAYER */
         .race-animation-overlay {
             display: none;
             position: absolute;
@@ -306,11 +422,11 @@
             text-transform: uppercase;
         }
 
-        /* REGISTRATION GRID */
+        /* STAGING AREA REGISTRATION GRID */
         .setup-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .form-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 8px; }
         label { font-family: var(--font-racing); font-size: 0.9rem; color: var(--accent-yellow); text-transform: uppercase; }
-        input[type="number"] {
+        input[type="number"], .short-input {
             width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff;
             font-family: var(--font-body); font-size: 1.2rem; border: 2px solid var(--border-color);
             border-radius: 6px; padding: 12px; outline: none;
@@ -332,7 +448,7 @@
             padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none;
         }
 
-        /* BRACKET SYSTEMS */
+        /* TOURNAMENT BRACKET GRAPHICS */
         .tournament-section { display: none; }
         .bracket-heading {
             font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase;
@@ -373,8 +489,13 @@
             color: white; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: 900;
             text-transform: uppercase; font-style: italic; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
         }
+        button.action-inline-btn {
+            font-family: var(--font-racing); background: #222230; color: #fff; border: 1px solid var(--border-color);
+            padding: 8px 12px; font-size: 0.85rem; border-radius: 4px; cursor: pointer;
+        }
+        button.action-inline-btn:hover { border-color: var(--accent-orange); }
 
-        /* PODIUM OVERLAY */
+        /* PODIUM */
         .podium-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(5, 5, 8, 0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px;
@@ -410,6 +531,18 @@
             <button class="reset-btn" onclick="closeAuthModal()" style="width:100%;">Cancel</button>
             <p id="auth-switch-mode" class="auth-switch-text" onclick="toggleAuthMode()">Don't have a team profile? Sign Up here</p>
             <p id="auth-forgot-pass" class="auth-switch-text" onclick="handleForgotPassword()" style="margin-top:5px; color:var(--accent-blue)">Forgot Password?</p>
+        </div>
+    </div>
+
+    <div id="history-modal" class="history-overlay">
+        <div class="history-card">
+            <div class="history-header">
+                <h3>🏁 Personal Track Logs</h3>
+                <button class="reset-btn" onclick="closeHistoryModal()" style="padding:6px 14px;">Close Log</button>
+            </div>
+            <div id="history-logs-container" class="history-content">
+                <div style="color:#666; font-style:italic; text-align:center;">Retrieving cloud racing history...</div>
+            </div>
         </div>
     </div>
 
@@ -473,7 +606,10 @@
                     <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
                 </div>
                 <div class="form-group" style="width: 100%;">
-                    <label>2. Customize Roster Grid:</label>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label>2. Customize Roster Grid:</label>
+                        <button id="sync-crew-roster-btn" class="action-inline-btn" onclick="injectCrewToRoster()" style="display: none; padding: 4px 10px; font-size: 0.75rem;">⚡ Inject Linked Crew Members</button>
+                    </div>
                     <div id="roster-grid" class="roster-grid"></div>
                 </div>
                 <button class="main-btn" onclick="startRaceSequence()">Split Grid & Create Brackets</button>
@@ -491,6 +627,42 @@
                 </div>
             </div>
         </div>
+
+        <div class="crew-panel">
+            <div class="panel-header">
+                <span>👥 Racing Crew Lobby</span>
+                <span id="crew-id-tag" style="font-size: 0.75rem; color: var(--accent-yellow); font-family: var(--font-body);"></span>
+            </div>
+            
+            <div id="crew-unauthenticated" style="color: #666; font-style: italic; text-align: center; font-size: 0.95rem;">
+                Log into a driver profile to manage or connect real-time racing groups.
+            </div>
+
+            <div id="crew-authenticated" style="display: none; flex-direction: column; gap: 15px;">
+                <button class="main-btn" onclick="openHistoryModal()" style="font-size:0.9rem; padding:10px; width:100%; box-shadow:none; background: linear-gradient(135deg, #222230, #141419); border:1px solid var(--border-color); color:var(--accent-blue);">📜 View Race History Log</button>
+                
+                <div id="crew-join-form" style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="font-size: 0.75rem;">Link / Create Active Crew Code:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="crew-code-input" class="short-input" placeholder="e.g., TRACK1" style="padding: 6px; font-size: 1rem;">
+                        <button class="action-inline-btn" onclick="connectToCrew()">Link</button>
+                    </div>
+                </div>
+
+                <div id="crew-active-dashboard" style="display: none; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <label style="font-size: 0.75rem;">Your Track Signature Car:</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="crew-user-car" class="short-input" placeholder="Your Car Name" style="padding: 6px; font-size: 1rem;">
+                            <button class="action-inline-btn" onclick="updateRacerProfileInCrew()">Save</button>
+                        </div>
+                    </div>
+                    
+                    <label style="font-size: 0.75rem; margin-top: 5px; color: var(--accent-blue)">Staged Crew Pitlane:</label>
+                    <div id="crew-members-list" class="crew-box" style="font-size: 0.95rem;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -502,7 +674,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPuNf5LdgX_WYFH_cxUN8C46kJY56A7c4",
@@ -520,22 +692,146 @@
 
         let currentUser = null;
         let authMode = "login";
+        let crewListenerUnsubscribe = null;
+        let connectedCrewMembersCache = [];
 
         onAuthStateChanged(auth, async (user) => {
             const navBtn = document.getElementById('nav-auth-btn');
+            const crewUnauth = document.getElementById('crew-unauthenticated');
+            const crewAuth = document.getElementById('crew-authenticated');
+            const syncBtn = document.getElementById('sync-crew-roster-btn');
+
             if (user) {
                 currentUser = user;
                 navBtn.innerText = `Sign Out (${user.email.split('@')[0]})`;
-                navBtn.onclick = () => signOut(auth);
+                navBtn.onclick = () => {
+                    if(crewListenerUnsubscribe) crewListenerUnsubscribe();
+                    signOut(auth);
+                };
+                crewUnauth.style.display = 'none';
+                crewAuth.style.display = 'flex';
+                syncBtn.style.display = 'block';
                 await syncUserDataFromCloud();
             } else {
                 currentUser = null;
                 navBtn.innerText = "Team Login";
                 navBtn.onclick = () => openAuthModal();
+                crewUnauth.style.display = 'block';
+                crewAuth.style.display = 'none';
+                syncBtn.style.display = 'none';
+                document.getElementById('crew-active-dashboard').style.display = 'none';
+                document.getElementById('crew-id-tag').innerText = '';
+                connectedCrewMembersCache = [];
                 loadLeaderboard(); 
             }
         });
 
+        // LIVE HISTORY ENGINE ACCESSORS
+        window.openHistoryModal = async function() {
+            document.getElementById('history-modal').style.display = 'flex';
+            const logBox = document.getElementById('history-logs-container');
+            if(!currentUser) { logBox.innerHTML = "Access Denied."; return; }
+
+            try {
+                const subCollRef = collection(db, "users", currentUser.uid, "races");
+                const sortedQuery = query(subCollRef, orderBy("timestamp", "desc"));
+                const querySnap = await getDocs(sortedQuery);
+                
+                logBox.innerHTML = '';
+                if(querySnap.empty) {
+                    logBox.innerHTML = `<div style="color:#666; font-style:italic; text-align:center; padding-top:40px;">No persistent race records discovered on this user profile. Complete a bracket layout execution to construct cloud logs.</div>`;
+                    return;
+                }
+
+                querySnap.forEach(snapDoc => {
+                    const data = snapDoc.data();
+                    let dateString = "Unknown Timing Node";
+                    if(data.timestamp) {
+                        const dateObj = data.timestamp.toDate();
+                        dateString = dateObj.toLocaleDateString() + " @ " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    const row = document.createElement('div');
+                    row.className = 'history-item-row';
+                    row.innerHTML = `
+                        <div class="history-meta-line">
+                            <span>🏁 ID: ${snapDoc.id.substring(0,8).toUpperCase()}</span>
+                            <span>📅 ${dateString}</span>
+                        </div>
+                        <div style="font-size:1.1rem; margin-bottom:5px;">Total Field Entries Count: <b style="color:var(--accent-blue);">${data.totalEntries} cars</b></div>
+                        <div class="history-podium-line">
+                            <span style="color:#ffd700;">🥇 Gold: <b>${data.podium.gold.car}</b> (${data.podium.gold.driver})</span>
+                            <span style="color:#e0e0e0;">🥈 Silver: <b>${data.podium.silver.car}</b> (${data.podium.silver.driver})</span>
+                            <span style="color:#cd7f32;">🥉 Bronze: <b>${data.podium.bronze.car}</b> (${data.podium.bronze.driver})</span>
+                        </div>
+                    `;
+                    logBox.appendChild(row);
+                });
+            } catch (err) {
+                logBox.innerHTML = `<div style="color:#ff4500;">History Index Error: ${err.message}</div>`;
+            }
+        }
+
+        window.closeHistoryModal = function() { document.getElementById('history-modal').style.display = 'none'; }
+
+        // CREW BUSINESS ACTIONS VIA FIREBASE
+        window.connectToCrew = function() {
+            const code = document.getElementById('crew-code-input').value.trim().toUpperCase();
+            if(!code) return alert("Enter a crew identification code.");
+
+            if(crewListenerUnsubscribe) crewListenerUnsubscribe();
+
+            document.getElementById('crew-id-tag').innerText = "Code: " + code;
+            document.getElementById('crew-active-dashboard').style.display = 'flex';
+
+            crewListenerUnsubscribe = onSnapshot(doc(db, "crews", code), async (snapshot) => {
+                let membersList = [];
+                if(snapshot.exists()) { membersList = snapshot.data().members || []; }
+                
+                let myEntry = membersList.find(m => m.uid === currentUser.uid);
+                if(!myEntry) {
+                    myEntry = { uid: currentUser.uid, name: currentUser.email.split('@')[0], car: "Bone Shaker" };
+                    membersList.push(myEntry);
+                    await setDoc(doc(db, "crews", code), { members: membersList }, { merge: true });
+                }
+
+                document.getElementById('crew-user-car').value = myEntry.car;
+                connectedCrewMembersCache = membersList;
+                renderCrewUI(membersList);
+            });
+        }
+
+        window.updateRacerProfileInCrew = async function() {
+            const code = document.getElementById('crew-code-input').value.trim().toUpperCase();
+            const chosenCar = document.getElementById('crew-user-car').value.trim();
+            if(!code || !chosenCar) return alert("Check values entered.");
+
+            let updatedList = connectedCrewMembersCache.map(m => {
+                if(m.uid === currentUser.uid) m.car = chosenCar;
+                return m;
+            });
+            await setDoc(doc(db, "crews", code), { members: updatedList }, { merge: true });
+        }
+
+        function renderCrewUI(members) {
+            const box = document.getElementById('crew-members-list');
+            box.innerHTML = '';
+            if(members.length === 0) { box.innerHTML = "Staging crew empty..."; return; }
+            members.forEach(m => {
+                const row = document.createElement('div');
+                row.className = 'member-row';
+                row.innerHTML = `<div><b>${m.name}</b><br><span style="font-size:0.8rem; color:#aaa;">🏎️ ${m.car}</span></div>`;
+                box.appendChild(row);
+            });
+        }
+
+        window.injectCrewToRoster = function() {
+            if(connectedCrewMembersCache.length === 0) return alert("No active crew profile linked or found in staging area!");
+            document.getElementById('car-count').value = connectedCrewMembersCache.length;
+            generateRosterInputs(connectedCrewMembersCache);
+        }
+
+        // AUTH BASE MANAGEMENT
         window.openAuthModal = function() {
             authMode = "login";
             document.getElementById('auth-modal').style.display = 'flex';
@@ -549,19 +845,14 @@
             document.getElementById('auth-forgot-pass').style.display = "block";
         }
 
-        window.closeAuthModal = function() {
-            document.getElementById('auth-modal').style.display = 'none';
-        }
-
+        window.closeAuthModal = function() { document.getElementById('auth-modal').style.display = 'none'; }
         window.toggleAuthMode = function() {
             if(authMode === "login") {
                 authMode = "signup";
                 document.getElementById('auth-title').innerText = "Create Team Profile";
                 document.getElementById('auth-primary-btn').innerText = "Sign Up";
                 document.getElementById('auth-switch-mode').innerText = "Already registered? Login here";
-            } else {
-                window.openAuthModal();
-            }
+            } else { window.openAuthModal(); }
         }
 
         window.handleForgotPassword = function() {
@@ -589,9 +880,7 @@
                     alert("Password reset email dispatched to your inbox!");
                 }
                 closeAuthModal();
-            } catch (err) {
-                alert(err.message);
-            }
+            } catch (err) { alert(err.message); }
         }
 
         async function syncUserDataFromCloud() {
@@ -604,34 +893,42 @@
             loadLeaderboard();
         }
 
-        window.saveChampionToHistory = async function(winnerObj) {
+        window.saveChampionToHistory = async function(winnerObj, completeFieldSnapshot = null) {
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             let existingIdx = scores.findIndex(item => item.car === winnerObj.car && item.driver === winnerObj.driver);
             
-            if(existingIdx > -1) {
-                scores[existingIdx].wins += 1;
-            } else {
-                scores.push({ car: winnerObj.car, driver: winnerObj.driver, wins: 1 });
-            }
+            if(existingIdx > -1) { scores[existingIdx].wins += 1; } 
+            else { scores.push({ car: winnerObj.car, driver: winnerObj.driver, wins: 1 }); }
             
             localStorage.setItem('hw_leaderboard_v2', JSON.stringify(scores));
             loadLeaderboard();
 
             if(currentUser) {
+                // Update general Hall of Fame leaderboard records
                 await setDoc(doc(db, "users", currentUser.uid), { leaderboard: scores }, { merge: true });
+
+                // Construct a detailed timeline race execution payload
+                if(completeFieldSnapshot) {
+                    const subCollRef = collection(db, "users", currentUser.uid, "races");
+                    await addDoc(subCollRef, {
+                        timestamp: serverTimestamp(),
+                        totalEntries: completeFieldSnapshot.totalEntries,
+                        podium: completeFieldSnapshot.podium
+                    });
+                }
             }
         }
     </script>
 
     <script>
-        let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null;
+        let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null; let registeredFieldCount = 0;
         const revAudio = new Audio('rev.mp3');
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
         const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
 
         function playEngineRev() {
             revAudio.currentTime = 0;
-            revAudio.play().catch(e => console.log("Audio waiting for user gesture..."));
+            revAudio.play().catch(e => console.log("Audio waiting for interaction context"));
         }
 
         function startRaceSequence() {
@@ -640,6 +937,7 @@
             rows.forEach(row => { if(row.querySelector('.input-car').value.trim()) racersCount++; });
             if (racersCount < 2) return alert("You need 2+ cars!");
 
+            registeredFieldCount = racersCount;
             const overlay = document.getElementById('race-animation');
             const statusText = document.getElementById('animation-text');
             overlay.style.display = 'flex';
@@ -657,13 +955,20 @@
             setTimeout(() => { overlay.style.display = 'none'; buildTournament(); }, 8000);
         }
 
-        function generateRosterInputs() {
-            const count = parseInt(document.getElementById('car-count').value) || 6;
+        function generateRosterInputs(crewMembersData = null) {
+            const count = crewMembersData ? crewMembersData.length : (parseInt(document.getElementById('car-count').value) || 6);
             const container = document.getElementById('roster-grid');
             container.innerHTML = '';
             for (let i = 1; i <= count; i++) {
                 const row = document.createElement('div'); row.className = 'roster-row';
-                row.innerHTML = `<div class="row-num">#${i}</div><input type="text" class="input-car" placeholder="Car" value="${defaultCars[(i - 1) % defaultCars.length]} ${Math.ceil(i/8)}"><input type="text" class="input-driver" placeholder="Driver" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">`;
+                let carVal = defaultCars[(i - 1) % defaultCars.length] + " " + Math.ceil(i/8);
+                let driverVal = defaultDrivers[(i - 1) % defaultDrivers.length];
+                
+                if(crewMembersData && crewMembersData[i-1]) {
+                    carVal = crewMembersData[i-1].car;
+                    driverVal = crewMembersData[i-1].name;
+                }
+                row.innerHTML = `<div class="row-num">#${i}</div><input type="text" class="input-car" placeholder="Car" value="${carVal}"><input type="text" class="input-driver" placeholder="Driver" value="${driverVal}">`;
                 container.appendChild(row);
             }
         }
@@ -752,7 +1057,13 @@
             let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
             let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
 
-            if(window.saveChampionToHistory) window.saveChampionToHistory(gold);
+            // Construct full statistical data profile context
+            let raceLogSnapshot = {
+                totalEntries: registeredFieldCount,
+                podium: { gold: gold, silver: silver, bronze: bronze }
+            };
+
+            if(window.saveChampionToHistory) window.saveChampionToHistory(gold, raceLogSnapshot);
 
             document.getElementById('podium-gold-car').innerText = gold.car; document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
             document.getElementById('podium-silver-car').innerText = silver.car; document.getElementById('podium-silver-driver').innerText = "Driver: " + silver.driver;
@@ -814,8 +1125,6 @@
                 tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded. Run races to populate the leaderboard.</div>`; 
                 return; 
             }
-            
-            // Generate ticker nodes
             scores.forEach((item, index) => {
                 const node = document.createElement('div'); node.className = 'ticker-item';
                 node.innerHTML = `<span class="ticker-rank">#${index + 1}</span><span class="ticker-car">${item.car}</span><span class="ticker-driver">(${item.driver})</span><span class="ticker-wins">${item.wins} WINS</span>`;
