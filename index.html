@@ -491,16 +491,23 @@
                 crewAuth.style.display = 'flex';
                 garageUnauth.style.display = 'none';
                 garageControls.style.display = 'flex';
+                
+                // 1. Force retrieval of profile data first to commit currentUserUsername to memory
                 await syncUserDataFromCloud();
-                navBtn.innerText = `Sign Out (${currentUserUsername || user.email.split('@')[0]})`;
+                
+                const finalHandle = currentUserUsername || user.email.split('@')[0];
+                
+                // 2. Establish live data streams utilizing the verified cloud handle
+                setupGarageListener(currentUser.uid, finalHandle);
+                setupFriendsListener();
+                
+                navBtn.innerText = `Sign Out (${finalHandle})`;
                 navBtn.onclick = () => {
                     if(crewListenerUnsubscribe) crewListenerUnsubscribe();
                     if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
                     if(garageListenerUnsubscribe) garageListenerUnsubscribe();
                     signOut(auth);
                 };
-                setupFriendsListener();
-                setupGarageListener(currentUser.uid, currentUserUsername || "You");
             } else {
                 currentUser = null;
                 currentUserUsername = "";
@@ -594,20 +601,23 @@
                 const card = document.createElement('div');
                 card.className = 'garage-car-card';
                 card.setAttribute('draggable', 'true');
+                
+                const cleanOwner = v.owner.replace('@', '');
+
                 card.innerHTML = `
-                    <div style="font-weight:bold; color:#fff; display:flex; justify-content:between; align-items:center;">
+                    <div style="font-weight:bold; color:#fff; display:flex; justify-content:space-between; align-items:center;">
                         <span>🏎️ ${v.model}</span>
-                        ${currentUser && v.owner === currentUserUsername ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:0.75rem; cursor:pointer; margin-left:auto;">✕</span>` : ''}
+                        ${currentUser && cleanOwner === currentUserUsername ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:0.75rem; cursor:pointer; margin-left:auto;">✕</span>` : ''}
                     </div>
                     <div class="garage-car-meta">
-                        <span>Owner: @${v.owner}</span>
+                        <span>Owner: @${cleanOwner}</span>
                         <span style="color:var(--accent-blue); font-size:0.7rem;">DRAG ME</span>
                     </div>
                 `;
 
                 card.addEventListener('dragstart', (e) => {
                     card.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', JSON.stringify({ model: v.model, owner: v.owner }));
+                    e.dataTransfer.setData('text/plain', JSON.stringify({ model: v.model, owner: cleanOwner }));
                 });
                 card.addEventListener('dragend', () => card.classList.remove('dragging'));
                 rack.appendChild(card);
@@ -897,7 +907,6 @@
                     <input type="text" class="input-driver" placeholder="Driver Alias" value="${driverVal}">
                 `;
 
-                // HTML5 Drag and Drop Target Event Handlers
                 row.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     row.classList.add('drag-over');
@@ -909,7 +918,9 @@
                     try {
                         const droppedData = JSON.parse(e.dataTransfer.getData('text/plain'));
                         row.querySelector('.input-car').value = droppedData.model;
-                        row.querySelector('.input-driver').value = `@${droppedData.owner}`;
+                        
+                        const finalOwner = droppedData.owner.replace('@', '');
+                        row.querySelector('.input-driver').value = `@${finalOwner}`;
                     } catch(err) { console.error("Drop Parse Error", err); }
                 });
 
