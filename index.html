@@ -259,6 +259,113 @@
             background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue));
         }
 
+        /* GARAGE GRAPHICS & MANAGEMENT STYLES */
+        .garage-manager {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .garage-form {
+            background: rgba(10, 10, 12, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .garage-form h4 {
+            margin-top: 0;
+            font-family: var(--font-racing);
+            color: var(--accent-blue);
+            text-transform: uppercase;
+        }
+        .garage-inputs-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        @media(max-width: 600px) {
+            .garage-inputs-row { grid-template-columns: 1fr; }
+        }
+        .garage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .garage-card {
+            background: #16161f;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            border-left: 4px solid #555;
+        }
+        .garage-card.has-trophy {
+            border-left-color: var(--accent-yellow);
+            box-shadow: 0 0 12px rgba(255, 204, 0, 0.15);
+        }
+        .garage-line {
+            font-size: 1.1rem;
+        }
+        .garage-label {
+            font-family: var(--font-racing);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #888;
+            margin-right: 5px;
+        }
+        .garage-val {
+            font-weight: bold;
+            color: #fff;
+        }
+        .garage-val.color-text {
+            font-style: italic;
+            color: #ddd;
+        }
+        .garage-trophy-badge {
+            background: linear-gradient(135deg, #2a2200 0%, #110f00 100%);
+            border: 1px solid var(--accent-yellow);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: var(--font-racing);
+            font-size: 0.8rem;
+            color: var(--accent-yellow);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            width: fit-content;
+        }
+        .garage-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255,255,255,0.05);
+        }
+        .garage-btn-small {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: #aaa;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-family: var(--font-racing);
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .garage-btn-small.edit:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .garage-btn-small.delete:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
+
         /* AUTH SEAMLESS MODAL PANEL */
         .auth-overlay {
             display: none;
@@ -540,9 +647,36 @@
                 </div>
             </div>
 
-            <div id="tab-view-garage" style="display: none; text-align: center; padding: 40px 20px;">
-                <h2 style="font-family: var(--font-racing); color: var(--accent-blue); text-transform: uppercase;">Team Garage</h2>
-                <p style="color: #aaa; font-style: italic;">Vehicle inventory and custom team builds showcase staging section coming soon...</p>
+            <div id="tab-view-garage" style="display: none; padding: 10px 0px;">
+                <div class="garage-manager">
+                    <div class="garage-form">
+                        <h4 id="garage-form-title">Add Vehicle to Team Grid</h4>
+                        <input type="hidden" id="garage-edit-id" value="">
+                        <div class="garage-inputs-row">
+                            <div>
+                                <label style="font-size:0.8rem;">Vehicle Name:</label>
+                                <input type="text" id="garage-input-car" class="auth-input" style="margin-bottom:0; margin-top:5px;" placeholder="e.g. Bone Shaker">
+                            </div>
+                            <div>
+                                <label style="font-size:0.8rem;">Color:</label>
+                                <input type="text" id="garage-input-color" class="auth-input" style="margin-bottom:0; margin-top:5px;" placeholder="e.g. Candy Apple Red">
+                            </div>
+                            <div>
+                                <label style="font-size:0.8rem;">Driver:</label>
+                                <input type="text" id="garage-input-driver" class="auth-input" style="margin-bottom:0; margin-top:5px;" placeholder="e.g. Ace">
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="main-btn" id="garage-submit-btn" onclick="saveGarageEntry()" style="padding: 10px 25px; font-size:1rem;">Add Vehicle</button>
+                            <button class="reset-btn" id="garage-cancel-btn" onclick="clearGarageForm()" style="display:none; padding: 10px 20px;">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; margin-bottom: 15px; font-size: 1.3rem;">Stored Inventory</h3>
+                        <div id="garage-display-grid" class="garage-grid"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="tab-view-contact" style="display: none; text-align: center; padding: 40px 20px;">
@@ -593,6 +727,7 @@
                 navBtn.innerText = "Team Login";
                 navBtn.onclick = () => openAuthModal();
                 loadLeaderboard(); 
+                if(window.renderGarageGrid) window.renderGarageGrid();
             }
         });
 
@@ -659,14 +794,17 @@
             const docRef = doc(db, "users", currentUser.uid);
             const docSnap = await getDoc(docRef);
             if(docSnap.exists()) {
-                localStorage.setItem('hw_leaderboard_v2', JSON.stringify(docSnap.data().leaderboard || []));
+                const data = docSnap.data();
+                localStorage.setItem('hw_leaderboard_v2', JSON.stringify(data.leaderboard || []));
+                localStorage.setItem('hw_garage_v1', JSON.stringify(data.garage || []));
             }
             loadLeaderboard();
+            if(window.renderGarageGrid) window.renderGarageGrid();
         }
 
         window.saveChampionToHistory = async function(winnerObj) {
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
-            let existingIdx = scores.findIndex(item => item.car === winnerObj.car && item.driver === winnerObj.driver);
+            let existingIdx = scores.findIndex(item => item.car.toLowerCase() === winnerObj.car.toLowerCase() && item.driver.toLowerCase() === winnerObj.driver.toLowerCase());
             if(existingIdx > -1) {
                 scores[existingIdx].wins += 1;
             } else {
@@ -675,10 +813,17 @@
             
             localStorage.setItem('hw_leaderboard_v2', JSON.stringify(scores));
             loadLeaderboard();
+            if(window.renderGarageGrid) window.renderGarageGrid();
 
             if(currentUser) {
                 await setDoc(doc(db, "users", currentUser.uid), { leaderboard: scores }, { merge: true });
             }
+        }
+
+        // Expose helper to cloud-save garage items easily
+        window.cloudSaveGarage = async function(garageArray) {
+            if(!currentUser) return;
+            await setDoc(doc(db, "users", currentUser.uid), { garage: garageArray }, { merge: true });
         }
     </script>
 
@@ -696,20 +841,158 @@
 
         /* TAB NAVIGATION TOGGLING ROUTINE */
         function switchTab(targetTab) {
-            // Remove 'active' status from all structural tab button nodes
             document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Hide all tab view viewport content panels
             document.getElementById('tab-view-home').style.display = 'none';
             document.getElementById('tab-view-garage').style.display = 'none';
             document.getElementById('tab-view-contact').style.display = 'none';
 
-            // Find current trigger and explicitly mark active + toggle targeted section element
             const clickedBtn = event.currentTarget;
             clickedBtn.classList.add('active');
             document.getElementById(`tab-view-${targetTab}`).style.display = 'block';
+
+            if(targetTab === 'garage') {
+                renderGarageGrid();
+            }
         }
 
+        /* GARAGE MANAGEMENT OPERATIONS Engine */
+        function getGarageData() {
+            return JSON.parse(localStorage.getItem('hw_garage_v1')) || [];
+        }
+
+        function saveGarageEntry() {
+            const carInput = document.getElementById('garage-input-car').value.trim();
+            const colorInput = document.getElementById('garage-input-color').value.trim();
+            const driverInput = document.getElementById('garage-input-driver').value.trim();
+            const editId = document.getElementById('garage-edit-id').value;
+
+            if(!carInput || !driverInput) {
+                return alert("Vehicle Name and Driver details are required to stage entries!");
+            }
+
+            let inventory = getGarageData();
+
+            if(editId) {
+                // Handle updating an existing entry
+                let entryIdx = inventory.findIndex(item => item.id == editId);
+                if(entryIdx > -1) {
+                    inventory[entryIdx].car = carInput;
+                    inventory[entryIdx].color = colorInput || "Stock Raw";
+                    inventory[entryIdx].driver = driverInput;
+                }
+            } else {
+                // Create a completely new inventory entry card
+                const newEntry = {
+                    id: Date.now(),
+                    car: carInput,
+                    color: colorInput || "Stock Raw",
+                    driver: driverInput
+                };
+                inventory.push(newEntry);
+            }
+
+            localStorage.setItem('hw_garage_v1', JSON.stringify(inventory));
+            clearGarageForm();
+            renderGarageGrid();
+
+            if(window.cloudSaveGarage) {
+                window.cloudSaveGarage(inventory);
+            }
+        }
+
+        function editGarageEntry(id) {
+            let inventory = getGarageData();
+            let record = inventory.find(item => item.id == id);
+            if(!record) return;
+
+            document.getElementById('garage-edit-id').value = record.id;
+            document.getElementById('garage-input-car').value = record.car;
+            document.getElementById('garage-input-color').value = record.color;
+            document.getElementById('garage-input-driver').value = record.driver;
+
+            document.getElementById('garage-form-title').innerText = "Modify Stored Vehicle Details";
+            document.getElementById('garage-submit-btn').innerText = "Apply Changes";
+            document.getElementById('garage-cancel-btn').style.display = "inline-block";
+        }
+
+        function deleteGarageEntry(id) {
+            if(!confirm("Are you sure you want to scrap this vehicle build from the garage?")) return;
+            let inventory = getGarageData();
+            inventory = inventory.filter(item => item.id != id);
+            
+            localStorage.setItem('hw_garage_v1', JSON.stringify(inventory));
+            renderGarageGrid();
+
+            if(window.cloudSaveGarage) {
+                window.cloudSaveGarage(inventory);
+            }
+        }
+
+        function clearGarageForm() {
+            document.getElementById('garage-edit-id').value = "";
+            document.getElementById('garage-input-car').value = "";
+            document.getElementById('garage-input-color').value = "";
+            document.getElementById('garage-input-driver').value = "";
+
+            document.getElementById('garage-form-title').innerText = "Add Vehicle to Team Grid";
+            document.getElementById('garage-submit-btn').innerText = "Add Vehicle";
+            document.getElementById('garage-cancel-btn').style.display = "none";
+        }
+
+        function renderGarageGrid() {
+            const displayGrid = document.getElementById('garage-display-grid');
+            if(!displayGrid) return;
+            displayGrid.innerHTML = '';
+
+            let inventory = getGarageData();
+            let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
+
+            if(inventory.length === 0) {
+                displayGrid.innerHTML = `<p style="color:#666; font-style:italic; grid-column: 1/-1; text-align:center;">Garage holds no specialized inventory. Log builds using the control deck above.</p>`;
+                return;
+            }
+
+            inventory.forEach(item => {
+                // Cross check local collection strings with verified leaderboard accounts
+                let matchedScore = scores.find(s => s.car.toLowerCase() === item.car.toLowerCase() && s.driver.toLowerCase() === item.driver.toLowerCase());
+                let hasTrophy = !!matchedScore;
+                
+                const card = document.createElement('div');
+                card.className = `garage-card ${hasTrophy ? 'has-trophy' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="garage-line"><span class="garage-label">Vehicle Name:</span><span class="garage-val">${item.car}</span></div>
+                    <div class="garage-line"><span class="garage-label">Color:</span><span class="garage-val color-text">${item.color}</span></div>
+                    <div class="garage-line"><span class="garage-label">Driver:</span><span class="garage-val">${item.driver}</span></div>
+                `;
+
+                if(hasTrophy) {
+                    const badge = document.createElement('div');
+                    badge.className = 'garage-trophy-badge';
+                    badge.innerHTML = `🏆 Verified Champ: <b>${matchedScore.wins} ${matchedScore.wins === 1 ? 'Win' : 'Wins'}</b>`;
+                    card.appendChild(badge);
+                }
+
+                const actions = document.createElement('div');
+                actions.className = 'garage-actions';
+                actions.innerHTML = `
+                    <button class="garage-btn-small edit" onclick="editGarageEntry(${item.id})">Edit</button>
+                    <button class="garage-btn-small delete" onclick="deleteGarageEntry(${item.id})">Delete</button>
+                `;
+                
+                card.appendChild(actions);
+                displayGrid.appendChild(card);
+            });
+        }
+
+        // Bind global handles so HTML onclick can reach them safely
+        window.saveGarageEntry = saveGarageEntry;
+        window.editGarageEntry = editGarageEntry;
+        window.deleteGarageEntry = deleteGarageEntry;
+        window.clearGarageForm = clearGarageForm;
+        window.renderGarageGrid = renderGarageGrid;
+
+        /* TOURNAMENT LOGIC FUNCTIONS */
         function startRaceSequence() {
             const rows = document.querySelectorAll('.roster-row');
             let racersCount = 0;
@@ -905,7 +1188,7 @@
             });
         }
 
-        function clearLeaderboard() { if(confirm("Erase board stats?")) { localStorage.removeItem('hw_leaderboard_v2'); loadLeaderboard(); } }
+        function clearLeaderboard() { if(confirm("Erase board stats?")) { localStorage.removeItem('hw_leaderboard_v2'); loadLeaderboard(); renderGarageGrid(); } }
         function closePodium() { document.getElementById('podium-modal').style.display = 'none'; resetTrack(); }
         function resetTrack() { document.getElementById('tournament-phase').style.display = 'none'; document.getElementById('setup-phase').style.display = 'flex'; }
 
