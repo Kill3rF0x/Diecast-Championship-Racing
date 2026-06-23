@@ -171,8 +171,8 @@
         .garage-car-card { background: #141419; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; cursor: grab; user-select: none; transition: transform 0.15s, border-color 0.15s; }
         .garage-car-card:active { cursor: grabbing; transform: scale(0.97); }
         .garage-car-card.dragging { opacity: 0.4; border-style: dashed; }
-        .garage-car-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; margin-top: 4px; align-items: center; }
-        .owner-edit-input { background: #000; border: 1px solid var(--accent-blue); color: #fff; font-family: var(--font-body); size: 0.8rem; padding: 2px 4px; border-radius: 3px; width: 100px; }
+        .garage-car-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; margin-top: 4px; align-items: center; gap: 6px; }
+        .owner-edit-input { background: #000; border: 1px solid var(--accent-blue); color: #fff; font-family: var(--font-body); font-size: 0.85rem; padding: 2px 4px; border-radius: 3px; width: 85px; outline: none; }
 
         /* CENTER COLUMN: MAIN STAGING & BRACKETS */
         .container { background: var(--card-bg); backdrop-filter: blur(8px); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); position: relative; min-width: 0; }
@@ -570,23 +570,20 @@
             } catch(e) { alert("Decommission failed: " + e.message); }
         }
 
+        window.updateCarFieldInCloud = async function(carId, field, newValue) {
+            try {
+                const targetDocRef = doc(db, "users", currentUser.uid, "garage", carId);
+                await updateDoc(targetDocRef, { [field]: newValue });
+            } catch(e) { alert("Could not save field change: " + e.message); }
+        }
+
         window.updateCarOwnerInCloud = async function(carId, oldOwner, newOwnerName) {
             const cleanNewOwner = newOwnerName.replace('@', '').trim();
             if (!cleanNewOwner) return alert("Owner name handle cannot be blank.");
             
             try {
                 const targetDocRef = doc(db, "users", currentUser.uid, "garage", carId);
-                const docSnap = await getDoc(targetDocRef);
-                
-                if (docSnap.exists()) {
-                    await updateDoc(targetDocRef, { owner: cleanNewOwner });
-                } else {
-                    const vehicleIdx = internalGarageFleetCache.findIndex(v => v.id === carId);
-                    if(vehicleIdx > -1) {
-                        internalGarageFleetCache[vehicleIdx].owner = cleanNewOwner;
-                        renderGarageUI(internalGarageFleetCache);
-                    }
-                }
+                await updateDoc(targetDocRef, { owner: cleanNewOwner });
             } catch(e) { alert("Could not save owner update: " + e.message); }
         }
 
@@ -631,40 +628,79 @@
                 card.className = 'garage-car-card';
                 card.setAttribute('draggable', 'true');
                 
-                // Use car color for left border style, fallback to accent yellow if not specified
                 const stripeColor = v.color ? v.color : 'var(--accent-yellow)';
                 card.style.borderLeft = `6px solid ${stripeColor}`;
                 
                 const cleanOwner = v.owner.replace('@', '');
+                const isMyCar = currentUser && cleanOwner === currentUserUsername;
 
                 card.innerHTML = `
-                    <div style="font-weight:bold; color:#fff; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🏎️ ${v.model}</span>
-                        ${currentUser && cleanOwner === currentUserUsername ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:0.75rem; cursor:pointer; margin-left:auto;">✕</span>` : ''}
+                    <div style="font-weight:bold; color:#fff; display:flex; justify-content:space-between; align-items:center; gap:4px;">
+                        <span id="model-element-${v.id}" style="cursor:pointer;" title="Click to edit model">🏎️ ${v.model}</span>
+                        ${isMyCar ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:1.1rem; font-weight:bold; cursor:pointer; padding:2px 6px; margin-left:auto;">✕</span>` : ''}
                     </div>
                     <div class="garage-car-meta">
                         <span id="owner-element-${v.id}" style="cursor:pointer; color:var(--accent-yellow);" title="Click to edit owner handle">Owner: @${cleanOwner}</span>
-                        <span style="color:var(--accent-blue); font-size:0.7rem;">DRAG ME</span>
+                        <span id="color-element-${v.id}" style="cursor:pointer; font-size:0.8rem; text-decoration:underline;" title="Click to edit border color">Color: ${v.color || 'none'}</span>
                     </div>
                 `;
+
+                const modelTrigger = card.querySelector(`#model-element-${v.id}`);
+                modelTrigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if(!isMyCar) return;
+                    modelTrigger.innerHTML = `🏎️ <input type="text" class="owner-edit-input" value="${v.model}">`;
+                    const inputField = modelTrigger.querySelector('input');
+                    inputField.focus();
+                    
+                    const saveModel = () => {
+                        const newVal = inputField.value.trim();
+                        if(newVal && newVal !== v.model) {
+                            window.updateCarFieldInCloud(v.id, "model", newVal);
+                        } else {
+                            modelTrigger.innerHTML = `🏎️ ${v.model}`;
+                        }
+                    };
+                    inputField.addEventListener('blur', saveModel);
+                    inputField.addEventListener('keydown', (evt) => { if(evt.key === 'Enter') saveModel(); });
+                });
+
+                const colorTrigger = card.querySelector(`#color-element-${v.id}`);
+                colorTrigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if(!isMyCar) return;
+                    colorTrigger.innerHTML = `<input type="text" class="owner-edit-input" value="${v.color || ''}" style="width:70px;">`;
+                    const inputField = colorTrigger.querySelector('input');
+                    inputField.focus();
+                    
+                    const saveColor = () => {
+                        const newVal = inputField.value.trim();
+                        if(newVal !== v.color) {
+                            window.updateCarFieldInCloud(v.id, "color", newVal);
+                        } else {
+                            colorTrigger.innerHTML = `Color: ${v.color || 'none'}`;
+                        }
+                    };
+                    inputField.addEventListener('blur', saveColor);
+                    inputField.addEventListener('keydown', (evt) => { if(evt.key === 'Enter') saveColor(); });
+                });
 
                 const ownerMetaTrigger = card.querySelector(`#owner-element-${v.id}`);
                 ownerMetaTrigger.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const currentText = cleanOwner;
-                    ownerMetaTrigger.innerHTML = `Owner: <input type="text" class="owner-edit-input" value="${currentText}">`;
+                    if(!isMyCar) return;
+                    ownerMetaTrigger.innerHTML = `Owner: <input type="text" class="owner-edit-input" value="${cleanOwner}">`;
                     const inputField = ownerMetaTrigger.querySelector('input');
                     inputField.focus();
                     
                     const saveBlock = () => {
                         const newVal = inputField.value.trim().replace('@','');
-                        if(newVal && newVal !== currentText) {
+                        if(newVal && newVal !== cleanOwner) {
                             window.updateCarOwnerInCloud(v.id, cleanOwner, newVal);
                         } else {
                             ownerMetaTrigger.innerHTML = `Owner: @${cleanOwner}`;
                         }
                     };
-                    
                     inputField.addEventListener('blur', saveBlock);
                     inputField.addEventListener('keydown', (evt) => { if(evt.key === 'Enter') saveBlock(); });
                 });
