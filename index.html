@@ -44,7 +44,7 @@
 
         .top-nav {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1500px;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
@@ -112,7 +112,7 @@
 
         .ticker-wrapper {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1500px;
             background: #101014;
             border: 2px solid var(--border-color);
             border-radius: 6px;
@@ -163,14 +163,24 @@
         .ticker-driver { font-style: italic; color: #aaa; font-size: 0.95rem; margin-right: 12px;}
         .ticker-wins { background: var(--accent-orange); color: #fff; font-family: var(--font-racing); font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; }
 
-        .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 25px; align-items: flex-start; margin-bottom: 40px; }
-        .container { flex: 2; background: var(--card-bg); backdrop-filter: blur(8px); padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); position: relative; }
+        .app-layout { display: grid; grid-template-columns: 320px 1fr 340px; width: 100%; max-width: 1500px; gap: 20px; align-items: flex-start; margin-bottom: 40px; }
+        
+        /* LEFT COLUMN: INTERACTIVE GARAGE PANEL */
+        .garage-panel { background: var(--card-bg); backdrop-filter: blur(8px); padding: 20px; border-radius: 12px; border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .garage-rack { display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
+        .garage-car-card { background: #141419; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-yellow); padding: 10px; border-radius: 4px; cursor: grab; user-select: none; transition: transform 0.15s, border-color 0.15s; }
+        .garage-car-card:active { cursor: grabbing; transform: scale(0.97); }
+        .garage-car-card.dragging { opacity: 0.4; border-style: dashed; }
+        .garage-car-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; margin-top: 4px; }
+
+        /* CENTER COLUMN: MAIN STAGING & BRACKETS */
+        .container { background: var(--card-bg); backdrop-filter: blur(8px); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); position: relative; min-width: 0; }
         .container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue)); }
 
-        /* LOBBY SIDEBAR COMPONENT */
-        .crew-panel { flex: 1; background: var(--card-bg); backdrop-filter: blur(8px); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 20px; }
-        .panel-header { font-family: var(--font-racing); color: var(--accent-blue); text-transform: uppercase; font-size: 1.1rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .crew-box { background: rgba(10, 10, 14, 0.6); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; max-height: 200px; overflow-y: auto; }
+        /* RIGHT COLUMN: CREW & LOBBY */
+        .crew-panel { background: var(--card-bg); backdrop-filter: blur(8px); padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; }
+        .panel-header { font-family: var(--font-racing); color: var(--accent-blue); text-transform: uppercase; font-size: 1.05rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .crew-box { background: rgba(10, 10, 14, 0.6); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; max-height: 180px; overflow-y: auto; }
         .member-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1f1f2e; }
         .member-row:last-child { border-bottom: none; }
 
@@ -192,7 +202,7 @@
         .history-meta-line { display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa; margin-bottom: 8px; font-family: var(--font-racing); }
         .history-podium-line { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; font-size: 0.95rem; }
 
-        /* COUNTDOWN TREE */
+        /* RUNTIME COUNTDOWN TREE */
         .race-animation-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 14, 0.96); border-radius: 12px; z-index: 100; justify-content: center; align-items: center; flex-direction: column; gap: 30px; }
         .christmas-tree { background: #222; padding: 20px 40px; border-radius: 10px; border: 4px solid #444; display: flex; flex-direction: column; gap: 15px; align-items: center; }
         .light-row { display: flex; gap: 25px; }
@@ -202,15 +212,19 @@
         .light-bulb.green.active { background: #00ff00; box-shadow: 0 0 40px #00ff00; }
         .animation-status-text { font-family: var(--font-racing); font-size: 1.8rem; color: #fff; text-transform: uppercase; }
 
-        /* STAGING AND BRACKETS */
+        /* ROSTER DESIGN AND DROP ZONES */
         .setup-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 8px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; gap: 8px; }
         label { font-family: var(--font-racing); font-size: 0.9rem; color: var(--accent-yellow); text-transform: uppercase; }
         input[type="number"], .short-input { width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff; font-family: var(--font-body); font-size: 1.2rem; border: 2px solid var(--border-color); border-radius: 6px; padding: 12px; outline: none; }
-        .roster-grid { width: 100%; max-width: 650px; max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
-        .roster-row { display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5); padding: 8px 12px; border-radius: 6px; border: 1px solid #222; }
+        .roster-grid { width: 100%; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
+        
+        .roster-row { display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5); padding: 8px 12px; border-radius: 6px; border: 2px dashed #333; transition: background 0.2s, border-color 0.2s; }
+        .roster-row.drag-over { background: rgba(0, 204, 255, 0.1); border-color: var(--accent-blue); }
         .row-num { font-family: var(--font-racing); color: var(--accent-blue); min-width: 25px; font-weight: bold; }
         .roster-row input[type="text"] { flex: 1; background: #181820; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none; }
+        
+        /* TOURNAMENT MAIN STRUCTURES */
         .tournament-section { display: none; }
         .bracket-heading { font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; font-size: 1.4rem; margin-top: 20px; border-left: 4px solid var(--accent-yellow); padding-left: 10px; }
         .bracket-container { display: flex; justify-content: flex-start; align-items: center; gap: 40px; overflow-x: auto; padding: 20px 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
@@ -230,7 +244,7 @@
         button.action-inline-btn { font-family: var(--font-racing); background: #222230; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; }
         button.action-inline-btn:hover { border-color: var(--accent-orange); }
 
-        /* PODIUM */
+        /* PODIUM ELEMENT DISPLAYS */
         .podium-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
         .podium-title { font-family: var(--font-racing); font-size: 2.8rem; text-transform: uppercase; background: linear-gradient(90deg, #ffcc00, #ff4500, #ffcc00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; }
         .podium-stage { display: flex; align-items: flex-end; justify-content: center; gap: 20px; width: 100%; max-width: 800px; height: 350px; margin-bottom: 40px; }
@@ -243,7 +257,7 @@
         .podium-column.silver .pedestal { height: 160px; background: linear-gradient(180deg, #e0e0e0 0%, #707070 100%); color: #000; }
         .podium-column.bronze .pedestal { height: 110px; background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%); color: #fff; }
 
-        footer { width: 100%; max-width: 1400px; display: flex; justify-content: center; align-items: center; padding: 15px 0; border-top: 1px dashed rgba(255, 255, 255, 0.1); margin-top: auto; }
+        footer { width: 100%; max-width: 1500px; display: flex; justify-content: center; align-items: center; padding: 15px 0; border-top: 1px dashed rgba(255, 255, 255, 0.1); margin-top: auto; }
         .instagram-link { font-family: var(--font-racing); color: #aaa; text-decoration: none; background: rgba(20, 20, 25, 0.6); padding: 10px 24px; border-radius: 30px; border: 1px solid var(--border-color); }
         .reset-btn { background: #2a2a30; border: 1px solid var(--border-color); color: white; padding: 10px 20px; font-family: var(--font-racing); cursor: pointer; border-radius: 4px;}
     </style>
@@ -320,6 +334,37 @@
     </div>
 
     <div class="app-layout">
+        
+        <div class="garage-panel">
+            <div class="panel-header">
+                <span>🚘 Track Garage</span>
+                <span id="garage-count" style="font-size:0.8rem; color:var(--accent-yellow);">0 / 16</span>
+            </div>
+            
+            <div id="garage-unauth-notice" style="color: #666; font-style: italic; font-size: 0.95rem; text-align: center; padding: 10px 0;">
+                Log in to calibrate and custom-build your personal racing team's fleet.
+            </div>
+
+            <div id="garage-auth-controls" style="display:none; flex-direction:column; gap:10px;">
+                <div style="display:flex; flex-direction:column; gap:5px;">
+                    <input type="text" id="garage-car-input" class="short-input" placeholder="Car Model (e.g., Twin Mill)" style="padding:6px; font-size:1rem;">
+                    <button class="action-inline-btn" onclick="addCarToGarage()" style="background:var(--accent-orange); color:#fff; border:none;">+ Fleet Addition</button>
+                </div>
+                
+                <div style="border-top:1px dashed var(--border-color); padding-top:10px; display:flex; flex-direction:column; gap:5px;">
+                    <label style="font-size:0.75rem;">Import External Garage Fleet:</label>
+                    <div style="display:flex; gap:5px;">
+                        <input type="text" id="import-garage-username" class="short-input" placeholder="@handle" style="padding:6px; font-size:1rem;">
+                        <button class="action-inline-btn" onclick="importExternalGarage()">Pull</button>
+                    </div>
+                </div>
+
+                <div style="font-size:0.8rem; color:#aaa; font-style:italic; text-align:center; margin-top:5px;">💡 Drag cars directly into roster slot zones below!</div>
+            </div>
+
+            <div id="garage-rack" class="garage-rack"></div>
+        </div>
+
         <div class="container">
             <div id="race-animation" class="race-animation-overlay">
                 <div class="christmas-tree">
@@ -336,10 +381,7 @@
                     <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
                 </div>
                 <div class="form-group" style="width: 100%;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <label>2. Customize Roster Grid:</label>
-                        <button id="sync-crew-roster-btn" class="action-inline-btn" onclick="injectCrewToRoster()" style="display: none; padding: 4px 10px; font-size: 0.75rem;">⚡ Inject Linked Crew Members</button>
-                    </div>
+                    <label>2. Customize Roster Grid:</label>
                     <div id="roster-grid" class="roster-grid"></div>
                 </div>
                 <button class="main-btn" onclick="startRaceSequence()">Split Grid & Create Brackets</button>
@@ -380,14 +422,6 @@
                 </div>
 
                 <div id="crew-active-dashboard" style="display: none; flex-direction: column; gap: 10px;">
-                    <div style="display: flex; flex-direction: column; gap: 6px;">
-                        <label style="font-size: 0.75rem;">Your Track Signature Car:</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="crew-user-car" class="short-input" placeholder="Your Car Name" style="padding: 6px; font-size: 1rem;">
-                            <button class="action-inline-btn" onclick="updateRacerProfileInCrew()">Save</button>
-                        </div>
-                    </div>
-                    
                     <label style="font-size: 0.75rem; margin-top: 5px; color: var(--accent-blue)">Staged Crew Pitlane:</label>
                     <div id="crew-members-list" class="crew-box" style="font-size: 0.95rem;"></div>
                 </div>
@@ -413,7 +447,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPuNf5LdgX_WYFH_cxUN8C46kJY56A7c4",
@@ -429,9 +463,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // PROFANITY FILTER BLOCKLIST
         const BANNED_WORDS = ["asshole", "bitch", "bastard", "fuck", "shit", "cunt", "nigger", "faggot", "dick", "pussy"];
-        
         function containsProfanity(text) {
             const cleanText = text.toLowerCase().replace(/[^a-z0-9]/g, "");
             return BANNED_WORDS.some(badWord => cleanText.includes(badWord));
@@ -442,27 +474,33 @@
         let authMode = "login";
         let crewListenerUnsubscribe = null;
         let friendsListenerUnsubscribe = null;
+        let garageListenerUnsubscribe = null;
         let connectedCrewMembersCache = [];
+        let internalGarageFleetCache = [];
 
         onAuthStateChanged(auth, async (user) => {
             const navBtn = document.getElementById('nav-auth-btn');
             const crewUnauth = document.getElementById('crew-unauthenticated');
             const crewAuth = document.getElementById('crew-authenticated');
-            const syncBtn = document.getElementById('sync-crew-roster-btn');
+            const garageUnauth = document.getElementById('garage-unauth-notice');
+            const garageControls = document.getElementById('garage-auth-controls');
 
             if (user) {
                 currentUser = user;
                 crewUnauth.style.display = 'none';
                 crewAuth.style.display = 'flex';
-                syncBtn.style.display = 'block';
+                garageUnauth.style.display = 'none';
+                garageControls.style.display = 'flex';
                 await syncUserDataFromCloud();
                 navBtn.innerText = `Sign Out (${currentUserUsername || user.email.split('@')[0]})`;
                 navBtn.onclick = () => {
                     if(crewListenerUnsubscribe) crewListenerUnsubscribe();
                     if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
+                    if(garageListenerUnsubscribe) garageListenerUnsubscribe();
                     signOut(auth);
                 };
                 setupFriendsListener();
+                setupGarageListener(currentUser.uid, currentUserUsername || "You");
             } else {
                 currentUser = null;
                 currentUserUsername = "";
@@ -470,14 +508,111 @@
                 navBtn.onclick = () => openAuthModal();
                 crewUnauth.style.display = 'block';
                 crewAuth.style.display = 'none';
-                syncBtn.style.display = 'none';
+                garageUnauth.style.display = 'block';
+                garageControls.style.display = 'none';
                 document.getElementById('crew-active-dashboard').style.display = 'none';
                 document.getElementById('crew-id-tag').innerText = '';
                 connectedCrewMembersCache = [];
+                internalGarageFleetCache = [];
                 if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
+                if(garageListenerUnsubscribe) garageListenerUnsubscribe();
+                renderGarageUI([]);
                 loadLeaderboard(); 
             }
         });
+
+        function setupGarageListener(userId, ownerHandle) {
+            if(garageListenerUnsubscribe) garageListenerUnsubscribe();
+            const garageRef = collection(db, "users", userId, "garage");
+            
+            garageListenerUnsubscribe = onSnapshot(garageRef, (snapshot) => {
+                const vehicles = [];
+                snapshot.forEach(docSnap => {
+                    vehicles.push({ id: docSnap.id, ...docSnap.data(), owner: ownerHandle });
+                });
+                internalGarageFleetCache = vehicles;
+                renderGarageUI(vehicles);
+            });
+        }
+
+        window.addCarToGarage = async function() {
+            const carModel = document.getElementById('garage-car-input').value.trim();
+            if(!carModel) return alert("Please specify a car configuration model.");
+            if(internalGarageFleetCache.length >= 16) return alert("Garage configuration cap maxed out at 16 vehicles!");
+
+            try {
+                const idRandom = "CAR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+                await setDoc(doc(db, "users", currentUser.uid, "garage", idRandom), {
+                    model: carModel,
+                    timestamp: serverTimestamp()
+                });
+                document.getElementById('garage-car-input').value = '';
+            } catch(e) { alert("Garage deployment roadblock: " + e.message); }
+        }
+
+        window.removeCarFromGarage = async function(carId) {
+            if(!confirm("Decommission vehicle out of active hangar infrastructure?")) return;
+            try {
+                await deleteDoc(doc(db, "users", currentUser.uid, "garage", carId));
+            } catch(e) { alert("Decommission failed: " + e.message); }
+        }
+
+        window.importExternalGarage = async function() {
+            const externalUser = document.getElementById('import-garage-username').value.trim().toLowerCase().replace('@', '');
+            if(!externalUser) return alert("Provide a targeted driver handle.");
+
+            try {
+                const userMapping = await getDoc(doc(db, "usernames", externalUser));
+                if(!userMapping.exists()) return alert("Racer profile address missing in central database.");
+                
+                const extUid = userMapping.data().uid;
+                const snap = await getDocs(collection(db, "users", extUid, "garage"));
+                
+                const loadedFleet = [];
+                snap.forEach(d => { loadedFleet.push({ id: d.id, ...d.data(), owner: externalUser }); });
+                
+                if(loadedFleet.length === 0) return alert(`The garage for @${externalUser} is currently empty.`);
+                
+                // Merge external fleet with user cache for instant dragging capabilities
+                const safeMerged = [...internalGarageFleetCache, ...loadedFleet.filter(lf => !internalGarageFleetCache.some(ig => ig.id === lf.id))];
+                renderGarageUI(safeMerged);
+                alert(`Successfully connected to @${externalUser}'s fleet!`);
+            } catch(e) { alert("Import system failure: " + e.message); }
+        }
+
+        function renderGarageUI(vehicles) {
+            const rack = document.getElementById('garage-rack');
+            document.getElementById('garage-count').innerText = `${vehicles.filter(v => currentUser && v.owner === currentUserUsername).length} / 16`;
+            rack.innerHTML = '';
+            
+            if(vehicles.length === 0) {
+                rack.innerHTML = `<div style="color:#444; font-style:italic; font-size:0.9rem; text-align:center; padding-top:20px;">Hangar empty...</div>`;
+                return;
+            }
+
+            vehicles.forEach(v => {
+                const card = document.createElement('div');
+                card.className = 'garage-car-card';
+                card.setAttribute('draggable', 'true');
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:#fff; display:flex; justify-content:between; align-items:center;">
+                        <span>🏎️ ${v.model}</span>
+                        ${currentUser && v.owner === currentUserUsername ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:0.75rem; cursor:pointer; margin-left:auto;">✕</span>` : ''}
+                    </div>
+                    <div class="garage-car-meta">
+                        <span>Owner: @${v.owner}</span>
+                        <span style="color:var(--accent-blue); font-size:0.7rem;">DRAG ME</span>
+                    </div>
+                `;
+
+                card.addEventListener('dragstart', (e) => {
+                    card.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', JSON.stringify({ model: v.model, owner: v.owner }));
+                });
+                card.addEventListener('dragend', () => card.classList.remove('dragging'));
+                rack.appendChild(card);
+            });
+        }
 
         window.openHistoryModal = async function() {
             document.getElementById('history-modal').style.display = 'flex';
@@ -538,27 +673,14 @@
                 
                 let myEntry = membersList.find(m => m.uid === currentUser.uid);
                 if(!myEntry) {
-                    myEntry = { uid: currentUser.uid, name: currentUserUsername || currentUser.email.split('@')[0], car: "Bone Shaker" };
+                    myEntry = { uid: currentUser.uid, name: currentUserUsername || currentUser.email.split('@')[0] };
                     membersList.push(myEntry);
                     await setDoc(doc(db, "crews", code), { members: membersList }, { merge: true });
                 }
 
-                document.getElementById('crew-user-car').value = myEntry.car;
                 connectedCrewMembersCache = membersList;
                 renderCrewUI(membersList);
             });
-        }
-
-        window.updateRacerProfileInCrew = async function() {
-            const code = document.getElementById('crew-code-input').value.trim().toUpperCase();
-            const chosenCar = document.getElementById('crew-user-car').value.trim();
-            if(!code || !chosenCar) return alert("Check values entered.");
-
-            let updatedList = connectedCrewMembersCache.map(m => {
-                if(m.uid === currentUser.uid) m.car = chosenCar;
-                return m;
-            });
-            await setDoc(doc(db, "crews", code), { members: updatedList }, { merge: true });
         }
 
         function renderCrewUI(members) {
@@ -568,67 +690,53 @@
             members.forEach(m => {
                 const row = document.createElement('div');
                 row.className = 'member-row';
-                row.innerHTML = `<div><b>${m.name}</b><br><span style="font-size:0.8rem; color:#aaa;">🏎️ ${m.car}</span></div>`;
+                row.innerHTML = `<div><b>@${m.name}</b><br><span style="font-size:0.75rem; color:#aaa;">Paddock Member Active</span></div>`;
                 box.appendChild(row);
             });
         }
 
-        // FRIENDS TRACKER MODULES
         window.addFriendByUsername = async function() {
             const targetUsername = document.getElementById('friend-uid-input').value.trim().toLowerCase();
             if(!targetUsername) return alert("Please specify a user handle ID.");
-            if(targetUsername === currentUserUsername.toLowerCase()) return alert("You cannot add yourself to your track list.");
+            if(targetUsername === currentUserUsername.toLowerCase()) return alert("You cannot follow your own trace tracking monitor.");
 
             try {
                 const usernameRef = doc(db, "usernames", targetUsername);
                 const usernameSnap = await getDoc(usernameRef);
                 
-                if(!usernameSnap.exists()) {
-                    return alert("Racer profile handle index entry not found in active cloud directory.");
-                }
+                if(!usernameSnap.exists()) return alert("Racer profile handle index entry not found in active cloud directory.");
 
                 const friendUid = usernameSnap.data().uid;
-                const friendMainProfile = await getDoc(doc(db, "users", friendUid));
-                const exactUsername = friendMainProfile.data().username || targetUsername;
-
                 await setDoc(doc(db, "users", currentUser.uid, "friends", friendUid), {
-                    username: exactUsername,
+                    username: targetUsername,
                     uid: friendUid,
                     addedAt: serverTimestamp()
                 });
 
                 document.getElementById('friend-uid-input').value = "";
-                alert(`Successfully added @${exactUsername} to tracking monitor!`);
+                alert(`Successfully added @${targetUsername} to tracking monitor!`);
             } catch(e) { alert("Error adding track follower: " + e.message); }
         }
 
         function setupFriendsListener() {
             if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
-            
             const friendsCollRef = collection(db, "users", currentUser.uid, "friends");
+            
             friendsListenerUnsubscribe = onSnapshot(friendsCollRef, (snapshot) => {
                 const container = document.getElementById('friends-list-box');
                 container.innerHTML = '';
-                
                 if(snapshot.empty) {
                     container.innerHTML = `<div style="color:#555; text-align:center; padding:10px; font-style:italic;">No active connections linked.</div>`;
                     return;
                 }
-
                 snapshot.forEach(friendDoc => {
                     const friendData = friendDoc.data();
                     const row = document.createElement('div');
                     row.className = 'member-row';
-                    row.innerHTML = `<div><b style="color:var(--accent-blue);">@${friendData.username}</b><br><span style="font-size:0.75rem; color:#777;">ID: ${friendData.uid.substring(0,6).toUpperCase()}</span></div><span style="font-size:0.8rem; background:#1a1a24; padding:3px 6px; border-radius:3px; color:#aaa;">Tracked</span>`;
+                    row.innerHTML = `<div><b style="color:var(--accent-blue);">@${friendData.username}</b></div><span style="font-size:0.8rem; background:#1a1a24; padding:3px 6px; border-radius:3px; color:#aaa;">Tracked</span>`;
                     container.appendChild(row);
                 });
             });
-        }
-
-        window.injectCrewToRoster = function() {
-            if(connectedCrewMembersCache.length === 0) return alert("No active crew profile linked!");
-            document.getElementById('car-count').value = connectedCrewMembersCache.length;
-            generateRosterInputs(connectedCrewMembersCache);
         }
 
         window.openAuthModal = function() {
@@ -685,15 +793,11 @@
                     if(!usernameInput || usernameInput.length < 3) return alert("Handle must be 3+ characters.");
                     if(containsProfanity(usernameInput)) return alert("Flagged: Choice of handle failed content filter checks.");
 
-                    // Enforce global uniqueness lock
                     const usernameRef = doc(db, "usernames", usernameInput);
                     const usernameSnap = await getDoc(usernameRef);
-                    if(usernameSnap.exists()) {
-                        return alert("Handle ID taken. Choose another.");
-                    }
+                    if(usernameSnap.exists()) return alert("Handle ID taken. Choose another.");
 
                     const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                    
                     await setDoc(doc(db, "usernames", usernameInput), { uid: userCred.user.uid });
                     await setDoc(doc(db, "users", userCred.user.uid), { 
                         username: usernameInput,
@@ -735,7 +839,6 @@
 
             if(currentUser) {
                 await setDoc(doc(db, "users", currentUser.uid), { leaderboard: scores }, { merge: true });
-
                 if(completeFieldSnapshot) {
                     const subCollRef = collection(db, "users", currentUser.uid, "races");
                     await addDoc(subCollRef, {
@@ -776,20 +879,40 @@
             setTimeout(() => { overlay.style.display = 'none'; buildTournament(); }, 5500);
         }
 
-        function generateRosterInputs(crewMembersData = null) {
-            const count = crewMembersData ? crewMembersData.length : (parseInt(document.getElementById('car-count').value) || 6);
+        function generateRosterInputs() {
+            const count = parseInt(document.getElementById('car-count').value) || 6;
             const container = document.getElementById('roster-grid');
             container.innerHTML = '';
+            
             for (let i = 1; i <= count; i++) {
-                const row = document.createElement('div'); row.className = 'roster-row';
+                const row = document.createElement('div'); 
+                row.className = 'roster-row';
+                
                 let carVal = defaultCars[(i - 1) % defaultCars.length] + " " + Math.ceil(i/8);
                 let driverVal = defaultDrivers[(i - 1) % defaultDrivers.length];
                 
-                if(crewMembersData && crewMembersData[i-1]) {
-                    carVal = crewMembersData[i-1].car;
-                    driverVal = crewMembersData[i-1].name;
-                }
-                row.innerHTML = `<div class="row-num">#${i}</div><input type="text" class="input-car" placeholder="Car" value="${carVal}"><input type="text" class="input-driver" placeholder="Driver" value="${driverVal}">`;
+                row.innerHTML = `
+                    <div class="row-num">#${i}</div>
+                    <input type="text" class="input-car" placeholder="Drop Car Model Here" value="${carVal}">
+                    <input type="text" class="input-driver" placeholder="Driver Alias" value="${driverVal}">
+                `;
+
+                // HTML5 Drag and Drop Target Event Handlers
+                row.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    row.classList.add('drag-over');
+                });
+                row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+                row.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    row.classList.remove('drag-over');
+                    try {
+                        const droppedData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                        row.querySelector('.input-car').value = droppedData.model;
+                        row.querySelector('.input-driver').value = `@${droppedData.owner}`;
+                    } catch(err) { console.error("Drop Parse Error", err); }
+                });
+
                 container.appendChild(row);
             }
         }
@@ -940,11 +1063,7 @@
             const tickerContainer = document.getElementById('leaderboard-ticker'); tickerContainer.innerHTML = '';
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             scores.sort((a, b) => b.wins - a.wins);
-            
-            if(scores.length === 0) { 
-                tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded.</div>`; 
-                return; 
-            }
+            if(scores.length === 0) { tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded.</div>`; return; }
             scores.forEach((item, index) => {
                 const node = document.createElement('div'); node.className = 'ticker-item';
                 node.innerHTML = `<span class="ticker-rank">#${index + 1}</span><span class="ticker-car">${item.car}</span><span class="ticker-driver">(${item.driver})</span><span class="ticker-wins">${item.wins} WINS</span>`;
