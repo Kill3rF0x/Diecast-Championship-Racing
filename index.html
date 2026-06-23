@@ -809,6 +809,7 @@
         </div>
     </div>
 
+    <!-- TABS NAVIGATION BAR -->
     <nav class="tabs-nav-bar">
         <button id="nav-tab-home" class="nav-tab-btn active" onclick="switchTab('home')">Home</button>
         <button id="nav-tab-garage" class="nav-tab-btn" onclick="switchTab('garage')">Garage</button>
@@ -826,9 +827,11 @@
                 <div id="animation-text" class="animation-status-text">Drivers, Stage Your Cars...</div>
             </div>
 
+            <!-- Home Tab Content View -->
             <div id="tab-view-home">
                 <div class="home-split-workspace">
                     
+                    <!-- COMPACT SIDEBAR FOR DRAGGING VEHICLES -->
                     <div class="compact-garage-sidebar" id="home-garage-sidebar">
                         <h3>Garage Inventory</h3>
                         <div class="sidebar-scroll-zone" id="sidebar-inventory-list">
@@ -865,6 +868,7 @@
                 </div>
             </div>
 
+            <!-- Garage Tab Content View -->
             <div id="tab-view-garage" style="display: none; padding: 10px 0px;">
                 <div class="garage-manager">
                     <div class="garage-form">
@@ -897,13 +901,14 @@
                 </div>
             </div>
 
+            <!-- Contact Tab Content View -->
             <div id="tab-view-contact" style="display: none; padding: 10px 0px;">
                 <div class="contact-deck">
                     <div class="suggestion-box-card">
                         <h3>Track Suggestions & Feedback</h3>
                         <p style="color: #aaa; font-style: italic; margin-top:0; margin-bottom: 20px; font-size:1rem;"> Have ideas to improve the app? Drop your telemetry modifications, bracket updates, or feature ideas right onto the track deck below.</p>
                         
-                        <form id="suggestion-form" action="https://formspree.io/f/frankroman89@gmail.com" method="POST">
+                        <form id="suggestion-form" action="https://formspree.io/f/mwvdpzee" method="POST">
                             <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                                 <label style="font-size: 0.85rem; color: var(--accent-blue)">Your Racing Email (Optional):</label>
                                 <input type="email" name="_replyto" class="auth-input" style="margin-bottom:0;" placeholder="driver@team.com">
@@ -1536,15 +1541,15 @@
                     });
                     
                     if (response.ok) {
-                        statusBox.classList.add('success');
+                        statusBox.className = "form-status-alert success";
                         statusBox.innerText = "Transmission Complete! Telemetry Received.";
                         suggestionForm.reset();
                     } else {
-                        statusBox.classList.add('error');
+                        statusBox.className = "form-status-alert error";
                         statusBox.innerText = "Transmission dropped. Check connection and retry.";
                     }
                 } catch (error) {
-                    statusBox.classList.add('error');
+                    statusBox.className = "form-status-alert error";
                     statusBox.innerText = "Grid Error: Failed to broadcast logs.";
                 }
             });
