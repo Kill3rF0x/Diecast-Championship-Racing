@@ -1087,6 +1087,207 @@
         function resetTrack() { document.getElementById('tournament-phase').style.display = 'none'; document.getElementById('setup-phase').style.display = 'flex'; }
 
         generateRosterInputs();
+    </script><script>
+        let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null;
+        const revAudio = new Audio('rev.mp3');
+        const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
+        const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
+
+        function playEngineRev() {
+            revAudio.currentTime = 0;
+            revAudio.play().catch(e => console.log("Audio waiting for user gesture..."));
+        }
+
+        function startRaceSequence() {
+            const rows = document.querySelectorAll('.roster-row');
+            let racersCount = 0;
+            rows.forEach(row => { if(row.querySelector('.input-car').value.trim()) racersCount++; });
+            if (racersCount < 2) return alert("You need 2+ cars!");
+
+            const overlay = document.getElementById('race-animation');
+            const statusText = document.getElementById('animation-text');
+            overlay.style.display = 'flex';
+            document.querySelectorAll('.light-bulb').forEach(l => l.classList.remove('active'));
+            playEngineRev();
+
+            setTimeout(() => { statusText.innerText = "PRE-STAGED..."; document.getElementById('light-r1').classList.add('active'); document.getElementById('light-r2').classList.add('active'); }, 1500);
+            setTimeout(() => { statusText.innerText = "STAGED! READY..."; document.getElementById('light-y1').classList.add('active'); document.getElementById('light-y2').classList.add('active'); }, 4500);
+            setTimeout(() => { 
+                statusText.innerText = "GREEN LIGHT! GO!"; 
+                document.getElementById('light-r1').classList.remove('active'); document.getElementById('light-r2').classList.remove('active');
+                document.getElementById('light-y1').classList.remove('active'); document.getElementById('light-y2').classList.remove('active');
+                document.getElementById('light-g1').classList.add('active'); document.getElementById('light-g2').classList.add('active');
+            }, 6800);
+            setTimeout(() => { overlay.style.display = 'none'; buildTournament(); }, 8000);
+        }
+
+        function generateRosterInputs() {
+            const count = parseInt(document.getElementById('car-count').value) || 6;
+            const container = document.getElementById('roster-grid');
+            container.innerHTML = '';
+            for (let i = 1; i <= count; i++) {
+                const row = document.createElement('div'); row.className = 'roster-row';
+                row.innerHTML = `<div class="row-num">#${i}</div><input type="text" class="input-car" placeholder="Car" value="${defaultCars[(i - 1) % defaultCars.length]} ${Math.ceil(i/8)}"><input type="text" class="input-driver" placeholder="Driver" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">`;
+                container.appendChild(row);
+            }
+        }
+
+        function buildTournament() {
+            const rows = document.querySelectorAll('.roster-row');
+            let racers = [];
+            rows.forEach(row => {
+                const car = row.querySelector('.input-car').value.trim();
+                const driver = row.querySelector('.input-driver').value.trim();
+                if (car) racers.push({ car: car, driver: driver || "Unknown Driver" });
+            });
+
+            racers.sort(() => Math.random() - 0.5);
+            let mainBracketSize = Math.pow(2, Math.floor(Math.log2(racers.length)));
+            if (mainBracketSize === racers.length && racers.length > 2) mainBracketSize = racers.length;
+
+            let mainRacers = racers.slice(0, mainBracketSize);
+            let extraRacers = racers.slice(mainBracketSize);
+            qualifierData = []; qualifierWinnersTargetMap = []; bronzeMatchData = { racer1: null, racer2: null, winner: null };
+
+            if (extraRacers.length > 0) {
+                let qualifierPool = [];
+                for (let i = 0; i < extraRacers.length; i++) {
+                    let opponent = mainRacers.pop(); 
+                    qualifierPool.push(opponent); qualifierPool.push(extraRacers[i]);
+                    qualifierWinnersTargetMap.push({ mainMatchIndex: Math.floor(mainRacers.length / 2), isRacer1: (mainRacers.length % 2 === 0) });
+                }
+                let qMatchups = [];
+                for(let i=0; i<qualifierPool.length; i+=2) qMatchups.push({ racer1: qualifierPool[i], racer2: qualifierPool[i+1], winner: null });
+                qualifierData.push(qMatchups);
+                document.getElementById('qualifier-header').style.display = 'block'; document.getElementById('qualifier-bracket-container').style.display = 'flex';
+            } else {
+                document.getElementById('qualifier-header').style.display = 'none'; document.getElementById('qualifier-bracket-container').style.display = 'none';
+            }
+
+            mainBracketData = [];
+            let currentMainPool = [...mainRacers];
+            for(let i=0; i < qualifierWinnersTargetMap.length; i++) currentMainPool.push(null);
+
+            while (currentMainPool.length >= 2) {
+                let roundMatchups = [];
+                for (let i = 0; i < currentMainPool.length; i += 2) roundMatchups.push({ racer1: currentMainPool[i], racer2: currentMainPool[i+1], winner: null });
+                mainBracketData.push(roundMatchups);
+                currentMainPool = Array(currentMainPool.length / 2).fill(null);
+            }
+            document.getElementById('setup-phase').style.display = 'none'; document.getElementById('tournament-phase').style.display = 'block';
+            renderGrids();
+        }
+
+        function advanceQualifier(matchIndex, winnerObj) {
+            qualifierData[0][matchIndex].winner = winnerObj;
+            let targetMap = qualifierWinnersTargetMap[matchIndex];
+            if(targetMap.isRacer1) mainBracketData[0][targetMap.mainMatchIndex].racer1 = winnerObj;
+            else mainBracketData[0][targetMap.mainMatchIndex].racer2 = winnerObj;
+            renderGrids();
+        }
+
+        function advanceMain(roundIndex, matchIndex, winnerObj) {
+            let currentMatch = mainBracketData[roundIndex][matchIndex];
+            currentMatch.winner = winnerObj;
+            if (mainBracketData.length >= 2 && roundIndex === mainBracketData.length - 2) {
+                let loserObj = (currentMatch.racer1 === winnerObj) ? currentMatch.racer2 : currentMatch.racer1;
+                if (matchIndex === 0) bronzeMatchData.racer1 = loserObj;
+                if (matchIndex === 1) bronzeMatchData.racer2 = loserObj;
+                document.getElementById('bronze-header').style.display = 'block'; document.getElementById('bronze-bracket-container').style.display = 'flex';
+            }
+            let nextRoundIndex = roundIndex + 1;
+            if (nextRoundIndex < mainBracketData.length) {
+                let nextMatchTarget = Math.floor(matchIndex / 2);
+                if (matchIndex % 2 === 0) mainBracketData[nextRoundIndex][nextMatchTarget].racer1 = winnerObj;
+                else mainBracketData[nextRoundIndex][nextMatchTarget].racer2 = winnerObj;
+            } else {
+                checkTournamentCompletion();
+            }
+            renderGrids();
+        }
+
+        function advanceBronze(winnerObj) { bronzeMatchData.winner = winnerObj; renderGrids(); checkTournamentCompletion(); }
+
+        function checkTournamentCompletion() {
+            let finalsRound = mainBracketData[mainBracketData.length - 1][0];
+            if (!finalsRound.winner || (bronzeMatchData.racer1 && bronzeMatchData.racer2 && !bronzeMatchData.winner)) return;
+
+            let gold = finalsRound.winner;
+            let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
+            let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
+
+            // Call window contextual global firebase bound tracking method
+            if(window.saveChampionToHistory) window.saveChampionToHistory(gold);
+
+            document.getElementById('podium-gold-car').innerText = gold.car; document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
+            document.getElementById('podium-silver-car').innerText = silver.car; document.getElementById('podium-silver-driver').innerText = "Driver: " + silver.driver;
+            document.getElementById('podium-bronze-car').innerText = bronze.car; document.getElementById('podium-bronze-driver').innerText = "Driver: " + bronze.driver;
+            document.getElementById('podium-modal').style.display = 'flex';
+        }
+
+        function renderGrids() {
+            const qContainer = document.getElementById('qualifier-bracket-container'); qContainer.innerHTML = '';
+            if(qualifierData.length > 0) {
+                const qRound = document.createElement('div'); qRound.className = 'round'; qRound.innerHTML = `<div class="round-title">Knockout Heats</div>`;
+                qualifierData[0].forEach((match, index) => {
+                    const card = document.createElement('div'); card.className = `matchup ${!match.winner ? 'active' : ''}`;
+                    card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceQualifier(index, match.racer1)));
+                    card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceQualifier(index, match.racer2)));
+                    qRound.appendChild(card);
+                });
+                qContainer.appendChild(qRound);
+            }
+
+            const bContainer = document.getElementById('bronze-bracket-container'); bContainer.innerHTML = '';
+            if(bronzeMatchData && (bronzeMatchData.racer1 || bronzeMatchData.racer2)) {
+                const bRound = document.createElement('div'); bRound.className = 'round'; bRound.style.height = '140px'; bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
+                const card = document.createElement('div'); card.className = `matchup ${!bronzeMatchData.winner ? 'active' : ''}`;
+                card.appendChild(buildRacerRow(bronzeMatchData.racer1, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer1)));
+                card.appendChild(buildRacerRow(bronzeMatchData.racer2, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer2)));
+                bRound.appendChild(card); bContainer.appendChild(bRound);
+            }
+
+            const mContainer = document.getElementById('main-bracket-container'); mContainer.innerHTML = '';
+            mainBracketData.forEach((round, roundIndex) => {
+                const column = document.createElement('div'); column.className = 'round';
+                column.innerHTML = `<div class="round-title">${roundIndex === mainBracketData.length - 1 ? 'Championship' : 'Round ' + (roundIndex + 1)}</div>`;
+                round.forEach((match, matchIndex) => {
+                    const card = document.createElement('div'); card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
+                    card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer1)));
+                    card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer2)));
+                    column.appendChild(card);
+                });
+                mContainer.appendChild(column);
+            });
+        }
+
+        function buildRacerRow(racerObj, winnerObj, clickCallback) {
+            const div = document.createElement('div'); div.className = 'racer';
+            if(!racerObj) { div.innerHTML = `<span style="color:#4a4a5a; font-style:italic;">Staging...</span>`; return div; }
+            div.innerHTML = `<div class="racer-details"><span class="racer-car">${racerObj.car}</span><span class="racer-driver">Driver: ${racerObj.driver}</span></div>`;
+            if(winnerObj) { div.classList.add(winnerObj === racerObj ? 'winner' : 'loser'); } 
+            else { div.onclick = clickCallback; let tag = document.createElement('span'); tag.className = 'action-tag'; tag.innerText = 'WIN'; div.appendChild(tag); }
+            return div;
+        }
+
+        function loadLeaderboard() {
+            const listContainer = document.getElementById('leaderboard-list'); listContainer.innerHTML = '';
+            let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
+            scores.sort((a, b) => b.wins - a.wins);
+            let topTen = scores.slice(0, 10);
+            if(topTen.length === 0) { listContainer.innerHTML = `<li style="color:#666; font-style:italic; text-align:center; padding:10px;">No trophies recorded.</li>`; return; }
+            topTen.forEach((item, index) => {
+                const li = document.createElement('li'); li.className = 'leaderboard-item';
+                li.innerHTML = `<div><b style="color:var(--accent-yellow)">#${index + 1}</b> ${item.car}<br><span class="driver-tag">Driver: ${item.driver}</span></div><span class="wins-count">${item.wins} W</span>`;
+                listContainer.appendChild(li);
+            });
+        }
+
+        function clearLeaderboard() { if(confirm("Erase board stats?")) { localStorage.removeItem('hw_leaderboard_v2'); loadLeaderboard(); } }
+        function closePodium() { document.getElementById('podium-modal').style.display = 'none'; resetTrack(); }
+        function resetTrack() { document.getElementById('tournament-phase').style.display = 'none'; document.getElementById('setup-phase').style.display = 'flex'; }
+
+        generateRosterInputs();
     </script>
 </body>
 </html>
