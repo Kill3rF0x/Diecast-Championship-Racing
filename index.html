@@ -110,7 +110,7 @@
             display: block;
         }
 
-        /* NEW INFINITE SCROLLING TICKER (HALL OF FAME) */
+        /* INFINITE SCROLLING TICKER (HALL OF FAME) */
         .ticker-wrapper {
             width: 100%;
             max-width: 1400px;
@@ -162,11 +162,10 @@
         .leaderboard-ticker-track {
             display: flex;
             white-space: nowrap;
-            padding-left: 100%; /* Start scrolling from outside right boundary */
+            padding-left: 100%;
             animation: ticker-scrolling 25s linear infinite;
         }
 
-        /* Pause scroll on hover so users can easily read/inspect items */
         .ticker-overflow:hover .leaderboard-ticker-track {
             animation-play-state: paused;
         }
@@ -228,6 +227,11 @@
             border-color: var(--border-color) var(--border-color) #0b0b0d;
             font-weight: bold;
             box-shadow: 0 -3px 0 var(--accent-orange);
+        }
+
+        /* HIDDEN BY DEFAULT ROUTINE */
+        #nav-tab-garage {
+            display: none;
         }
 
         /* WORKSPACE LAYOUT */
@@ -366,7 +370,7 @@
         .garage-btn-small.edit:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
         .garage-btn-small.delete:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
 
-        /* AUTH SEAMLESS MODAL PANEL */
+        /* AUTH MODAL PANEL */
         .auth-overlay {
             display: none;
             position: fixed;
@@ -510,7 +514,7 @@
             justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
         }
         .racer:hover { background: #2e2e36; }
-        .racer-car { font-weight: 700; font-size: 1.15rem; }
+        .racer-car { font-weight: 900; font-size: 1.15rem; }
         .racer-driver { font-size: 0.85rem; color: #aaa; font-style: italic; }
         .racer.winner { background: rgba(0, 230, 115, 0.15); color: #00ff7f; border-color: #00ff7f; }
         .racer.loser { opacity: 0.25; text-decoration: line-through; background: #131316; }
@@ -604,10 +608,11 @@
         </div>
     </div>
 
+    <!-- TABS NAVIGATION BAR -->
     <nav class="tabs-nav-bar">
-        <button class="nav-tab-btn active" onclick="switchTab('home')">Home</button>
-        <button class="nav-tab-btn" onclick="switchTab('garage')">Garage</button>
-        <button class="nav-tab-btn" onclick="switchTab('contact')">Contact Us</button>
+        <button id="nav-tab-home" class="nav-tab-btn active" onclick="switchTab('home')">Home</button>
+        <button id="nav-tab-garage" class="nav-tab-btn" onclick="switchTab('garage')">Garage</button>
+        <button id="nav-tab-contact" class="nav-tab-btn" onclick="switchTab('contact')">Contact Us</button>
     </nav>
 
     <div class="app-layout">
@@ -621,6 +626,7 @@
                 <div id="animation-text" class="animation-status-text">Drivers, Stage Your Cars...</div>
             </div>
 
+            <!-- Home Tab Content View -->
             <div id="tab-view-home">
                 <div id="setup-phase" class="setup-section">
                     <div class="form-group">
@@ -647,6 +653,7 @@
                 </div>
             </div>
 
+            <!-- Garage Tab Content View -->
             <div id="tab-view-garage" style="display: none; padding: 10px 0px;">
                 <div class="garage-manager">
                     <div class="garage-form">
@@ -679,6 +686,7 @@
                 </div>
             </div>
 
+            <!-- Contact Tab Content View Placeholder -->
             <div id="tab-view-contact" style="display: none; text-align: center; padding: 40px 20px;">
                 <h2 style="font-family: var(--font-racing); color: var(--accent-yellow); text-transform: uppercase;">Contact Track Operations</h2>
                 <p style="color: #aaa; font-style: italic;">Submit match disputes, tracking system bugs, or business inquiries here...</p>
@@ -717,15 +725,28 @@
 
         onAuthStateChanged(auth, async (user) => {
             const navBtn = document.getElementById('nav-auth-btn');
+            const garageTabBtn = document.getElementById('nav-tab-garage');
+
             if (user) {
                 currentUser = user;
                 navBtn.innerText = `Sign Out (${user.email.split('@')[0]})`;
                 navBtn.onclick = () => signOut(auth);
+                
+                // Show Garage Tab for Auth-verified users
+                if(garageTabBtn) garageTabBtn.style.display = "block";
+                
                 await syncUserDataFromCloud();
             } else {
                 currentUser = null;
                 navBtn.innerText = "Team Login";
                 navBtn.onclick = () => openAuthModal();
+                
+                // Hide Garage Tab and switch back safely to Home if user signs out on the garage view
+                if(garageTabBtn) garageTabBtn.style.display = "none";
+                if(document.getElementById('nav-tab-garage').classList.contains('active')) {
+                    window.switchTab('home');
+                }
+                
                 loadLeaderboard(); 
                 if(window.renderGarageGrid) window.renderGarageGrid();
             }
@@ -820,7 +841,6 @@
             }
         }
 
-        // Expose helper to cloud-save garage items easily
         window.cloudSaveGarage = async function(garageArray) {
             if(!currentUser) return;
             await setDoc(doc(db, "users", currentUser.uid), { garage: garageArray }, { merge: true });
@@ -846,14 +866,17 @@
             document.getElementById('tab-view-garage').style.display = 'none';
             document.getElementById('tab-view-contact').style.display = 'none';
 
-            const clickedBtn = event.currentTarget;
-            clickedBtn.classList.add('active');
+            // Safeguard element selection inside dynamic state swaps
+            const activeTabElement = document.getElementById(`nav-tab-${targetTab}`);
+            if(activeTabElement) activeTabElement.classList.add('active');
+            
             document.getElementById(`tab-view-${targetTab}`).style.display = 'block';
 
             if(targetTab === 'garage') {
                 renderGarageGrid();
             }
         }
+        window.switchTab = switchTab;
 
         /* GARAGE MANAGEMENT OPERATIONS Engine */
         function getGarageData() {
@@ -873,7 +896,6 @@
             let inventory = getGarageData();
 
             if(editId) {
-                // Handle updating an existing entry
                 let entryIdx = inventory.findIndex(item => item.id == editId);
                 if(entryIdx > -1) {
                     inventory[entryIdx].car = carInput;
@@ -881,7 +903,6 @@
                     inventory[entryIdx].driver = driverInput;
                 }
             } else {
-                // Create a completely new inventory entry card
                 const newEntry = {
                     id: Date.now(),
                     car: carInput,
@@ -953,7 +974,6 @@
             }
 
             inventory.forEach(item => {
-                // Cross check local collection strings with verified leaderboard accounts
                 let matchedScore = scores.find(s => s.car.toLowerCase() === item.car.toLowerCase() && s.driver.toLowerCase() === item.driver.toLowerCase());
                 let hasTrophy = !!matchedScore;
                 
@@ -985,7 +1005,6 @@
             });
         }
 
-        // Bind global handles so HTML onclick can reach them safely
         window.saveGarageEntry = saveGarageEntry;
         window.editGarageEntry = editGarageEntry;
         window.deleteGarageEntry = deleteGarageEntry;
