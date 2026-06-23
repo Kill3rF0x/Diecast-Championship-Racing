@@ -263,6 +263,89 @@
             background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue));
         }
 
+        /* HOME SPLIT VIEW WORKSPACE */
+        .home-split-workspace {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        @media(max-width: 900px) {
+            .home-split-workspace { flex-direction: column; }
+            .compact-garage-sidebar { width: 100% !important; max-height: 250px !important; }
+        }
+
+        .compact-garage-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            background: rgba(10, 10, 14, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+            max-height: 580px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .compact-garage-sidebar h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: var(--font-racing);
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 8px;
+            text-align: center;
+        }
+
+        .sidebar-scroll-zone {
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 4px;
+        }
+
+        .compact-drag-item {
+            background: #181822;
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-orange);
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .compact-drag-item:active { cursor: grabbing; }
+        .compact-drag-item:hover {
+            background: #20202d;
+            border-color: #555;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .compact-item-car {
+            font-family: var(--font-racing);
+            font-size: 0.95rem;
+            color: #fff;
+            display: block;
+        }
+
+        .compact-item-driver {
+            font-size: 0.85rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .home-main-staging {
+            flex: 1;
+            width: 100%;
+        }
+
         /* GARAGE GRAPHICS & MANAGEMENT STYLES */
         .garage-manager {
             display: flex;
@@ -460,7 +543,7 @@
 
         /* REGISTRATION GRID */
         .setup-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 8px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; gap: 8px; }
         label { font-family: var(--font-racing); font-size: 0.9rem; color: var(--accent-yellow); text-transform: uppercase; }
         input[type="number"] {
             width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff;
@@ -469,13 +552,19 @@
         }
 
         .roster-grid {
-            width: 100%; max-width: 650px; max-height: 400px; overflow-y: auto;
+            width: 100%; max-height: 400px; overflow-y: auto;
             display: flex; flex-direction: column; gap: 10px; padding-right: 5px;
         }
 
         .roster-row {
             display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5);
             padding: 8px 12px; border-radius: 6px; border: 1px solid #222;
+            transition: background 0.2s;
+        }
+        
+        .roster-row.drag-over {
+            background: rgba(0, 204, 255, 0.15);
+            border-color: var(--accent-blue);
         }
 
         .row-num { font-family: var(--font-racing); color: var(--accent-blue); min-width: 25px; font-weight: bold; }
@@ -628,16 +717,30 @@
 
             <!-- Home Tab Content View -->
             <div id="tab-view-home">
-                <div id="setup-phase" class="setup-section">
-                    <div class="form-group">
-                        <label for="car-count">1. Number of Racing Entries:</label>
-                        <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
+                <div class="home-split-workspace">
+                    
+                    <!-- COMPACT SIDEBAR FOR DRAGGING VEHICLES -->
+                    <div class="compact-garage-sidebar" id="home-garage-sidebar">
+                        <h3>Garage Inventory</h3>
+                        <div class="sidebar-scroll-zone" id="sidebar-inventory-list">
+                            <p style="color:#666; font-style:italic; text-align:center; font-size:0.9rem; padding:10px;">Sign in to drag your custom fleet to the roster grid.</p>
+                        </div>
                     </div>
-                    <div class="form-group" style="width: 100%;">
-                        <label>2. Customize Roster Grid:</label>
-                        <div id="roster-grid" class="roster-grid"></div>
+
+                    <div class="home-main-staging">
+                        <div id="setup-phase" class="setup-section">
+                            <div class="form-group">
+                                <label for="car-count">1. Number of Racing Entries:</label>
+                                <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
+                            </div>
+                            <div class="form-group" style="width: 100%;">
+                                <label>2. Customize Roster Grid (Drag cars here):</label>
+                                <div id="roster-grid" class="roster-grid"></div>
+                            </div>
+                            <button class="main-btn" onclick="startRaceSequence()" style="width:100%;">Split Grid & Create Brackets</button>
+                        </div>
                     </div>
-                    <button class="main-btn" onclick="startRaceSequence()">Split Grid & Create Brackets</button>
+
                 </div>
 
                 <div id="tournament-phase" class="tournament-section">
@@ -732,7 +835,6 @@
                 navBtn.innerText = `Sign Out (${user.email.split('@')[0]})`;
                 navBtn.onclick = () => signOut(auth);
                 
-                // Show Garage Tab for Auth-verified users
                 if(garageTabBtn) garageTabBtn.style.display = "block";
                 
                 await syncUserDataFromCloud();
@@ -741,7 +843,6 @@
                 navBtn.innerText = "Team Login";
                 navBtn.onclick = () => openAuthModal();
                 
-                // Hide Garage Tab and switch back safely to Home if user signs out on the garage view
                 if(garageTabBtn) garageTabBtn.style.display = "none";
                 if(document.getElementById('nav-tab-garage').classList.contains('active')) {
                     window.switchTab('home');
@@ -749,6 +850,7 @@
                 
                 loadLeaderboard(); 
                 if(window.renderGarageGrid) window.renderGarageGrid();
+                if(window.renderSidebarInventory) window.renderSidebarInventory();
             }
         });
 
@@ -821,6 +923,7 @@
             }
             loadLeaderboard();
             if(window.renderGarageGrid) window.renderGarageGrid();
+            if(window.renderSidebarInventory) window.renderSidebarInventory();
         }
 
         window.saveChampionToHistory = async function(winnerObj) {
@@ -866,7 +969,6 @@
             document.getElementById('tab-view-garage').style.display = 'none';
             document.getElementById('tab-view-contact').style.display = 'none';
 
-            // Safeguard element selection inside dynamic state swaps
             const activeTabElement = document.getElementById(`nav-tab-${targetTab}`);
             if(activeTabElement) activeTabElement.classList.add('active');
             
@@ -874,6 +976,9 @@
 
             if(targetTab === 'garage') {
                 renderGarageGrid();
+            }
+            if(targetTab === 'home') {
+                renderSidebarInventory();
             }
         }
         window.switchTab = switchTab;
@@ -915,6 +1020,7 @@
             localStorage.setItem('hw_garage_v1', JSON.stringify(inventory));
             clearGarageForm();
             renderGarageGrid();
+            renderSidebarInventory();
 
             if(window.cloudSaveGarage) {
                 window.cloudSaveGarage(inventory);
@@ -943,6 +1049,7 @@
             
             localStorage.setItem('hw_garage_v1', JSON.stringify(inventory));
             renderGarageGrid();
+            renderSidebarInventory();
 
             if(window.cloudSaveGarage) {
                 window.cloudSaveGarage(inventory);
@@ -1005,11 +1112,51 @@
             });
         }
 
+        /* COMPACT SIDEBAR RENDER & DRAG DATA BINDING */
+        function renderSidebarInventory() {
+            const listZone = document.getElementById('sidebar-inventory-list');
+            if(!listZone) return;
+
+            // Check if user button implies signed-in configuration state
+            const authBtn = document.getElementById('nav-auth-btn');
+            const isGuest = authBtn && authBtn.innerText.includes("Team Login");
+
+            if(isGuest) {
+                listZone.innerHTML = `<p style="color:#666; font-style:italic; text-align:center; font-size:0.9rem; padding:10px;">Sign in to drag your custom fleet to the roster grid.</p>`;
+                return;
+            }
+
+            let inventory = getGarageData();
+            if(inventory.length === 0) {
+                listZone.innerHTML = `<p style="color:#888; font-style:italic; text-align:center; font-size:0.9rem; padding:10px;">Your garage is empty. Add vehicles under the Garage tab!</p>`;
+                return;
+            }
+
+            listZone.innerHTML = '';
+            inventory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'compact-drag-item';
+                div.setAttribute('draggable', 'true');
+                div.innerHTML = `
+                    <span class="compact-item-car">${item.car}</span>
+                    <span class="compact-item-driver">Driver: ${item.driver}</span>
+                `;
+
+                div.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', JSON.stringify({ car: item.car, driver: item.driver }));
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+
+                listZone.appendChild(div);
+            });
+        }
+
         window.saveGarageEntry = saveGarageEntry;
         window.editGarageEntry = editGarageEntry;
         window.deleteGarageEntry = deleteGarageEntry;
         window.clearGarageForm = clearGarageForm;
         window.renderGarageGrid = renderGarageGrid;
+        window.renderSidebarInventory = renderSidebarInventory;
 
         /* TOURNAMENT LOGIC FUNCTIONS */
         function startRaceSequence() {
@@ -1040,7 +1187,36 @@
             for (let i = 1; i <= count; i++) {
                 const row = document.createElement('div');
                 row.className = 'roster-row';
-                row.innerHTML = `<div class="row-num">#${i}</div><input type="text" class="input-car" placeholder="Car" value="${defaultCars[(i - 1) % defaultCars.length]} ${Math.ceil(i/8)}"><input type="text" class="input-driver" placeholder="Driver" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">`;
+                row.innerHTML = `
+                    <div class="row-num">#${i}</div>
+                    <input type="text" class="input-car" placeholder="Car Name" value="${defaultCars[(i - 1) % defaultCars.length]} ${Math.ceil(i/8)}">
+                    <input type="text" class="input-driver" placeholder="Driver Profile" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">
+                `;
+                
+                // Add Drag over listeners to full rows for simpler drops
+                row.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    row.classList.add('drag-over');
+                });
+
+                row.addEventListener('dragleave', () => {
+                    row.classList.remove('drag-over');
+                });
+
+                row.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    row.classList.remove('drag-over');
+                    try {
+                        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                        if (data && data.car && data.driver) {
+                            row.querySelector('.input-car').value = data.car;
+                            row.querySelector('.input-driver').value = data.driver;
+                        }
+                    } catch(err) {
+                        console.error("Invalid drag data intercepted");
+                    }
+                });
+
                 container.appendChild(row);
             }
         }
@@ -1085,6 +1261,7 @@
                 mainBracketData.push(roundMatchups);
                 currentMainPool = Array(currentMainPool.length / 2).fill(null);
             }
+            document.getElementById('home-garage-sidebar').style.display = 'none';
             document.getElementById('setup-phase').style.display = 'none';
             document.getElementById('tournament-phase').style.display = 'block';
             renderGrids();
@@ -1207,11 +1384,18 @@
             });
         }
 
-        function clearLeaderboard() { if(confirm("Erase board stats?")) { localStorage.removeItem('hw_leaderboard_v2'); loadLeaderboard(); renderGarageGrid(); } }
+        function clearLeaderboard() { if(confirm("Erase board stats?")) { localStorage.removeItem('hw_leaderboard_v2'); loadLeaderboard(); renderGarageGrid(); renderSidebarInventory(); } }
         function closePodium() { document.getElementById('podium-modal').style.display = 'none'; resetTrack(); }
-        function resetTrack() { document.getElementById('tournament-phase').style.display = 'none'; document.getElementById('setup-phase').style.display = 'flex'; }
+        
+        function resetTrack() { 
+            document.getElementById('tournament-phase').style.display = 'none'; 
+            document.getElementById('setup-phase').style.display = 'flex'; 
+            document.getElementById('home-garage-sidebar').style.display = 'flex';
+            renderSidebarInventory();
+        }
 
         generateRosterInputs();
+        renderSidebarInventory();
     </script>
 </body>
 </html>
