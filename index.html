@@ -72,7 +72,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-bottom: 35px;
+            margin-bottom: 25px;
             width: 100%;
             max-width: 600px;
         }
@@ -110,6 +110,85 @@
             display: block;
         }
 
+        /* NEW INFINITE SCROLLING TICKER (HALL OF FAME) */
+        .ticker-wrapper {
+            width: 100%;
+            max-width: 1400px;
+            background: #101014;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .ticker-label {
+            background: var(--accent-yellow);
+            color: #000;
+            font-family: var(--font-racing);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 12px 20px;
+            z-index: 5;
+            white-space: nowrap;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ticker-clear-btn {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(0,0,0,0.4);
+            color: #000;
+            font-size: 0.65rem;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: var(--font-racing);
+        }
+        .ticker-clear-btn:hover { background: #000; color: var(--accent-yellow); }
+
+        .ticker-overflow {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .leaderboard-ticker-track {
+            display: flex;
+            white-space: nowrap;
+            padding-left: 100%; /* Start scrolling from outside right boundary */
+            animation: ticker-scrolling 25s linear infinite;
+        }
+
+        /* Pause scroll on hover so users can easily read/inspect items */
+        .ticker-overflow:hover .leaderboard-ticker-track {
+            animation-play-state: paused;
+        }
+
+        @keyframes ticker-scrolling {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 30px;
+            color: #fff;
+            border-right: 1px dashed var(--border-color);
+            font-size: 1.15rem;
+        }
+        .ticker-rank { color: var(--accent-blue); font-family: var(--font-racing); margin-right: 8px; font-weight: bold;}
+        .ticker-car { font-weight: bold; margin-right: 6px; color: #fff; }
+        .ticker-driver { font-style: italic; color: #aaa; font-size: 0.95rem; margin-right: 12px;}
+        .ticker-wins { background: var(--accent-orange); color: #fff; font-family: var(--font-racing); font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; }
+
         /* WORKSPACE LAYOUT */
         .app-layout {
             display: flex;
@@ -122,7 +201,7 @@
         }
 
         .container {
-            flex: 3;
+            flex: 1;
             background: var(--card-bg);
             backdrop-filter: blur(8px);
             padding: 30px;
@@ -132,7 +211,7 @@
             position: relative;
         }
 
-        .container::before, .leaderboard-panel::before {
+        .container::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 4px;
@@ -227,49 +306,6 @@
             text-transform: uppercase;
         }
 
-        /* HALL OF FAME LEADERBOARD PANEL */
-        .leaderboard-panel {
-            flex: 1;
-            min-width: 300px;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            border: 2px solid var(--border-color);
-            position: relative;
-        }
-
-        .leaderboard-title {
-            font-family: var(--font-racing);
-            color: var(--accent-yellow);
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .leaderboard-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-        .leaderboard-item {
-            background: rgba(15, 15, 18, 0.8);
-            border: 1px solid var(--border-color);
-            padding: 10px 12px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .leaderboard-item .driver-tag { font-size: 0.85rem; color: #aaa; font-style: italic; }
-        .leaderboard-item .wins-count {
-            background: var(--accent-orange);
-            color: #fff;
-            padding: 2px 6px;
-            font-size: 0.8rem;
-            border-radius: 4px;
-            font-family: var(--font-racing);
-        }
-
         /* REGISTRATION GRID */
         .setup-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
         .form-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 8px; }
@@ -358,7 +394,6 @@
 
         footer { width: 100%; max-width: 1400px; display: flex; justify-content: center; align-items: center; padding: 15px 0; border-top: 1px dashed rgba(255, 255, 255, 0.1); margin-top: auto; }
         .instagram-link { font-family: var(--font-racing); color: #aaa; text-decoration: none; background: rgba(20, 20, 25, 0.6); padding: 10px 24px; border-radius: 30px; border: 1px solid var(--border-color); }
-        .clear-history-btn { background: transparent; border: 1px solid #555; color: #aaa; font-size: 0.75rem; padding: 6px 12px; margin-top: 15px; width: 100%; cursor: pointer; font-family: var(--font-racing); border-radius: 4px; }
         .reset-btn { background: #2a2a30; border: 1px solid var(--border-color); color: white; padding: 10px 20px; font-family: var(--font-racing); cursor: pointer; border-radius: 4px;}
     </style>
 </head>
@@ -411,13 +446,17 @@
         </div>
     </header>
 
-    <div class="app-layout">
-        <div class="leaderboard-panel">
-            <div class="leaderboard-title">🏆 Hall of Fame 🏆</div>
-            <ul id="leaderboard-list" class="leaderboard-list"></ul>
-            <button class="clear-history-btn" onclick="clearLeaderboard()">Clear Stats Board</button>
+    <div class="ticker-wrapper">
+        <div class="ticker-label">
+            🏆 Hall of Fame
+            <button class="ticker-clear-btn" onclick="clearLeaderboard()">Clear</button>
         </div>
+        <div class="ticker-overflow">
+            <div id="leaderboard-ticker" class="leaderboard-ticker-track"></div>
+        </div>
+    </div>
 
+    <div class="app-layout">
         <div class="container">
             <div id="race-animation" class="race-animation-overlay">
                 <div class="christmas-tree">
@@ -465,7 +504,6 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Integrated with your specific dcr-racing project credentials
         const firebaseConfig = {
             apiKey: "AIzaSyCPuNf5LdgX_WYFH_cxUN8C46kJY56A7c4",
             authDomain: "dcr-racing.firebaseapp.com",
@@ -768,15 +806,20 @@
         }
 
         function loadLeaderboard() {
-            const listContainer = document.getElementById('leaderboard-list'); listContainer.innerHTML = '';
+            const tickerContainer = document.getElementById('leaderboard-ticker'); tickerContainer.innerHTML = '';
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             scores.sort((a, b) => b.wins - a.wins);
-            let topTen = scores.slice(0, 10);
-            if(topTen.length === 0) { listContainer.innerHTML = `<li style="color:#666; font-style:italic; text-align:center; padding:10px;">No trophies recorded.</li>`; return; }
-            topTen.forEach((item, index) => {
-                const li = document.createElement('li'); li.className = 'leaderboard-item';
-                li.innerHTML = `<div><b style="color:var(--accent-yellow)">#${index + 1}</b> ${item.car}<br><span class="driver-tag">Driver: ${item.driver}</span></div><span class="wins-count">${item.wins} W</span>`;
-                listContainer.appendChild(li);
+            
+            if(scores.length === 0) { 
+                tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded. Run races to populate the leaderboard.</div>`; 
+                return; 
+            }
+            
+            // Generate ticker nodes
+            scores.forEach((item, index) => {
+                const node = document.createElement('div'); node.className = 'ticker-item';
+                node.innerHTML = `<span class="ticker-rank">#${index + 1}</span><span class="ticker-car">${item.car}</span><span class="ticker-driver">(${item.driver})</span><span class="ticker-wins">${item.wins} WINS</span>`;
+                tickerContainer.appendChild(node);
             });
         }
 
