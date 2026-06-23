@@ -117,7 +117,7 @@
             background: #101014;
             border: 2px solid var(--border-color);
             border-radius: 6px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             overflow: hidden;
@@ -188,6 +188,47 @@
         .ticker-car { font-weight: bold; margin-right: 6px; color: #fff; }
         .ticker-driver { font-style: italic; color: #aaa; font-size: 0.95rem; margin-right: 12px;}
         .ticker-wins { background: var(--accent-orange); color: #fff; font-family: var(--font-racing); font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; }
+
+        /* TABS NAVIGATION BAR */
+        .tabs-nav-bar {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .nav-tab-btn {
+            font-family: var(--font-racing);
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            background: #141419;
+            color: #aaa;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            padding: 10px 24px;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            top: 2px;
+        }
+
+        .nav-tab-btn:hover {
+            color: #fff;
+            background: #1c1c24;
+            border-color: #555 #555 transparent;
+        }
+
+        .nav-tab-btn.active {
+            color: var(--accent-orange);
+            background: var(--card-bg);
+            border-color: var(--border-color) var(--border-color) #0b0b0d;
+            font-weight: bold;
+            box-shadow: 0 -3px 0 var(--accent-orange);
+        }
 
         /* WORKSPACE LAYOUT */
         .app-layout {
@@ -418,7 +459,7 @@
     </div>
 
     <div id="podium-modal" class="podium-overlay">
-        <div class="podium-title">🏁 PODIUM FINISHERS 🏁</div>
+        <div class="podium-title">🏆 PODIUM FINISHERS 🏆</div>
         <div class="podium-stage">
             <div class="podium-column silver">
                 <span id="podium-silver-car" class="podium-car-name">-</span>
@@ -448,13 +489,19 @@
 
     <div class="ticker-wrapper">
         <div class="ticker-label">
-            🏆 Hall of Fame
+            🏁 Hall of Fame
             <button class="ticker-clear-btn" onclick="clearLeaderboard()">Clear</button>
         </div>
         <div class="ticker-overflow">
             <div id="leaderboard-ticker" class="leaderboard-ticker-track"></div>
         </div>
     </div>
+
+    <nav class="tabs-nav-bar">
+        <button class="nav-tab-btn active" onclick="switchTab('home')">Home</button>
+        <button class="nav-tab-btn" onclick="switchTab('garage')">Garage</button>
+        <button class="nav-tab-btn" onclick="switchTab('contact')">Contact Us</button>
+    </nav>
 
     <div class="app-layout">
         <div class="container">
@@ -467,29 +514,42 @@
                 <div id="animation-text" class="animation-status-text">Drivers, Stage Your Cars...</div>
             </div>
 
-            <div id="setup-phase" class="setup-section">
-                <div class="form-group">
-                    <label for="car-count">1. Number of Racing Entries:</label>
-                    <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
+            <div id="tab-view-home">
+                <div id="setup-phase" class="setup-section">
+                    <div class="form-group">
+                        <label for="car-count">1. Number of Racing Entries:</label>
+                        <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
+                    </div>
+                    <div class="form-group" style="width: 100%;">
+                        <label>2. Customize Roster Grid:</label>
+                        <div id="roster-grid" class="roster-grid"></div>
+                    </div>
+                    <button class="main-btn" onclick="startRaceSequence()">Split Grid & Create Brackets</button>
                 </div>
-                <div class="form-group" style="width: 100%;">
-                    <label>2. Customize Roster Grid:</label>
-                    <div id="roster-grid" class="roster-grid"></div>
+
+                <div id="tournament-phase" class="tournament-section">
+                    <div id="qualifier-header" class="bracket-heading" style="display:none;">Stage 1: Qualifier Bracket</div>
+                    <div class="bracket-container" id="qualifier-bracket-container" style="display:none;"></div>
+                    <div id="bronze-header" class="bracket-heading" style="display:none;">Consolation Race</div>
+                    <div class="bracket-container" id="bronze-bracket-container" style="display:none;"></div>
+                    <div class="bracket-heading">Stage 2: Championship Main Bracket</div>
+                    <div class="bracket-container" id="main-bracket-container"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="reset-btn" onclick="resetTrack()">Reset Complete Bracket</button>
+                    </div>
                 </div>
-                <button class="main-btn" onclick="startRaceSequence()">Split Grid & Create Brackets</button>
             </div>
 
-            <div id="tournament-phase" class="tournament-section">
-                <div id="qualifier-header" class="bracket-heading" style="display:none;">Stage 1: Qualifier Bracket</div>
-                <div class="bracket-container" id="qualifier-bracket-container" style="display:none;"></div>
-                <div id="bronze-header" class="bracket-heading" style="display:none;">Consolation Race</div>
-                <div class="bracket-container" id="bronze-bracket-container" style="display:none;"></div>
-                <div class="bracket-heading">Stage 2: Championship Main Bracket</div>
-                <div class="bracket-container" id="main-bracket-container"></div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="reset-btn" onclick="resetTrack()">Reset Complete Bracket</button>
-                </div>
+            <div id="tab-view-garage" style="display: none; text-align: center; padding: 40px 20px;">
+                <h2 style="font-family: var(--font-racing); color: var(--accent-blue); text-transform: uppercase;">Team Garage</h2>
+                <p style="color: #aaa; font-style: italic;">Vehicle inventory and custom team builds showcase staging section coming soon...</p>
             </div>
+
+            <div id="tab-view-contact" style="display: none; text-align: center; padding: 40px 20px;">
+                <h2 style="font-family: var(--font-racing); color: var(--accent-yellow); text-transform: uppercase;">Contact Track Operations</h2>
+                <p style="color: #aaa; font-style: italic;">Submit match disputes, tracking system bugs, or business inquiries here...</p>
+            </div>
+
         </div>
     </div>
 
@@ -607,7 +667,6 @@
         window.saveChampionToHistory = async function(winnerObj) {
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             let existingIdx = scores.findIndex(item => item.car === winnerObj.car && item.driver === winnerObj.driver);
-            
             if(existingIdx > -1) {
                 scores[existingIdx].wins += 1;
             } else {
@@ -624,14 +683,31 @@
     </script>
 
     <script>
-        let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null;
+        let mainBracketData = [];
+        let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null;
         const revAudio = new Audio('rev.mp3');
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
         const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
-
+        
         function playEngineRev() {
             revAudio.currentTime = 0;
             revAudio.play().catch(e => console.log("Audio waiting for user gesture..."));
+        }
+
+        /* TAB NAVIGATION TOGGLING ROUTINE */
+        function switchTab(targetTab) {
+            // Remove 'active' status from all structural tab button nodes
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Hide all tab view viewport content panels
+            document.getElementById('tab-view-home').style.display = 'none';
+            document.getElementById('tab-view-garage').style.display = 'none';
+            document.getElementById('tab-view-contact').style.display = 'none';
+
+            // Find current trigger and explicitly mark active + toggle targeted section element
+            const clickedBtn = event.currentTarget;
+            clickedBtn.classList.add('active');
+            document.getElementById(`tab-view-${targetTab}`).style.display = 'block';
         }
 
         function startRaceSequence() {
@@ -639,13 +715,11 @@
             let racersCount = 0;
             rows.forEach(row => { if(row.querySelector('.input-car').value.trim()) racersCount++; });
             if (racersCount < 2) return alert("You need 2+ cars!");
-
             const overlay = document.getElementById('race-animation');
             const statusText = document.getElementById('animation-text');
             overlay.style.display = 'flex';
             document.querySelectorAll('.light-bulb').forEach(l => l.classList.remove('active'));
             playEngineRev();
-
             setTimeout(() => { statusText.innerText = "PRE-STAGED..."; document.getElementById('light-r1').classList.add('active'); document.getElementById('light-r2').classList.add('active'); }, 1500);
             setTimeout(() => { statusText.innerText = "STAGED! READY..."; document.getElementById('light-y1').classList.add('active'); document.getElementById('light-y2').classList.add('active'); }, 4500);
             setTimeout(() => { 
@@ -662,7 +736,8 @@
             const container = document.getElementById('roster-grid');
             container.innerHTML = '';
             for (let i = 1; i <= count; i++) {
-                const row = document.createElement('div'); row.className = 'roster-row';
+                const row = document.createElement('div');
+                row.className = 'roster-row';
                 row.innerHTML = `<div class="row-num">#${i}</div><input type="text" class="input-car" placeholder="Car" value="${defaultCars[(i - 1) % defaultCars.length]} ${Math.ceil(i/8)}"><input type="text" class="input-driver" placeholder="Driver" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">`;
                 container.appendChild(row);
             }
@@ -676,7 +751,6 @@
                 const driver = row.querySelector('.input-driver').value.trim();
                 if (car) racers.push({ car: car, driver: driver || "Unknown Driver" });
             });
-
             racers.sort(() => Math.random() - 0.5);
             let mainBracketSize = Math.pow(2, Math.floor(Math.log2(racers.length)));
             if (mainBracketSize === racers.length && racers.length > 2) mainBracketSize = racers.length;
@@ -684,11 +758,10 @@
             let mainRacers = racers.slice(0, mainBracketSize);
             let extraRacers = racers.slice(mainBracketSize);
             qualifierData = []; qualifierWinnersTargetMap = []; bronzeMatchData = { racer1: null, racer2: null, winner: null };
-
             if (extraRacers.length > 0) {
                 let qualifierPool = [];
                 for (let i = 0; i < extraRacers.length; i++) {
-                    let opponent = mainRacers.pop(); 
+                    let opponent = mainRacers.pop();
                     qualifierPool.push(opponent); qualifierPool.push(extraRacers[i]);
                     qualifierWinnersTargetMap.push({ mainMatchIndex: Math.floor(mainRacers.length / 2), isRacer1: (mainRacers.length % 2 === 0) });
                 }
@@ -697,20 +770,21 @@
                 qualifierData.push(qMatchups);
                 document.getElementById('qualifier-header').style.display = 'block'; document.getElementById('qualifier-bracket-container').style.display = 'flex';
             } else {
-                document.getElementById('qualifier-header').style.display = 'none'; document.getElementById('qualifier-bracket-container').style.display = 'none';
+                document.getElementById('qualifier-header').style.display = 'none';
+                document.getElementById('qualifier-bracket-container').style.display = 'none';
             }
 
             mainBracketData = [];
             let currentMainPool = [...mainRacers];
             for(let i=0; i < qualifierWinnersTargetMap.length; i++) currentMainPool.push(null);
-
             while (currentMainPool.length >= 2) {
                 let roundMatchups = [];
                 for (let i = 0; i < currentMainPool.length; i += 2) roundMatchups.push({ racer1: currentMainPool[i], racer2: currentMainPool[i+1], winner: null });
                 mainBracketData.push(roundMatchups);
                 currentMainPool = Array(currentMainPool.length / 2).fill(null);
             }
-            document.getElementById('setup-phase').style.display = 'none'; document.getElementById('tournament-phase').style.display = 'block';
+            document.getElementById('setup-phase').style.display = 'none';
+            document.getElementById('tournament-phase').style.display = 'block';
             renderGrids();
         }
 
@@ -729,7 +803,8 @@
                 let loserObj = (currentMatch.racer1 === winnerObj) ? currentMatch.racer2 : currentMatch.racer1;
                 if (matchIndex === 0) bronzeMatchData.racer1 = loserObj;
                 if (matchIndex === 1) bronzeMatchData.racer2 = loserObj;
-                document.getElementById('bronze-header').style.display = 'block'; document.getElementById('bronze-bracket-container').style.display = 'flex';
+                document.getElementById('bronze-header').style.display = 'block';
+                document.getElementById('bronze-bracket-container').style.display = 'flex';
             }
             let nextRoundIndex = roundIndex + 1;
             if (nextRoundIndex < mainBracketData.length) {
@@ -754,16 +829,20 @@
 
             if(window.saveChampionToHistory) window.saveChampionToHistory(gold);
 
-            document.getElementById('podium-gold-car').innerText = gold.car; document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
+            document.getElementById('podium-gold-car').innerText = gold.car;
+            document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
             document.getElementById('podium-silver-car').innerText = silver.car; document.getElementById('podium-silver-driver').innerText = "Driver: " + silver.driver;
-            document.getElementById('podium-bronze-car').innerText = bronze.car; document.getElementById('podium-bronze-driver').innerText = "Driver: " + bronze.driver;
+            document.getElementById('podium-bronze-car').innerText = bronze.car;
+            document.getElementById('podium-bronze-driver').innerText = "Driver: " + bronze.driver;
             document.getElementById('podium-modal').style.display = 'flex';
         }
 
         function renderGrids() {
-            const qContainer = document.getElementById('qualifier-bracket-container'); qContainer.innerHTML = '';
+            const qContainer = document.getElementById('qualifier-bracket-container');
+            qContainer.innerHTML = '';
             if(qualifierData.length > 0) {
-                const qRound = document.createElement('div'); qRound.className = 'round'; qRound.innerHTML = `<div class="round-title">Knockout Heats</div>`;
+                const qRound = document.createElement('div');
+                qRound.className = 'round'; qRound.innerHTML = `<div class="round-title">Knockout Heats</div>`;
                 qualifierData[0].forEach((match, index) => {
                     const card = document.createElement('div'); card.className = `matchup ${!match.winner ? 'active' : ''}`;
                     card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceQualifier(index, match.racer1)));
@@ -775,7 +854,8 @@
 
             const bContainer = document.getElementById('bronze-bracket-container'); bContainer.innerHTML = '';
             if(bronzeMatchData && (bronzeMatchData.racer1 || bronzeMatchData.racer2)) {
-                const bRound = document.createElement('div'); bRound.className = 'round'; bRound.style.height = '140px'; bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
+                const bRound = document.createElement('div');
+                bRound.className = 'round'; bRound.style.height = '140px'; bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
                 const card = document.createElement('div'); card.className = `matchup ${!bronzeMatchData.winner ? 'active' : ''}`;
                 card.appendChild(buildRacerRow(bronzeMatchData.racer1, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer1)));
                 card.appendChild(buildRacerRow(bronzeMatchData.racer2, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer2)));
@@ -787,7 +867,8 @@
                 const column = document.createElement('div'); column.className = 'round';
                 column.innerHTML = `<div class="round-title">${roundIndex === mainBracketData.length - 1 ? 'Championship' : 'Round ' + (roundIndex + 1)}</div>`;
                 round.forEach((match, matchIndex) => {
-                    const card = document.createElement('div'); card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
+                    const card = document.createElement('div'); 
+                    card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
                     card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer1)));
                     card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer2)));
                     column.appendChild(card);
@@ -797,25 +878,26 @@
         }
 
         function buildRacerRow(racerObj, winnerObj, clickCallback) {
-            const div = document.createElement('div'); div.className = 'racer';
+            const div = document.createElement('div');
+            div.className = 'racer';
             if(!racerObj) { div.innerHTML = `<span style="color:#4a4a5a; font-style:italic;">Staging...</span>`; return div; }
             div.innerHTML = `<div class="racer-details"><span class="racer-car">${racerObj.car}</span><span class="racer-driver">Driver: ${racerObj.driver}</span></div>`;
             if(winnerObj) { div.classList.add(winnerObj === racerObj ? 'winner' : 'loser'); } 
-            else { div.onclick = clickCallback; let tag = document.createElement('span'); tag.className = 'action-tag'; tag.innerText = 'WIN'; div.appendChild(tag); }
+            else { div.onclick = clickCallback;
+                let tag = document.createElement('span'); tag.className = 'action-tag'; tag.innerText = 'WIN'; div.appendChild(tag);
+            }
             return div;
         }
 
         function loadLeaderboard() {
-            const tickerContainer = document.getElementById('leaderboard-ticker'); tickerContainer.innerHTML = '';
+            const tickerContainer = document.getElementById('leaderboard-ticker');
+            tickerContainer.innerHTML = '';
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             scores.sort((a, b) => b.wins - a.wins);
-            
             if(scores.length === 0) { 
                 tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded. Run races to populate the leaderboard.</div>`; 
                 return; 
             }
-            
-            // Generate ticker nodes
             scores.forEach((item, index) => {
                 const node = document.createElement('div'); node.className = 'ticker-item';
                 node.innerHTML = `<span class="ticker-rank">#${index + 1}</span><span class="ticker-car">${item.car}</span><span class="ticker-driver">(${item.driver})</span><span class="ticker-wins">${item.wins} WINS</span>`;
