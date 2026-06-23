@@ -168,10 +168,11 @@
         /* LEFT COLUMN: INTERACTIVE GARAGE PANEL */
         .garage-panel { background: var(--card-bg); backdrop-filter: blur(8px); padding: 20px; border-radius: 12px; border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .garage-rack { display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
-        .garage-car-card { background: #141419; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-yellow); padding: 10px; border-radius: 4px; cursor: grab; user-select: none; transition: transform 0.15s, border-color 0.15s; }
+        .garage-car-card { background: #141419; border: 1px solid var(--border-color); padding: 10px; border-radius: 4px; cursor: grab; user-select: none; transition: transform 0.15s, border-color 0.15s; }
         .garage-car-card:active { cursor: grabbing; transform: scale(0.97); }
         .garage-car-card.dragging { opacity: 0.4; border-style: dashed; }
-        .garage-car-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; margin-top: 4px; }
+        .garage-car-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; margin-top: 4px; align-items: center; }
+        .owner-edit-input { background: #000; border: 1px solid var(--accent-blue); color: #fff; font-family: var(--font-body); size: 0.8rem; padding: 2px 4px; border-radius: 3px; width: 100px; }
 
         /* CENTER COLUMN: MAIN STAGING & BRACKETS */
         .container { background: var(--card-bg); backdrop-filter: blur(8px); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); position: relative; min-width: 0; }
@@ -338,7 +339,7 @@
         <div class="garage-panel">
             <div class="panel-header">
                 <span>🚘 Track Garage</span>
-                <span id="garage-count" style="font-size:0.8rem; color:var(--accent-yellow);">0 / 16</span>
+                <span id="garage-count" style="font-size:0.8rem; color:var(--accent-yellow);">0 / 50</span>
             </div>
             
             <div id="garage-unauth-notice" style="color: #666; font-style: italic; font-size: 0.95rem; text-align: center; padding: 10px 0;">
@@ -348,6 +349,7 @@
             <div id="garage-auth-controls" style="display:none; flex-direction:column; gap:10px;">
                 <div style="display:flex; flex-direction:column; gap:5px;">
                     <input type="text" id="garage-car-input" class="short-input" placeholder="Car Model (e.g., Twin Mill)" style="padding:6px; font-size:1rem;">
+                    <input type="text" id="garage-color-input" class="short-input" placeholder="Car Color (e.g., red, #ff4500)" style="padding:6px; font-size:1rem;">
                     <button class="action-inline-btn" onclick="addCarToGarage()" style="background:var(--accent-orange); color:#fff; border:none;">+ Fleet Addition</button>
                 </div>
                 
@@ -447,7 +449,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPuNf5LdgX_WYFH_cxUN8C46kJY56A7c4",
@@ -492,12 +494,10 @@
                 garageUnauth.style.display = 'none';
                 garageControls.style.display = 'flex';
                 
-                // 1. Force retrieval of profile data first to commit currentUserUsername to memory
                 await syncUserDataFromCloud();
                 
                 const finalHandle = currentUserUsername || user.email.split('@')[0];
                 
-                // 2. Establish live data streams utilizing the verified cloud handle
                 setupGarageListener(currentUser.uid, finalHandle);
                 setupFriendsListener();
                 
@@ -535,7 +535,8 @@
             garageListenerUnsubscribe = onSnapshot(garageRef, (snapshot) => {
                 const vehicles = [];
                 snapshot.forEach(docSnap => {
-                    vehicles.push({ id: docSnap.id, ...docSnap.data(), owner: ownerHandle });
+                    const data = docSnap.data();
+                    vehicles.push({ id: docSnap.id, ...data, owner: data.owner || ownerHandle });
                 });
                 internalGarageFleetCache = vehicles;
                 renderGarageUI(vehicles);
@@ -544,16 +545,21 @@
 
         window.addCarToGarage = async function() {
             const carModel = document.getElementById('garage-car-input').value.trim();
+            const carColor = document.getElementById('garage-color-input').value.trim();
             if(!carModel) return alert("Please specify a car configuration model.");
-            if(internalGarageFleetCache.length >= 16) return alert("Garage configuration cap maxed out at 16 vehicles!");
+            if(internalGarageFleetCache.length >= 50) return alert("Garage configuration cap maxed out at 50 vehicles!");
 
             try {
                 const idRandom = "CAR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+                const cleanHandle = currentUserUsername || currentUser.email.split('@')[0];
                 await setDoc(doc(db, "users", currentUser.uid, "garage", idRandom), {
                     model: carModel,
+                    color: carColor || "",
+                    owner: cleanHandle,
                     timestamp: serverTimestamp()
                 });
                 document.getElementById('garage-car-input').value = '';
+                document.getElementById('garage-color-input').value = '';
             } catch(e) { alert("Garage deployment roadblock: " + e.message); }
         }
 
@@ -562,6 +568,26 @@
             try {
                 await deleteDoc(doc(db, "users", currentUser.uid, "garage", carId));
             } catch(e) { alert("Decommission failed: " + e.message); }
+        }
+
+        window.updateCarOwnerInCloud = async function(carId, oldOwner, newOwnerName) {
+            const cleanNewOwner = newOwnerName.replace('@', '').trim();
+            if (!cleanNewOwner) return alert("Owner name handle cannot be blank.");
+            
+            try {
+                const targetDocRef = doc(db, "users", currentUser.uid, "garage", carId);
+                const docSnap = await getDoc(targetDocRef);
+                
+                if (docSnap.exists()) {
+                    await updateDoc(targetDocRef, { owner: cleanNewOwner });
+                } else {
+                    const vehicleIdx = internalGarageFleetCache.findIndex(v => v.id === carId);
+                    if(vehicleIdx > -1) {
+                        internalGarageFleetCache[vehicleIdx].owner = cleanNewOwner;
+                        renderGarageUI(internalGarageFleetCache);
+                    }
+                }
+            } catch(e) { alert("Could not save owner update: " + e.message); }
         }
 
         window.importExternalGarage = async function() {
@@ -576,11 +602,13 @@
                 const snap = await getDocs(collection(db, "users", extUid, "garage"));
                 
                 const loadedFleet = [];
-                snap.forEach(d => { loadedFleet.push({ id: d.id, ...d.data(), owner: externalUser }); });
+                snap.forEach(d => { 
+                    const dData = d.data();
+                    loadedFleet.push({ id: d.id, ...dData, owner: dData.owner || externalUser }); 
+                });
                 
                 if(loadedFleet.length === 0) return alert(`The garage for @${externalUser} is currently empty.`);
                 
-                // Merge external fleet with user cache for instant dragging capabilities
                 const safeMerged = [...internalGarageFleetCache, ...loadedFleet.filter(lf => !internalGarageFleetCache.some(ig => ig.id === lf.id))];
                 renderGarageUI(safeMerged);
                 alert(`Successfully connected to @${externalUser}'s fleet!`);
@@ -589,7 +617,8 @@
 
         function renderGarageUI(vehicles) {
             const rack = document.getElementById('garage-rack');
-            document.getElementById('garage-count').innerText = `${vehicles.filter(v => currentUser && v.owner === currentUserUsername).length} / 16`;
+            const localOwnedCount = vehicles.filter(v => currentUser && v.owner.replace('@', '') === currentUserUsername).length;
+            document.getElementById('garage-count').innerText = `${localOwnedCount} / 50`;
             rack.innerHTML = '';
             
             if(vehicles.length === 0) {
@@ -602,6 +631,10 @@
                 card.className = 'garage-car-card';
                 card.setAttribute('draggable', 'true');
                 
+                // Use car color for left border style, fallback to accent yellow if not specified
+                const stripeColor = v.color ? v.color : 'var(--accent-yellow)';
+                card.style.borderLeft = `6px solid ${stripeColor}`;
+                
                 const cleanOwner = v.owner.replace('@', '');
 
                 card.innerHTML = `
@@ -610,10 +643,31 @@
                         ${currentUser && cleanOwner === currentUserUsername ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:0.75rem; cursor:pointer; margin-left:auto;">✕</span>` : ''}
                     </div>
                     <div class="garage-car-meta">
-                        <span>Owner: @${cleanOwner}</span>
+                        <span id="owner-element-${v.id}" style="cursor:pointer; color:var(--accent-yellow);" title="Click to edit owner handle">Owner: @${cleanOwner}</span>
                         <span style="color:var(--accent-blue); font-size:0.7rem;">DRAG ME</span>
                     </div>
                 `;
+
+                const ownerMetaTrigger = card.querySelector(`#owner-element-${v.id}`);
+                ownerMetaTrigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentText = cleanOwner;
+                    ownerMetaTrigger.innerHTML = `Owner: <input type="text" class="owner-edit-input" value="${currentText}">`;
+                    const inputField = ownerMetaTrigger.querySelector('input');
+                    inputField.focus();
+                    
+                    const saveBlock = () => {
+                        const newVal = inputField.value.trim().replace('@','');
+                        if(newVal && newVal !== currentText) {
+                            window.updateCarOwnerInCloud(v.id, cleanOwner, newVal);
+                        } else {
+                            ownerMetaTrigger.innerHTML = `Owner: @${cleanOwner}`;
+                        }
+                    };
+                    
+                    inputField.addEventListener('blur', saveBlock);
+                    inputField.addEventListener('keydown', (evt) => { if(evt.key === 'Enter') saveBlock(); });
+                });
 
                 card.addEventListener('dragstart', (e) => {
                     card.classList.add('dragging');
