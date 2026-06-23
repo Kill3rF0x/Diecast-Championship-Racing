@@ -42,12 +42,12 @@
             box-sizing: border-box;
         }
 
+        /* NAVIGATION & AUTH HEADERS */
         .top-nav {
             width: 100%;
-            max-width: 1500px;
+            max-width: 1400px;
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
             margin-bottom: 10px;
         }
 
@@ -110,9 +110,10 @@
             display: block;
         }
 
+        /* NEW INFINITE SCROLLING TICKER (HALL OF FAME) */
         .ticker-wrapper {
             width: 100%;
-            max-width: 1500px;
+            max-width: 1400px;
             background: #101014;
             border: 2px solid var(--border-color);
             border-radius: 6px;
@@ -152,87 +153,214 @@
         }
         .ticker-clear-btn:hover { background: #000; color: var(--accent-yellow); }
 
-        .ticker-overflow { flex: 1; display: flex; overflow: hidden; }
-        .leaderboard-ticker-track { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker-scrolling 25s linear infinite; }
-        .ticker-overflow:hover .leaderboard-ticker-track { animation-play-state: paused; }
-        @keyframes ticker-scrolling { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .ticker-overflow {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
 
-        .ticker-item { display: inline-flex; align-items: center; padding: 0 30px; color: #fff; border-right: 1px dashed var(--border-color); font-size: 1.15rem; }
+        .leaderboard-ticker-track {
+            display: flex;
+            white-space: nowrap;
+            padding-left: 100%; /* Start scrolling from outside right boundary */
+            animation: ticker-scrolling 25s linear infinite;
+        }
+
+        /* Pause scroll on hover so users can easily read/inspect items */
+        .ticker-overflow:hover .leaderboard-ticker-track {
+            animation-play-state: paused;
+        }
+
+        @keyframes ticker-scrolling {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 0 30px;
+            color: #fff;
+            border-right: 1px dashed var(--border-color);
+            font-size: 1.15rem;
+        }
         .ticker-rank { color: var(--accent-blue); font-family: var(--font-racing); margin-right: 8px; font-weight: bold;}
         .ticker-car { font-weight: bold; margin-right: 6px; color: #fff; }
         .ticker-driver { font-style: italic; color: #aaa; font-size: 0.95rem; margin-right: 12px;}
         .ticker-wins { background: var(--accent-orange); color: #fff; font-family: var(--font-racing); font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; }
 
-        .app-layout { display: grid; grid-template-columns: 320px 1fr 340px; width: 100%; max-width: 1500px; gap: 20px; align-items: flex-start; margin-bottom: 40px; }
-        
-        /* LEFT COLUMN: INTERACTIVE GARAGE PANEL */
-        .garage-panel { background: var(--card-bg); backdrop-filter: blur(8px); padding: 20px; border-radius: 12px; border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .garage-rack { display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
-        .garage-car-card { background: #141419; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-yellow); padding: 10px; border-radius: 4px; cursor: grab; user-select: none; transition: transform 0.15s, border-color 0.15s; }
-        .garage-car-card:active { cursor: grabbing; transform: scale(0.97); }
-        .garage-car-card.dragging { opacity: 0.4; border-style: dashed; }
-        .garage-car-meta { font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; margin-top: 4px; }
+        /* WORKSPACE LAYOUT */
+        .app-layout {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            gap: 25px;
+            align-items: flex-start;
+            flex: 1;
+            margin-bottom: 40px;
+        }
 
-        /* CENTER COLUMN: MAIN STAGING & BRACKETS */
-        .container { background: var(--card-bg); backdrop-filter: blur(8px); padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); position: relative; min-width: 0; }
-        .container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue)); }
+        .container {
+            flex: 1;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            border: 2px solid var(--border-color);
+            position: relative;
+        }
 
-        /* RIGHT COLUMN: CREW & LOBBY */
-        .crew-panel { background: var(--card-bg); backdrop-filter: blur(8px); padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.7); border: 2px solid var(--border-color); display: flex; flex-direction: column; gap: 15px; }
-        .panel-header { font-family: var(--font-racing); color: var(--accent-blue); text-transform: uppercase; font-size: 1.05rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .crew-box { background: rgba(10, 10, 14, 0.6); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; max-height: 180px; overflow-y: auto; }
-        .member-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1f1f2e; }
-        .member-row:last-child { border-bottom: none; }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow), var(--accent-blue));
+        }
 
-        /* AUTH MODAL */
-        .auth-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.95); z-index: 2000; justify-content: center; align-items: center; }
-        .auth-card { background: #141419; border: 2px solid var(--border-color); padding: 30px; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
-        .auth-card h3 { font-family: var(--font-racing); color: var(--accent-orange); margin-top: 0; text-transform: uppercase; }
-        .auth-input { width: 100%; box-sizing: border-box; background: #0b0b0d; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-family: var(--font-body); font-size: 1.1rem; }
-        .auth-switch-text { font-size: 0.9rem; color: #aaa; margin-top: 15px; text-align: center; cursor: pointer; }
+        /* AUTH SEAMLESS MODAL PANEL */
+        .auth-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            background: #141419;
+            border: 2px solid var(--border-color);
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+        }
+
+        .auth-card h3 {
+            font-family: var(--font-racing);
+            color: var(--accent-orange);
+            margin-top: 0;
+            text-transform: uppercase;
+        }
+
+        .auth-input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #0b0b0d;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+        }
+
+        .auth-switch-text {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 15px;
+            text-align: center;
+            cursor: pointer;
+        }
         .auth-switch-text:hover { color: #fff; }
 
-        /* HISTORY MODAL */
-        .history-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.96); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
-        .history-card { background: #141419; border: 2px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 800px; height: 80vh; display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,0,0,0.8); overflow: hidden; }
-        .history-header { background: #1a1a24; padding: 20px; border-bottom: 2px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .history-header h3 { font-family: var(--font-racing); color: var(--accent-orange); margin: 0; text-transform: uppercase; }
-        .history-content { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .history-item-row { background: rgba(10, 10, 14, 0.6); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-blue); border-radius: 4px; padding: 15px; }
-        .history-meta-line { display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa; margin-bottom: 8px; font-family: var(--font-racing); }
-        .history-podium-line { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 5px; font-size: 0.95rem; }
+        /* COUNTDOWN ANIMATION SCREEN LAYER */
+        .race-animation-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 14, 0.96);
+            border-radius: 12px;
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 30px;
+        }
 
-        /* RUNTIME COUNTDOWN TREE */
-        .race-animation-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 14, 0.96); border-radius: 12px; z-index: 100; justify-content: center; align-items: center; flex-direction: column; gap: 30px; }
-        .christmas-tree { background: #222; padding: 20px 40px; border-radius: 10px; border: 4px solid #444; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .christmas-tree {
+            background: #222;
+            padding: 20px 40px;
+            border-radius: 10px;
+            border: 4px solid #444;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
         .light-row { display: flex; gap: 25px; }
         .light-bulb { width: 50px; height: 50px; border-radius: 50%; background: #111; border: 3px solid #000; }
         .light-bulb.red.active { background: #ff0000; box-shadow: 0 0 30px #ff0000; }
         .light-bulb.yellow.active { background: #ffff00; box-shadow: 0 0 30px #ffff00; }
         .light-bulb.green.active { background: #00ff00; box-shadow: 0 0 40px #00ff00; }
-        .animation-status-text { font-family: var(--font-racing); font-size: 1.8rem; color: #fff; text-transform: uppercase; }
 
-        /* ROSTER DESIGN AND DROP ZONES */
+        .animation-status-text {
+            font-family: var(--font-racing);
+            font-size: 1.8rem;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        /* REGISTRATION GRID */
         .setup-section { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; width: 100%; gap: 8px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 8px; }
         label { font-family: var(--font-racing); font-size: 0.9rem; color: var(--accent-yellow); text-transform: uppercase; }
-        input[type="number"], .short-input { width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff; font-family: var(--font-body); font-size: 1.2rem; border: 2px solid var(--border-color); border-radius: 6px; padding: 12px; outline: none; }
-        .roster-grid { width: 100%; max-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
-        
-        .roster-row { display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5); padding: 8px 12px; border-radius: 6px; border: 2px dashed #333; transition: background 0.2s, border-color 0.2s; }
-        .roster-row.drag-over { background: rgba(0, 204, 255, 0.1); border-color: var(--accent-blue); }
+        input[type="number"] {
+            width: 100%; box-sizing: border-box; background: rgba(10, 10, 12, 0.9); color: #fff;
+            font-family: var(--font-body); font-size: 1.2rem; border: 2px solid var(--border-color);
+            border-radius: 6px; padding: 12px; outline: none;
+        }
+
+        .roster-grid {
+            width: 100%; max-width: 650px; max-height: 400px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px; padding-right: 5px;
+        }
+
+        .roster-row {
+            display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5);
+            padding: 8px 12px; border-radius: 6px; border: 1px solid #222;
+        }
+
         .row-num { font-family: var(--font-racing); color: var(--accent-blue); min-width: 25px; font-weight: bold; }
-        .roster-row input[type="text"] { flex: 1; background: #181820; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none; }
-        
-        /* TOURNAMENT MAIN STRUCTURES */
+        .roster-row input[type="text"] {
+            flex: 1; background: #181820; color: #fff; border: 1px solid var(--border-color);
+            padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none;
+        }
+
+        /* BRACKET SYSTEMS */
         .tournament-section { display: none; }
-        .bracket-heading { font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; font-size: 1.4rem; margin-top: 20px; border-left: 4px solid var(--accent-yellow); padding-left: 10px; }
-        .bracket-container { display: flex; justify-content: flex-start; align-items: center; gap: 40px; overflow-x: auto; padding: 20px 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 30px; border: 1px solid #222; }
+        .bracket-heading {
+            font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase;
+            font-size: 1.4rem; margin-top: 20px; border-left: 4px solid var(--accent-yellow); padding-left: 10px;
+        }
+
+        .bracket-container {
+            display: flex; justify-content: flex-start; align-items: center; gap: 40px;
+            overflow-x: auto; padding: 20px 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 30px; border: 1px solid #222;
+        }
+
         .round { display: flex; flex-direction: column; justify-content: space-around; height: 520px; min-width: 260px; }
-        .round-title { font-family: var(--font-racing); text-align: center; color: var(--accent-yellow); font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 1rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 5px; }
-        .matchup { background: rgba(15, 15, 18, 0.95); border: 2px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .round-title {
+            font-family: var(--font-racing); text-align: center; color: var(--accent-yellow);
+            font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 1rem;
+            border-bottom: 1px dashed var(--border-color); padding-bottom: 5px;
+        }
+
+        .matchup {
+            background: rgba(15, 15, 18, 0.95); border: 2px solid var(--border-color);
+            border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+        }
+
         .matchup.active { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 204, 255, 0.3); }
-        .racer { background: #222227; padding: 10px 14px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; }
+        .racer {
+            background: #222227; padding: 10px 14px; border-radius: 5px; display: flex;
+            justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
+        }
         .racer:hover { background: #2e2e36; }
         .racer-car { font-weight: 700; font-size: 1.15rem; }
         .racer-driver { font-size: 0.85rem; color: #aaa; font-style: italic; }
@@ -240,12 +368,18 @@
         .racer.loser { opacity: 0.25; text-decoration: line-through; background: #131316; }
         .action-tag { font-family: var(--font-racing); background: var(--accent-yellow); color: #000; padding: 3px 8px; font-size: 0.75rem; border-radius: 3px; }
 
-        button.main-btn { font-family: var(--font-racing); background: linear-gradient(135deg, var(--accent-orange), #b30000); color: white; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: 900; text-transform: uppercase; font-style: italic; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4); }
-        button.action-inline-btn { font-family: var(--font-racing); background: #222230; color: #fff; border: 1px solid var(--border-color); padding: 8px 12px; font-size: 0.85rem; border-radius: 4px; cursor: pointer; }
-        button.action-inline-btn:hover { border-color: var(--accent-orange); }
+        button.main-btn {
+            font-family: var(--font-racing); background: linear-gradient(135deg, var(--accent-orange), #b30000);
+            color: white; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: 900;
+            text-transform: uppercase; font-style: italic; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4);
+        }
 
-        /* PODIUM ELEMENT DISPLAYS */
-        .podium-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px; }
+        /* PODIUM OVERLAY */
+        .podium-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 8, 0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; padding: 20px;
+        }
+
         .podium-title { font-family: var(--font-racing); font-size: 2.8rem; text-transform: uppercase; background: linear-gradient(90deg, #ffcc00, #ff4500, #ffcc00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; }
         .podium-stage { display: flex; align-items: flex-end; justify-content: center; gap: 20px; width: 100%; max-width: 800px; height: 350px; margin-bottom: 40px; }
         .podium-column { display: flex; flex-direction: column; align-items: center; width: 30%; font-family: var(--font-racing); }
@@ -253,11 +387,12 @@
         .podium-driver-name { font-family: var(--font-body); font-size: 1rem; color: #aaa; font-style: italic; }
         .pedestal { width: 100%; border-radius: 6px 6px 0 0; display: flex; flex-direction: column; align-items: center; padding-top: 20px; border: 2px solid rgba(255,255,255,0.1); }
         .pedestal-rank { font-size: 3.5rem; font-weight: 900; }
+
         .podium-column.gold .pedestal { height: 220px; background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%); color: #000; }
         .podium-column.silver .pedestal { height: 160px; background: linear-gradient(180deg, #e0e0e0 0%, #707070 100%); color: #000; }
         .podium-column.bronze .pedestal { height: 110px; background: linear-gradient(180deg, #cd7f32 0%, #8b4513 100%); color: #fff; }
 
-        footer { width: 100%; max-width: 1500px; display: flex; justify-content: center; align-items: center; padding: 15px 0; border-top: 1px dashed rgba(255, 255, 255, 0.1); margin-top: auto; }
+        footer { width: 100%; max-width: 1400px; display: flex; justify-content: center; align-items: center; padding: 15px 0; border-top: 1px dashed rgba(255, 255, 255, 0.1); margin-top: auto; }
         .instagram-link { font-family: var(--font-racing); color: #aaa; text-decoration: none; background: rgba(20, 20, 25, 0.6); padding: 10px 24px; border-radius: 30px; border: 1px solid var(--border-color); }
         .reset-btn { background: #2a2a30; border: 1px solid var(--border-color); color: white; padding: 10px 20px; font-family: var(--font-racing); cursor: pointer; border-radius: 4px;}
     </style>
@@ -275,18 +410,6 @@
             <button class="reset-btn" onclick="closeAuthModal()" style="width:100%;">Cancel</button>
             <p id="auth-switch-mode" class="auth-switch-text" onclick="toggleAuthMode()">Don't have a team profile? Sign Up here</p>
             <p id="auth-forgot-pass" class="auth-switch-text" onclick="handleForgotPassword()" style="margin-top:5px; color:var(--accent-blue)">Forgot Password?</p>
-        </div>
-    </div>
-
-    <div id="history-modal" class="history-overlay">
-        <div class="history-card">
-            <div class="history-header">
-                <h3>🏁 Personal Track Logs</h3>
-                <button class="reset-btn" onclick="closeHistoryModal()" style="padding:6px 14px;">Close Log</button>
-            </div>
-            <div id="history-logs-container" class="history-content">
-                <div style="color:#666; font-style:italic; text-align:center;">Retrieving cloud racing history...</div>
-            </div>
         </div>
     </div>
 
@@ -334,37 +457,6 @@
     </div>
 
     <div class="app-layout">
-        
-        <div class="garage-panel">
-            <div class="panel-header">
-                <span>🚘 Track Garage</span>
-                <span id="garage-count" style="font-size:0.8rem; color:var(--accent-yellow);">0 / 16</span>
-            </div>
-            
-            <div id="garage-unauth-notice" style="color: #666; font-style: italic; font-size: 0.95rem; text-align: center; padding: 10px 0;">
-                Log in to calibrate and custom-build your personal racing team's fleet.
-            </div>
-
-            <div id="garage-auth-controls" style="display:none; flex-direction:column; gap:10px;">
-                <div style="display:flex; flex-direction:column; gap:5px;">
-                    <input type="text" id="garage-car-input" class="short-input" placeholder="Car Model (e.g., Twin Mill)" style="padding:6px; font-size:1rem;">
-                    <button class="action-inline-btn" onclick="addCarToGarage()" style="background:var(--accent-orange); color:#fff; border:none;">+ Fleet Addition</button>
-                </div>
-                
-                <div style="border-top:1px dashed var(--border-color); padding-top:10px; display:flex; flex-direction:column; gap:5px;">
-                    <label style="font-size:0.75rem;">Import External Garage Fleet:</label>
-                    <div style="display:flex; gap:5px;">
-                        <input type="text" id="import-garage-username" class="short-input" placeholder="@handle" style="padding:6px; font-size:1rem;">
-                        <button class="action-inline-btn" onclick="importExternalGarage()">Pull</button>
-                    </div>
-                </div>
-
-                <div style="font-size:0.8rem; color:#aaa; font-style:italic; text-align:center; margin-top:5px;">💡 Drag cars directly into roster slot zones below!</div>
-            </div>
-
-            <div id="garage-rack" class="garage-rack"></div>
-        </div>
-
         <div class="container">
             <div id="race-animation" class="race-animation-overlay">
                 <div class="christmas-tree">
@@ -399,43 +491,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="crew-panel">
-            <div class="panel-header">
-                <span>👥 Racing Crew Lobby</span>
-                <span id="crew-id-tag" style="font-size: 0.75rem; color: var(--accent-yellow); font-family: var(--font-body);"></span>
-            </div>
-            
-            <div id="crew-unauthenticated" style="color: #666; font-style: italic; text-align: center; font-size: 0.95rem;">
-                Log into a driver profile to manage or connect real-time racing groups.
-            </div>
-
-            <div id="crew-authenticated" style="display: none; flex-direction: column; gap: 15px;">
-                <button class="main-btn" onclick="openHistoryModal()" style="font-size:0.9rem; padding:10px; width:100%; box-shadow:none; background: linear-gradient(135deg, #222230, #141419); border:1px solid var(--border-color); color:var(--accent-blue);">📜 View Race History Log</button>
-                
-                <div id="crew-join-form" style="display: flex; flex-direction: column; gap: 10px;">
-                    <label style="font-size: 0.75rem;">Link / Create Active Crew Code:</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="crew-code-input" class="short-input" placeholder="e.g., TRACK1" style="padding: 6px; font-size: 1rem;">
-                        <button class="action-inline-btn" onclick="connectToCrew()">Link</button>
-                    </div>
-                </div>
-
-                <div id="crew-active-dashboard" style="display: none; flex-direction: column; gap: 10px;">
-                    <label style="font-size: 0.75rem; margin-top: 5px; color: var(--accent-blue)">Staged Crew Pitlane:</label>
-                    <div id="crew-members-list" class="crew-box" style="font-size: 0.95rem;"></div>
-                </div>
-
-                <div id="friends-system-section" style="border-top: 1px dashed var(--border-color); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
-                    <label style="font-size: 0.85rem; color: var(--accent-yellow);">🏁 Crew Friends Tracker</label>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="friend-uid-input" class="short-input" placeholder="Friend's Handle ID" style="padding: 6px; font-size: 1rem;">
-                        <button class="action-inline-btn" onclick="addFriendByUsername()">Add</button>
-                    </div>
-                    <div id="friends-list-box" class="crew-box" style="font-size: 0.95rem; min-height: 80px;"></div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <footer>
@@ -447,7 +502,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCPuNf5LdgX_WYFH_cxUN8C46kJY56A7c4",
@@ -463,291 +518,23 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const BANNED_WORDS = ["asshole", "bitch", "bastard", "fuck", "shit", "cunt", "nigger", "faggot", "dick", "pussy"];
-        function containsProfanity(text) {
-            const cleanText = text.toLowerCase().replace(/[^a-z0-9]/g, "");
-            return BANNED_WORDS.some(badWord => cleanText.includes(badWord));
-        }
-
         let currentUser = null;
-        let currentUserUsername = "";
         let authMode = "login";
-        let crewListenerUnsubscribe = null;
-        let friendsListenerUnsubscribe = null;
-        let garageListenerUnsubscribe = null;
-        let connectedCrewMembersCache = [];
-        let internalGarageFleetCache = [];
 
         onAuthStateChanged(auth, async (user) => {
             const navBtn = document.getElementById('nav-auth-btn');
-            const crewUnauth = document.getElementById('crew-unauthenticated');
-            const crewAuth = document.getElementById('crew-authenticated');
-            const garageUnauth = document.getElementById('garage-unauth-notice');
-            const garageControls = document.getElementById('garage-auth-controls');
-
             if (user) {
                 currentUser = user;
-                crewUnauth.style.display = 'none';
-                crewAuth.style.display = 'flex';
-                garageUnauth.style.display = 'none';
-                garageControls.style.display = 'flex';
-                
-                // 1. Force retrieval of profile data first to commit currentUserUsername to memory
+                navBtn.innerText = `Sign Out (${user.email.split('@')[0]})`;
+                navBtn.onclick = () => signOut(auth);
                 await syncUserDataFromCloud();
-                
-                const finalHandle = currentUserUsername || user.email.split('@')[0];
-                
-                // 2. Establish live data streams utilizing the verified cloud handle
-                setupGarageListener(currentUser.uid, finalHandle);
-                setupFriendsListener();
-                
-                navBtn.innerText = `Sign Out (${finalHandle})`;
-                navBtn.onclick = () => {
-                    if(crewListenerUnsubscribe) crewListenerUnsubscribe();
-                    if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
-                    if(garageListenerUnsubscribe) garageListenerUnsubscribe();
-                    signOut(auth);
-                };
             } else {
                 currentUser = null;
-                currentUserUsername = "";
                 navBtn.innerText = "Team Login";
                 navBtn.onclick = () => openAuthModal();
-                crewUnauth.style.display = 'block';
-                crewAuth.style.display = 'none';
-                garageUnauth.style.display = 'block';
-                garageControls.style.display = 'none';
-                document.getElementById('crew-active-dashboard').style.display = 'none';
-                document.getElementById('crew-id-tag').innerText = '';
-                connectedCrewMembersCache = [];
-                internalGarageFleetCache = [];
-                if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
-                if(garageListenerUnsubscribe) garageListenerUnsubscribe();
-                renderGarageUI([]);
                 loadLeaderboard(); 
             }
         });
-
-        function setupGarageListener(userId, ownerHandle) {
-            if(garageListenerUnsubscribe) garageListenerUnsubscribe();
-            const garageRef = collection(db, "users", userId, "garage");
-            
-            garageListenerUnsubscribe = onSnapshot(garageRef, (snapshot) => {
-                const vehicles = [];
-                snapshot.forEach(docSnap => {
-                    vehicles.push({ id: docSnap.id, ...docSnap.data(), owner: ownerHandle });
-                });
-                internalGarageFleetCache = vehicles;
-                renderGarageUI(vehicles);
-            });
-        }
-
-        window.addCarToGarage = async function() {
-            const carModel = document.getElementById('garage-car-input').value.trim();
-            if(!carModel) return alert("Please specify a car configuration model.");
-            if(internalGarageFleetCache.length >= 16) return alert("Garage configuration cap maxed out at 16 vehicles!");
-
-            try {
-                const idRandom = "CAR-" + Math.random().toString(36).substring(2, 7).toUpperCase();
-                await setDoc(doc(db, "users", currentUser.uid, "garage", idRandom), {
-                    model: carModel,
-                    timestamp: serverTimestamp()
-                });
-                document.getElementById('garage-car-input').value = '';
-            } catch(e) { alert("Garage deployment roadblock: " + e.message); }
-        }
-
-        window.removeCarFromGarage = async function(carId) {
-            if(!confirm("Decommission vehicle out of active hangar infrastructure?")) return;
-            try {
-                await deleteDoc(doc(db, "users", currentUser.uid, "garage", carId));
-            } catch(e) { alert("Decommission failed: " + e.message); }
-        }
-
-        window.importExternalGarage = async function() {
-            const externalUser = document.getElementById('import-garage-username').value.trim().toLowerCase().replace('@', '');
-            if(!externalUser) return alert("Provide a targeted driver handle.");
-
-            try {
-                const userMapping = await getDoc(doc(db, "usernames", externalUser));
-                if(!userMapping.exists()) return alert("Racer profile address missing in central database.");
-                
-                const extUid = userMapping.data().uid;
-                const snap = await getDocs(collection(db, "users", extUid, "garage"));
-                
-                const loadedFleet = [];
-                snap.forEach(d => { loadedFleet.push({ id: d.id, ...d.data(), owner: externalUser }); });
-                
-                if(loadedFleet.length === 0) return alert(`The garage for @${externalUser} is currently empty.`);
-                
-                // Merge external fleet with user cache for instant dragging capabilities
-                const safeMerged = [...internalGarageFleetCache, ...loadedFleet.filter(lf => !internalGarageFleetCache.some(ig => ig.id === lf.id))];
-                renderGarageUI(safeMerged);
-                alert(`Successfully connected to @${externalUser}'s fleet!`);
-            } catch(e) { alert("Import system failure: " + e.message); }
-        }
-
-        function renderGarageUI(vehicles) {
-            const rack = document.getElementById('garage-rack');
-            document.getElementById('garage-count').innerText = `${vehicles.filter(v => currentUser && v.owner === currentUserUsername).length} / 16`;
-            rack.innerHTML = '';
-            
-            if(vehicles.length === 0) {
-                rack.innerHTML = `<div style="color:#444; font-style:italic; font-size:0.9rem; text-align:center; padding-top:20px;">Hangar empty...</div>`;
-                return;
-            }
-
-            vehicles.forEach(v => {
-                const card = document.createElement('div');
-                card.className = 'garage-car-card';
-                card.setAttribute('draggable', 'true');
-                
-                const cleanOwner = v.owner.replace('@', '');
-
-                card.innerHTML = `
-                    <div style="font-weight:bold; color:#fff; display:flex; justify-content:space-between; align-items:center;">
-                        <span>🏎️ ${v.model}</span>
-                        ${currentUser && cleanOwner === currentUserUsername ? `<span onclick="removeCarFromGarage('${v.id}')" style="color:var(--accent-orange); font-size:0.75rem; cursor:pointer; margin-left:auto;">✕</span>` : ''}
-                    </div>
-                    <div class="garage-car-meta">
-                        <span>Owner: @${cleanOwner}</span>
-                        <span style="color:var(--accent-blue); font-size:0.7rem;">DRAG ME</span>
-                    </div>
-                `;
-
-                card.addEventListener('dragstart', (e) => {
-                    card.classList.add('dragging');
-                    e.dataTransfer.setData('text/plain', JSON.stringify({ model: v.model, owner: cleanOwner }));
-                });
-                card.addEventListener('dragend', () => card.classList.remove('dragging'));
-                rack.appendChild(card);
-            });
-        }
-
-        window.openHistoryModal = async function() {
-            document.getElementById('history-modal').style.display = 'flex';
-            const logBox = document.getElementById('history-logs-container');
-            if(!currentUser) { logBox.innerHTML = "Access Denied."; return; }
-
-            try {
-                const subCollRef = collection(db, "users", currentUser.uid, "races");
-                const sortedQuery = query(subCollRef, orderBy("timestamp", "desc"));
-                const querySnap = await getDocs(sortedQuery);
-                
-                logBox.innerHTML = '';
-                if(querySnap.empty) {
-                    logBox.innerHTML = `<div style="color:#666; font-style:italic; text-align:center; padding-top:40px;">No persistent race records discovered on this user profile.</div>`;
-                    return;
-                }
-
-                querySnap.forEach(snapDoc => {
-                    const data = snapDoc.data();
-                    let dateString = "Unknown Timing Node";
-                    if(data.timestamp) {
-                        const dateObj = data.timestamp.toDate();
-                        dateString = dateObj.toLocaleDateString() + " @ " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    }
-
-                    const row = document.createElement('div');
-                    row.className = 'history-item-row';
-                    row.innerHTML = `
-                        <div class="history-meta-line">
-                            <span>🏁 ID: ${snapDoc.id.substring(0,8).toUpperCase()}</span>
-                            <span>📅 ${dateString}</span>
-                        </div>
-                        <div style="font-size:1.1rem; margin-bottom:5px;">Total Field Entries Count: <b style="color:var(--accent-blue);">${data.totalEntries} cars</b></div>
-                        <div class="history-podium-line">
-                            <span style="color:#ffd700;">🥇 Gold: <b>${data.podium.gold.car}</b> (${data.podium.gold.driver})</span>
-                            <span style="color:#e0e0e0;">🥈 Silver: <b>${data.podium.silver.car}</b> (${data.podium.silver.driver})</span>
-                            <span style="color:#cd7f32;">🥉 Bronze: <b>${data.podium.bronze.car}</b> (${data.podium.bronze.driver})</span>
-                        </div>
-                    `;
-                    logBox.appendChild(row);
-                });
-            } catch (err) { logBox.innerHTML = `<div style="color:#ff4500;">History Index Error: ${err.message}</div>`; }
-        }
-
-        window.closeHistoryModal = function() { document.getElementById('history-modal').style.display = 'none'; }
-
-        window.connectToCrew = function() {
-            const code = document.getElementById('crew-code-input').value.trim().toUpperCase();
-            if(!code) return alert("Enter a crew identification code.");
-
-            if(crewListenerUnsubscribe) crewListenerUnsubscribe();
-            document.getElementById('crew-id-tag').innerText = "Code: " + code;
-            document.getElementById('crew-active-dashboard').style.display = 'flex';
-
-            crewListenerUnsubscribe = onSnapshot(doc(db, "crews", code), async (snapshot) => {
-                let membersList = [];
-                if(snapshot.exists()) { membersList = snapshot.data().members || []; }
-                
-                let myEntry = membersList.find(m => m.uid === currentUser.uid);
-                if(!myEntry) {
-                    myEntry = { uid: currentUser.uid, name: currentUserUsername || currentUser.email.split('@')[0] };
-                    membersList.push(myEntry);
-                    await setDoc(doc(db, "crews", code), { members: membersList }, { merge: true });
-                }
-
-                connectedCrewMembersCache = membersList;
-                renderCrewUI(membersList);
-            });
-        }
-
-        function renderCrewUI(members) {
-            const box = document.getElementById('crew-members-list');
-            box.innerHTML = '';
-            if(members.length === 0) { box.innerHTML = "Staging crew empty..."; return; }
-            members.forEach(m => {
-                const row = document.createElement('div');
-                row.className = 'member-row';
-                row.innerHTML = `<div><b>@${m.name}</b><br><span style="font-size:0.75rem; color:#aaa;">Paddock Member Active</span></div>`;
-                box.appendChild(row);
-            });
-        }
-
-        window.addFriendByUsername = async function() {
-            const targetUsername = document.getElementById('friend-uid-input').value.trim().toLowerCase();
-            if(!targetUsername) return alert("Please specify a user handle ID.");
-            if(targetUsername === currentUserUsername.toLowerCase()) return alert("You cannot follow your own trace tracking monitor.");
-
-            try {
-                const usernameRef = doc(db, "usernames", targetUsername);
-                const usernameSnap = await getDoc(usernameRef);
-                
-                if(!usernameSnap.exists()) return alert("Racer profile handle index entry not found in active cloud directory.");
-
-                const friendUid = usernameSnap.data().uid;
-                await setDoc(doc(db, "users", currentUser.uid, "friends", friendUid), {
-                    username: targetUsername,
-                    uid: friendUid,
-                    addedAt: serverTimestamp()
-                });
-
-                document.getElementById('friend-uid-input').value = "";
-                alert(`Successfully added @${targetUsername} to tracking monitor!`);
-            } catch(e) { alert("Error adding track follower: " + e.message); }
-        }
-
-        function setupFriendsListener() {
-            if(friendsListenerUnsubscribe) friendsListenerUnsubscribe();
-            const friendsCollRef = collection(db, "users", currentUser.uid, "friends");
-            
-            friendsListenerUnsubscribe = onSnapshot(friendsCollRef, (snapshot) => {
-                const container = document.getElementById('friends-list-box');
-                container.innerHTML = '';
-                if(snapshot.empty) {
-                    container.innerHTML = `<div style="color:#555; text-align:center; padding:10px; font-style:italic;">No active connections linked.</div>`;
-                    return;
-                }
-                snapshot.forEach(friendDoc => {
-                    const friendData = friendDoc.data();
-                    const row = document.createElement('div');
-                    row.className = 'member-row';
-                    row.innerHTML = `<div><b style="color:var(--accent-blue);">@${friendData.username}</b></div><span style="font-size:0.8rem; background:#1a1a24; padding:3px 6px; border-radius:3px; color:#aaa;">Tracked</span>`;
-                    container.appendChild(row);
-                });
-            });
-        }
 
         window.openAuthModal = function() {
             authMode = "login";
@@ -762,20 +549,19 @@
             document.getElementById('auth-forgot-pass').style.display = "block";
         }
 
-        window.closeAuthModal = function() { document.getElementById('auth-modal').style.display = 'none'; }
-        
+        window.closeAuthModal = function() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
         window.toggleAuthMode = function() {
             if(authMode === "login") {
                 authMode = "signup";
                 document.getElementById('auth-title').innerText = "Create Team Profile";
-                document.getElementById('auth-primary-btn').innerText = "Register Team";
-                document.getElementById('auth-inputs-area').innerHTML = `
-                    <input type="text" id="auth-username" class="auth-input" placeholder="Choose Unique User ID Handle (No Profanity)">
-                    <input type="email" id="auth-email" class="auth-input" placeholder="Racing Team Email">
-                    <input type="password" id="auth-password" class="auth-input" placeholder="Secure Password">
-                `;
+                document.getElementById('auth-primary-btn').innerText = "Sign Up";
                 document.getElementById('auth-switch-mode').innerText = "Already registered? Login here";
-            } else { window.openAuthModal(); }
+            } else {
+                window.openAuthModal();
+            }
         }
 
         window.handleForgotPassword = function() {
@@ -795,34 +581,17 @@
                 if (authMode === "login") {
                     const pass = document.getElementById('auth-password').value;
                     await signInWithEmailAndPassword(auth, email, pass);
-                    closeAuthModal();
                 } else if (authMode === "signup") {
-                    const usernameInput = document.getElementById('auth-username').value.trim().toLowerCase();
                     const pass = document.getElementById('auth-password').value;
-
-                    if(!usernameInput || usernameInput.length < 3) return alert("Handle must be 3+ characters.");
-                    if(containsProfanity(usernameInput)) return alert("Flagged: Choice of handle failed content filter checks.");
-
-                    const usernameRef = doc(db, "usernames", usernameInput);
-                    const usernameSnap = await getDoc(usernameRef);
-                    if(usernameSnap.exists()) return alert("Handle ID taken. Choose another.");
-
-                    const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "usernames", usernameInput), { uid: userCred.user.uid });
-                    await setDoc(doc(db, "users", userCred.user.uid), { 
-                        username: usernameInput,
-                        email: email,
-                        createdAt: serverTimestamp()
-                    });
-                    
-                    currentUserUsername = usernameInput;
-                    closeAuthModal();
+                    await createUserWithEmailAndPassword(auth, email, pass);
                 } else if (authMode === "forgot") {
                     await sendPasswordResetEmail(auth, email);
                     alert("Password reset email dispatched to your inbox!");
-                    closeAuthModal();
                 }
-            } catch (err) { alert(err.message); }
+                closeAuthModal();
+            } catch (err) {
+                alert(err.message);
+            }
         }
 
         async function syncUserDataFromCloud() {
@@ -830,264 +599,31 @@
             const docRef = doc(db, "users", currentUser.uid);
             const docSnap = await getDoc(docRef);
             if(docSnap.exists()) {
-                const userData = docSnap.data();
-                currentUserUsername = userData.username || "";
-                localStorage.setItem('hw_leaderboard_v2', JSON.stringify(userData.leaderboard || []));
+                localStorage.setItem('hw_leaderboard_v2', JSON.stringify(docSnap.data().leaderboard || []));
             }
             loadLeaderboard();
         }
 
-        window.saveChampionToHistory = async function(winnerObj, completeFieldSnapshot = null) {
+        window.saveChampionToHistory = async function(winnerObj) {
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             let existingIdx = scores.findIndex(item => item.car === winnerObj.car && item.driver === winnerObj.driver);
             
-            if(existingIdx > -1) { scores[existingIdx].wins += 1; } 
-            else { scores.push({ car: winnerObj.car, driver: winnerObj.driver, wins: 1 }); }
+            if(existingIdx > -1) {
+                scores[existingIdx].wins += 1;
+            } else {
+                scores.push({ car: winnerObj.car, driver: winnerObj.driver, wins: 1 });
+            }
             
             localStorage.setItem('hw_leaderboard_v2', JSON.stringify(scores));
             loadLeaderboard();
 
             if(currentUser) {
                 await setDoc(doc(db, "users", currentUser.uid), { leaderboard: scores }, { merge: true });
-                if(completeFieldSnapshot) {
-                    const subCollRef = collection(db, "users", currentUser.uid, "races");
-                    await addDoc(subCollRef, {
-                        timestamp: serverTimestamp(),
-                        totalEntries: completeFieldSnapshot.totalEntries,
-                        podium: completeFieldSnapshot.podium
-                    });
-                }
             }
         }
     </script>
 
     <script>
-        let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null; let registeredFieldCount = 0;
-        const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
-        const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
-
-        function startRaceSequence() {
-            const rows = document.querySelectorAll('.roster-row');
-            let racersCount = 0;
-            rows.forEach(row => { if(row.querySelector('.input-car').value.trim()) racersCount++; });
-            if (racersCount < 2) return alert("You need 2+ cars!");
-
-            registeredFieldCount = racersCount;
-            const overlay = document.getElementById('race-animation');
-            const statusText = document.getElementById('animation-text');
-            overlay.style.display = 'flex';
-            document.querySelectorAll('.light-bulb').forEach(l => l.classList.remove('active'));
-
-            setTimeout(() => { statusText.innerText = "PRE-STAGED..."; document.getElementById('light-r1').classList.add('active'); document.getElementById('light-r2').classList.add('active'); }, 1500);
-            setTimeout(() => { statusText.innerText = "STAGED! READY..."; document.getElementById('light-y1').classList.add('active'); document.getElementById('light-y2').classList.add('active'); }, 3000);
-            setTimeout(() => { 
-                statusText.innerText = "GREEN LIGHT! GO!"; 
-                document.getElementById('light-r1').classList.remove('active'); document.getElementById('light-r2').classList.remove('active');
-                document.getElementById('light-y1').classList.remove('active'); document.getElementById('light-y2').classList.remove('active');
-                document.getElementById('light-g1').classList.add('active'); document.getElementById('light-g2').classList.add('active');
-            }, 4500);
-            setTimeout(() => { overlay.style.display = 'none'; buildTournament(); }, 5500);
-        }
-
-        function generateRosterInputs() {
-            const count = parseInt(document.getElementById('car-count').value) || 6;
-            const container = document.getElementById('roster-grid');
-            container.innerHTML = '';
-            
-            for (let i = 1; i <= count; i++) {
-                const row = document.createElement('div'); 
-                row.className = 'roster-row';
-                
-                let carVal = defaultCars[(i - 1) % defaultCars.length] + " " + Math.ceil(i/8);
-                let driverVal = defaultDrivers[(i - 1) % defaultDrivers.length];
-                
-                row.innerHTML = `
-                    <div class="row-num">#${i}</div>
-                    <input type="text" class="input-car" placeholder="Drop Car Model Here" value="${carVal}">
-                    <input type="text" class="input-driver" placeholder="Driver Alias" value="${driverVal}">
-                `;
-
-                row.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    row.classList.add('drag-over');
-                });
-                row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
-                row.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    row.classList.remove('drag-over');
-                    try {
-                        const droppedData = JSON.parse(e.dataTransfer.getData('text/plain'));
-                        row.querySelector('.input-car').value = droppedData.model;
-                        
-                        const finalOwner = droppedData.owner.replace('@', '');
-                        row.querySelector('.input-driver').value = `@${finalOwner}`;
-                    } catch(err) { console.error("Drop Parse Error", err); }
-                });
-
-                container.appendChild(row);
-            }
-        }
-
-        function buildTournament() {
-            const rows = document.querySelectorAll('.roster-row');
-            let racers = [];
-            rows.forEach(row => {
-                const car = row.querySelector('.input-car').value.trim();
-                const driver = row.querySelector('.input-driver').value.trim();
-                if (car) racers.push({ car: car, driver: driver || "Unknown Driver" });
-            });
-
-            racers.sort(() => Math.random() - 0.5);
-            let mainBracketSize = Math.pow(2, Math.floor(Math.log2(racers.length)));
-            if (mainBracketSize === racers.length && racers.length > 2) mainBracketSize = racers.length;
-
-            let mainRacers = racers.slice(0, mainBracketSize);
-            let extraRacers = racers.slice(mainBracketSize);
-            qualifierData = []; qualifierWinnersTargetMap = []; bronzeMatchData = { racer1: null, racer2: null, winner: null };
-
-            if (extraRacers.length > 0) {
-                let qualifierPool = [];
-                for (let i = 0; i < extraRacers.length; i++) {
-                    let opponent = mainRacers.pop(); 
-                    qualifierPool.push(opponent); qualifierPool.push(extraRacers[i]);
-                    qualifierWinnersTargetMap.push({ mainMatchIndex: Math.floor(mainRacers.length / 2), isRacer1: (mainRacers.length % 2 === 0) });
-                }
-                let qMatchups = [];
-                for(let i=0; i<qualifierPool.length; i+=2) qMatchups.push({ racer1: qualifierPool[i], racer2: qualifierPool[i+1], winner: null });
-                qualifierData.push(qMatchups);
-                document.getElementById('qualifier-header').style.display = 'block'; document.getElementById('qualifier-bracket-container').style.display = 'flex';
-            } else {
-                document.getElementById('qualifier-header').style.display = 'none'; document.getElementById('qualifier-bracket-container').style.display = 'none';
-            }
-
-            mainBracketData = [];
-            let currentMainPool = [...mainRacers];
-            for(let i=0; i < qualifierWinnersTargetMap.length; i++) currentMainPool.push(null);
-
-            while (currentMainPool.length >= 2) {
-                let roundMatchups = [];
-                for (let i = 0; i < currentMainPool.length; i += 2) roundMatchups.push({ racer1: currentMainPool[i], racer2: currentMainPool[i+1], winner: null });
-                mainBracketData.push(roundMatchups);
-                currentMainPool = Array(currentMainPool.length / 2).fill(null);
-            }
-            document.getElementById('setup-phase').style.display = 'none'; document.getElementById('tournament-phase').style.display = 'block';
-            renderGrids();
-        }
-
-        function advanceQualifier(matchIndex, winnerObj) {
-            qualifierData[0][matchIndex].winner = winnerObj;
-            let targetMap = qualifierWinnersTargetMap[matchIndex];
-            if(targetMap.isRacer1) mainBracketData[0][targetMap.mainMatchIndex].racer1 = winnerObj;
-            else mainBracketData[0][targetMap.mainMatchIndex].racer2 = winnerObj;
-            renderGrids();
-        }
-
-        function advanceMain(roundIndex, matchIndex, winnerObj) {
-            let currentMatch = mainBracketData[roundIndex][matchIndex];
-            currentMatch.winner = winnerObj;
-            if (mainBracketData.length >= 2 && roundIndex === mainBracketData.length - 2) {
-                let loserObj = (currentMatch.racer1 === winnerObj) ? currentMatch.racer2 : currentMatch.racer1;
-                if (matchIndex === 0) bronzeMatchData.racer1 = loserObj;
-                if (matchIndex === 1) bronzeMatchData.racer2 = loserObj;
-                document.getElementById('bronze-header').style.display = 'block'; document.getElementById('bronze-bracket-container').style.display = 'flex';
-            }
-            let nextRoundIndex = roundIndex + 1;
-            if (nextRoundIndex < mainBracketData.length) {
-                let nextMatchTarget = Math.floor(matchIndex / 2);
-                if (matchIndex % 2 === 0) mainBracketData[nextRoundIndex][nextMatchTarget].racer1 = winnerObj;
-                else mainBracketData[nextRoundIndex][nextMatchTarget].racer2 = winnerObj;
-            } else {
-                checkTournamentCompletion();
-            }
-            renderGrids();
-        }
-
-        function advanceBronze(winnerObj) { bronzeMatchData.winner = winnerObj; renderGrids(); checkTournamentCompletion(); }
-
-        function checkTournamentCompletion() {
-            let finalsRound = mainBracketData[mainBracketData.length - 1][0];
-            if (!finalsRound.winner || (bronzeMatchData.racer1 && bronzeMatchData.racer2 && !bronzeMatchData.winner)) return;
-
-            let gold = finalsRound.winner;
-            let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
-            let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
-
-            let raceLogSnapshot = {
-                totalEntries: registeredFieldCount,
-                podium: { gold: gold, silver: silver, bronze: bronze }
-            };
-
-            if(window.saveChampionToHistory) window.saveChampionToHistory(gold, raceLogSnapshot);
-
-            document.getElementById('podium-gold-car').innerText = gold.car; document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
-            document.getElementById('podium-silver-car').innerText = silver.car; document.getElementById('podium-silver-driver').innerText = "Driver: " + silver.driver;
-            document.getElementById('podium-bronze-car').innerText = bronze.car; document.getElementById('podium-bronze-driver').innerText = "Driver: " + bronze.driver;
-            document.getElementById('podium-modal').style.display = 'flex';
-        }
-
-        function renderGrids() {
-            const qContainer = document.getElementById('qualifier-bracket-container'); qContainer.innerHTML = '';
-            if(qualifierData.length > 0) {
-                const qRound = document.createElement('div'); qRound.className = 'round'; qRound.innerHTML = `<div class="round-title">Knockout Heats</div>`;
-                qualifierData[0].forEach((match, index) => {
-                    const card = document.createElement('div'); card.className = `matchup ${!match.winner ? 'active' : ''}`;
-                    card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceQualifier(index, match.racer1)));
-                    card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceQualifier(index, match.racer2)));
-                    qRound.appendChild(card);
-                });
-                qContainer.appendChild(qRound);
-            }
-
-            const bContainer = document.getElementById('bronze-bracket-container'); bContainer.innerHTML = '';
-            if(bronzeMatchData && (bronzeMatchData.racer1 || bronzeMatchData.racer2)) {
-                const bRound = document.createElement('div'); bRound.className = 'round'; bRound.style.height = '140px'; bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
-                const card = document.createElement('div'); card.className = `matchup ${!bronzeMatchData.winner ? 'active' : ''}`;
-                card.appendChild(buildRacerRow(bronzeMatchData.racer1, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer1)));
-                card.appendChild(buildRacerRow(bronzeMatchData.racer2, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer2)));
-                bRound.appendChild(card); bContainer.appendChild(bRound);
-            }
-
-            const mContainer = document.getElementById('main-bracket-container'); mContainer.innerHTML = '';
-            mainBracketData.forEach((round, roundIndex) => {
-                const column = document.createElement('div'); column.className = 'round';
-                column.innerHTML = `<div class="round-title">${roundIndex === mainBracketData.length - 1 ? 'Championship' : 'Round ' + (roundIndex + 1)}</div>`;
-                round.forEach((match, matchIndex) => {
-                    const card = document.createElement('div'); card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
-                    card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer1)));
-                    card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer2)));
-                    column.appendChild(card);
-                });
-                mContainer.appendChild(column);
-            });
-        }
-
-        function buildRacerRow(racerObj, winnerObj, clickCallback) {
-            const div = document.createElement('div'); div.className = 'racer';
-            if(!racerObj) { div.innerHTML = `<span style="color:#4a4a5a; font-style:italic;">Staging...</span>`; return div; }
-            div.innerHTML = `<div class="racer-details"><span class="racer-car">${racerObj.car}</span><span class="racer-driver">Driver: ${racerObj.driver}</span></div>`;
-            if(winnerObj) { div.classList.add(winnerObj === racerObj ? 'winner' : 'loser'); } 
-            else { div.onclick = clickCallback; let tag = document.createElement('span'); tag.className = 'action-tag'; tag.innerText = 'WIN'; div.appendChild(tag); }
-            return div;
-        }
-
-        function loadLeaderboard() {
-            const tickerContainer = document.getElementById('leaderboard-ticker'); tickerContainer.innerHTML = '';
-            let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
-            scores.sort((a, b) => b.wins - a.wins);
-            if(scores.length === 0) { tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded.</div>`; return; }
-            scores.forEach((item, index) => {
-                const node = document.createElement('div'); node.className = 'ticker-item';
-                node.innerHTML = `<span class="ticker-rank">#${index + 1}</span><span class="ticker-car">${item.car}</span><span class="ticker-driver">(${item.driver})</span><span class="ticker-wins">${item.wins} WINS</span>`;
-                tickerContainer.appendChild(node);
-            });
-        }
-
-        function clearLeaderboard() { if(confirm("Erase board stats?")) { localStorage.removeItem('hw_leaderboard_v2'); loadLeaderboard(); } }
-        function closePodium() { document.getElementById('podium-modal').style.display = 'none'; resetTrack(); }
-        function resetTrack() { document.getElementById('tournament-phase').style.display = 'none'; document.getElementById('setup-phase').style.display = 'flex'; }
-
-        generateRosterInputs();
-    </script><script>
         let mainBracketData = []; let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null;
         const revAudio = new Audio('rev.mp3');
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
@@ -1216,7 +752,6 @@
             let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
             let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
 
-            // Call window contextual global firebase bound tracking method
             if(window.saveChampionToHistory) window.saveChampionToHistory(gold);
 
             document.getElementById('podium-gold-car').innerText = gold.car; document.getElementById('podium-gold-driver').innerText = "Driver: " + gold.driver;
@@ -1271,15 +806,20 @@
         }
 
         function loadLeaderboard() {
-            const listContainer = document.getElementById('leaderboard-list'); listContainer.innerHTML = '';
+            const tickerContainer = document.getElementById('leaderboard-ticker'); tickerContainer.innerHTML = '';
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
             scores.sort((a, b) => b.wins - a.wins);
-            let topTen = scores.slice(0, 10);
-            if(topTen.length === 0) { listContainer.innerHTML = `<li style="color:#666; font-style:italic; text-align:center; padding:10px;">No trophies recorded.</li>`; return; }
-            topTen.forEach((item, index) => {
-                const li = document.createElement('li'); li.className = 'leaderboard-item';
-                li.innerHTML = `<div><b style="color:var(--accent-yellow)">#${index + 1}</b> ${item.car}<br><span class="driver-tag">Driver: ${item.driver}</span></div><span class="wins-count">${item.wins} W</span>`;
-                listContainer.appendChild(li);
+            
+            if(scores.length === 0) { 
+                tickerContainer.innerHTML = `<div class="ticker-item" style="color:#666; font-style:italic;">No trophies recorded. Run races to populate the leaderboard.</div>`; 
+                return; 
+            }
+            
+            // Generate ticker nodes
+            scores.forEach((item, index) => {
+                const node = document.createElement('div'); node.className = 'ticker-item';
+                node.innerHTML = `<span class="ticker-rank">#${index + 1}</span><span class="ticker-car">${item.car}</span><span class="ticker-driver">(${item.driver})</span><span class="ticker-wins">${item.wins} WINS</span>`;
+                tickerContainer.appendChild(node);
             });
         }
 
