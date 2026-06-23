@@ -497,6 +497,74 @@
         .garage-btn-small.edit:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
         .garage-btn-small.delete:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
 
+        /* CONTACT TAB & SUGGESTION BOX ENGINE */
+        .contact-deck {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .suggestion-box-card {
+            background: rgba(10, 10, 12, 0.85);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            box-sizing: border-box;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            position: relative;
+        }
+        .suggestion-box-card h3 {
+            margin-top: 0;
+            font-family: var(--font-racing);
+            color: var(--accent-yellow);
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .contact-textarea {
+            width: 100%;
+            min-height: 120px;
+            box-sizing: border-box;
+            background: #0b0b0d;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .contact-textarea:focus {
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 8px rgba(255, 204, 0, 0.2);
+        }
+        .form-status-alert {
+            display: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: var(--font-racing);
+            font-size: 0.95rem;
+            text-align: center;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+        .form-status-alert.success {
+            background: rgba(0, 230, 115, 0.15);
+            color: #00ff7f;
+            border: 1px solid #00ff7f;
+        }
+        .form-status-alert.error {
+            background: rgba(255, 69, 0, 0.15);
+            color: #ff4500;
+            border: 1px solid #ff4500;
+        }
+
         /* AUTH MODAL PANEL */
         .auth-overlay {
             display: none;
@@ -741,7 +809,6 @@
         </div>
     </div>
 
-    <!-- TABS NAVIGATION BAR -->
     <nav class="tabs-nav-bar">
         <button id="nav-tab-home" class="nav-tab-btn active" onclick="switchTab('home')">Home</button>
         <button id="nav-tab-garage" class="nav-tab-btn" onclick="switchTab('garage')">Garage</button>
@@ -759,11 +826,9 @@
                 <div id="animation-text" class="animation-status-text">Drivers, Stage Your Cars...</div>
             </div>
 
-            <!-- Home Tab Content View -->
             <div id="tab-view-home">
                 <div class="home-split-workspace">
                     
-                    <!-- COMPACT SIDEBAR FOR DRAGGING VEHICLES -->
                     <div class="compact-garage-sidebar" id="home-garage-sidebar">
                         <h3>Garage Inventory</h3>
                         <div class="sidebar-scroll-zone" id="sidebar-inventory-list">
@@ -800,7 +865,6 @@
                 </div>
             </div>
 
-            <!-- Garage Tab Content View -->
             <div id="tab-view-garage" style="display: none; padding: 10px 0px;">
                 <div class="garage-manager">
                     <div class="garage-form">
@@ -833,10 +897,26 @@
                 </div>
             </div>
 
-            <!-- Contact Tab Content View Placeholder -->
-            <div id="tab-view-contact" style="display: none; text-align: center; padding: 40px 20px;">
-                <h2 style="font-family: var(--font-racing); color: var(--accent-yellow); text-transform: uppercase;">Contact Track Operations</h2>
-                <p style="color: #aaa; font-style: italic;">Submit match disputes, tracking system bugs, or business inquiries here...</p>
+            <div id="tab-view-contact" style="display: none; padding: 10px 0px;">
+                <div class="contact-deck">
+                    <div class="suggestion-box-card">
+                        <h3>Track Suggestions & Feedback</h3>
+                        <p style="color: #aaa; font-style: italic; margin-top:0; margin-bottom: 20px; font-size:1rem;"> Have ideas to improve the app? Drop your telemetry modifications, bracket updates, or feature ideas right onto the track deck below.</p>
+                        
+                        <form id="suggestion-form" action="https://formspree.io/f/frankroman89@gmail.com" method="POST">
+                            <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
+                                <label style="font-size: 0.85rem; color: var(--accent-blue)">Your Racing Email (Optional):</label>
+                                <input type="email" name="_replyto" class="auth-input" style="margin-bottom:0;" placeholder="driver@team.com">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 5px;">
+                                <label style="font-size: 0.85rem; color: var(--accent-blue)">Your Tuning Suggestions:</label>
+                                <textarea name="suggestion" class="contact-textarea" placeholder="Type out your recommendations here..." required></textarea>
+                            </div>
+                            <button type="submit" class="main-btn" style="width: 100%; padding: 12px 0;">Transmit Telemetry</button>
+                        </form>
+                        <div id="suggestion-status" class="form-status-alert"></div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -1161,7 +1241,6 @@
             const listZone = document.getElementById('sidebar-inventory-list');
             if(!listZone) return;
 
-            // Check if user button implies signed-in configuration state
             const authBtn = document.getElementById('nav-auth-btn');
             const isGuest = authBtn && authBtn.innerText.includes("Team Login");
 
@@ -1237,7 +1316,6 @@
                     <input type="text" class="input-driver" placeholder="Driver Profile" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">
                 `;
                 
-                // Add Drag over listeners to full rows for simpler drops
                 row.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     row.classList.add('drag-over');
@@ -1436,6 +1514,40 @@
             document.getElementById('setup-phase').style.display = 'flex'; 
             document.getElementById('home-garage-sidebar').style.display = 'flex';
             renderSidebarInventory();
+        }
+
+        /* CONTACT SUBMISSION TELEMETRY ASYNC INTERCEPTOR */
+        const suggestionForm = document.getElementById('suggestion-form');
+        if(suggestionForm) {
+            suggestionForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const statusBox = document.getElementById('suggestion-status');
+                const formData = new FormData(suggestionForm);
+                
+                statusBox.style.display = "block";
+                statusBox.className = "form-status-alert"; 
+                statusBox.innerText = "Transmitting metrics to track operations...";
+
+                try {
+                    const response = await fetch(suggestionForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    
+                    if (response.ok) {
+                        statusBox.classList.add('success');
+                        statusBox.innerText = "Transmission Complete! Telemetry Received.";
+                        suggestionForm.reset();
+                    } else {
+                        statusBox.classList.add('error');
+                        statusBox.innerText = "Transmission dropped. Check connection and retry.";
+                    }
+                } catch (error) {
+                    statusBox.classList.add('error');
+                    statusBox.innerText = "Grid Error: Failed to broadcast logs.";
+                }
+            });
         }
 
         generateRosterInputs();
