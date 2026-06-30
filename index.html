@@ -669,7 +669,7 @@
         }
 
         .roster-row {
-            display: flex; gap: 15px; align-items: center; background: rgba(15, 15, 18, 0.5);
+            display: flex; gap: 12px; align-items: center; background: rgba(15, 15, 18, 0.5);
             padding: 8px 12px; border-radius: 6px; border: 1px solid #222;
             transition: background 0.2s;
         }
@@ -685,6 +685,26 @@
             padding: 8px 12px; border-radius: 4px; font-family: var(--font-body); font-size: 1.1rem; outline: none;
         }
 
+        /* ONE-CLICK ROSTER QUICK ADD TO GARAGE BUTTON */
+        .roster-quick-save-btn {
+            background: #1c3d27;
+            border: 1px solid #2e7d32;
+            color: #81c784;
+            padding: 8px 12px;
+            font-family: var(--font-racing);
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .roster-quick-save-btn:hover {
+            background: #2e7d32;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(46, 125, 50, 0.4);
+        }
+
         /* BRACKET SYSTEMS */
         .tournament-section { display: none; }
         .bracket-heading {
@@ -697,7 +717,7 @@
             overflow-x: auto; padding: 20px 10px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 30px; border: 1px solid #222;
         }
 
-        .round { display: flex; flex-direction: column; justify-content: space-around; height: 520px; min-width: 260px; }
+        .round { display: flex; flex-direction: column; justify-content: space-around; height: 520px; min-width: 320px; }
         .round-title {
             font-family: var(--font-racing); text-align: center; color: var(--accent-yellow);
             font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 1rem;
@@ -707,10 +727,20 @@
         .matchup {
             background: rgba(15, 15, 18, 0.95); border: 2px solid var(--border-color);
             border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px;
+            position: relative;
         }
 
         .matchup.active { border-color: var(--accent-blue); box-shadow: 0 0 15px rgba(0, 204, 255, 0.3); }
+        
+        .racer-row-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
         .racer {
+            flex: 1;
             background: #222227; padding: 10px 14px; border-radius: 5px; display: flex;
             justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;
         }
@@ -719,7 +749,27 @@
         .racer-driver { font-size: 0.85rem; color: #aaa; font-style: italic; }
         .racer.winner { background: rgba(0, 230, 115, 0.15); color: #00ff7f; border-color: #00ff7f; }
         .racer.loser { opacity: 0.25; text-decoration: line-through; background: #131316; }
+        
         .action-tag { font-family: var(--font-racing); background: var(--accent-yellow); color: #000; padding: 3px 8px; font-size: 0.75rem; border-radius: 3px; }
+
+        /* INLINE BRACKET UNDO REVERT BUTTON */
+        .bracket-undo-btn {
+            background: #2a1b1b;
+            border: 1px solid #ff4500;
+            color: #ff4500;
+            padding: 6px 10px;
+            font-family: var(--font-racing);
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .bracket-undo-btn:hover {
+            background: #ff4500;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+        }
 
         button.main-btn {
             font-family: var(--font-racing); background: linear-gradient(135deg, var(--accent-orange), #b30000);
@@ -1156,6 +1206,55 @@
             }
         }
 
+        /* ONE CLICK QUICK SAVE FROM ROSTER GRID ROW */
+        function quickSaveRosterCar(rowIndex) {
+            const row = document.querySelectorAll('.roster-row')[rowIndex];
+            if(!row) return;
+
+            const carName = row.querySelector('.input-car').value.trim();
+            const driverName = row.querySelector('.input-driver').value.trim();
+            const saveBtn = row.querySelector('.roster-quick-save-btn');
+
+            if(!carName || !driverName) {
+                return alert("Ensure both Car Name and Driver profiles are filled before quick saving!");
+            }
+
+            let inventory = getGarageData();
+            
+            // Avoid duplicate additions
+            let duplicate = inventory.find(item => item.car.toLowerCase() === carName.toLowerCase() && item.driver.toLowerCase() === driverName.toLowerCase());
+            if(duplicate) {
+                if(saveBtn) saveBtn.innerText = "Stamped!";
+                setTimeout(() => { if(saveBtn) saveBtn.innerText = "🚘 Save"; }, 1500);
+                return;
+            }
+
+            const newEntry = {
+                id: Date.now(),
+                car: carName,
+                color: "Stock Raw", // Default layout, can add full modifications later
+                driver: driverName
+            };
+
+            inventory.push(newEntry);
+            localStorage.setItem('hw_garage_v1', JSON.stringify(inventory));
+            
+            if(window.cloudSaveGarage) {
+                window.cloudSaveGarage(inventory);
+            }
+
+            if(saveBtn) {
+                saveBtn.innerText = "Saved!";
+                saveBtn.style.borderColor = "#00ff7f";
+                saveBtn.style.color = "#00ff7f";
+                setTimeout(() => {
+                    saveBtn.innerText = "🚘 Save";
+                    saveBtn.style.borderColor = "";
+                    saveBtn.style.color = "";
+                }, 2000);
+            }
+        }
+
         function editGarageEntry(id) {
             let inventory = getGarageData();
             let record = inventory.find(item => item.id == id);
@@ -1285,6 +1384,7 @@
         window.clearGarageForm = clearGarageForm;
         window.renderGarageGrid = renderGarageGrid;
         window.renderSidebarInventory = renderSidebarInventory;
+        window.quickSaveRosterCar = quickSaveRosterCar;
 
         /* TOURNAMENT LOGIC FUNCTIONS */
         function startRaceSequence() {
@@ -1319,6 +1419,7 @@
                     <div class="row-num">#${i}</div>
                     <input type="text" class="input-car" placeholder="Car Name" value="${defaultCars[(i - 1) % defaultCars.length]} ${Math.ceil(i/8)}">
                     <input type="text" class="input-driver" placeholder="Driver Profile" value="${defaultDrivers[(i - 1) % defaultDrivers.length]}">
+                    <button class="roster-quick-save-btn" onclick="quickSaveRosterCar(${i - 1})">🚘 Save</button>
                 `;
                 
                 row.addEventListener('dragover', (e) => {
@@ -1402,6 +1503,14 @@
             renderGrids();
         }
 
+        function undoQualifier(matchIndex) {
+            qualifierData[0][matchIndex].winner = null;
+            let targetMap = qualifierWinnersTargetMap[matchIndex];
+            if(targetMap.isRacer1) mainBracketData[0][targetMap.mainMatchIndex].racer1 = null;
+            else mainBracketData[0][targetMap.mainMatchIndex].racer2 = null;
+            renderGrids();
+        }
+
         function advanceMain(roundIndex, matchIndex, winnerObj) {
             let currentMatch = mainBracketData[roundIndex][matchIndex];
             currentMatch.winner = winnerObj;
@@ -1423,7 +1532,34 @@
             renderGrids();
         }
 
+        function undoMain(roundIndex, matchIndex) {
+            let currentMatch = mainBracketData[roundIndex][matchIndex];
+            currentMatch.winner = null;
+            
+            // Clear consolation targets if it affects the semi-finals output
+            if (mainBracketData.length >= 2 && roundIndex === mainBracketData.length - 2) {
+                if (matchIndex === 0) bronzeMatchData.racer1 = null;
+                if (matchIndex === 1) bronzeMatchData.racer2 = null;
+                bronzeMatchData.winner = null;
+                if(!bronzeMatchData.racer1 && !bronzeMatchData.racer2) {
+                    document.getElementById('bronze-header').style.display = 'none';
+                    document.getElementById('bronze-bracket-container').style.display = 'none';
+                }
+            }
+
+            // Cascade clear advanced downstream slots recursively
+            let nextRoundIndex = roundIndex + 1;
+            if (nextRoundIndex < mainBracketData.length) {
+                let nextMatchTarget = Math.floor(matchIndex / 2);
+                undoMain(nextRoundIndex, nextMatchTarget);
+                if (matchIndex % 2 === 0) mainBracketData[nextRoundIndex][nextMatchTarget].racer1 = null;
+                else mainBracketData[nextRoundIndex][nextMatchTarget].racer2 = null;
+            }
+            renderGrids();
+        }
+
         function advanceBronze(winnerObj) { bronzeMatchData.winner = winnerObj; renderGrids(); checkTournamentCompletion(); }
+        function undoBronze() { bronzeMatchData.winner = null; renderGrids(); }
 
         function checkTournamentCompletion() {
             let finalsRound = mainBracketData[mainBracketData.length - 1][0];
@@ -1453,6 +1589,14 @@
                     const card = document.createElement('div'); card.className = `matchup ${!match.winner ? 'active' : ''}`;
                     card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceQualifier(index, match.racer1)));
                     card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceQualifier(index, match.racer2)));
+                    
+                    if(match.winner) {
+                        const undoBtn = document.createElement('button');
+                        undoBtn.className = "bracket-undo-btn";
+                        undoBtn.innerText = "↩ Undo";
+                        undoBtn.onclick = () => undoQualifier(index);
+                        card.appendChild(undoBtn);
+                    }
                     qRound.appendChild(card);
                 });
                 qContainer.appendChild(qRound);
@@ -1461,10 +1605,18 @@
             const bContainer = document.getElementById('bronze-bracket-container'); bContainer.innerHTML = '';
             if(bronzeMatchData && (bronzeMatchData.racer1 || bronzeMatchData.racer2)) {
                 const bRound = document.createElement('div');
-                bRound.className = 'round'; bRound.style.height = '140px'; bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
+                bRound.className = 'round'; bRound.style.height = '160px'; bRound.innerHTML = `<div class="round-title">Bronze Duel</div>`;
                 const card = document.createElement('div'); card.className = `matchup ${!bronzeMatchData.winner ? 'active' : ''}`;
                 card.appendChild(buildRacerRow(bronzeMatchData.racer1, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer1)));
                 card.appendChild(buildRacerRow(bronzeMatchData.racer2, bronzeMatchData.winner, () => advanceBronze(bronzeMatchData.racer2)));
+                
+                if(bronzeMatchData.winner) {
+                    const undoBtn = document.createElement('button');
+                    undoBtn.className = "bracket-undo-btn";
+                    undoBtn.innerText = "↩ Undo";
+                    undoBtn.onclick = () => undoBronze();
+                    card.appendChild(undoBtn);
+                }
                 bRound.appendChild(card); bContainer.appendChild(bRound);
             }
 
@@ -1477,6 +1629,14 @@
                     card.className = `matchup ${(!match.winner && match.racer1 && match.racer2) ? 'active' : ''}`;
                     card.appendChild(buildRacerRow(match.racer1, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer1)));
                     card.appendChild(buildRacerRow(match.racer2, match.winner, () => advanceMain(roundIndex, matchIndex, match.racer2)));
+                    
+                    if(match.winner) {
+                        const undoBtn = document.createElement('button');
+                        undoBtn.className = "bracket-undo-btn";
+                        undoBtn.innerText = "↩ Undo";
+                        undoBtn.onclick = () => undoMain(roundIndex, matchIndex);
+                        card.appendChild(undoBtn);
+                    }
                     column.appendChild(card);
                 });
                 mContainer.appendChild(column);
@@ -1484,15 +1644,22 @@
         }
 
         function buildRacerRow(racerObj, winnerObj, clickCallback) {
+            const containerRow = document.createElement('div');
+            containerRow.className = "racer-row-container";
+            
             const div = document.createElement('div');
             div.className = 'racer';
-            if(!racerObj) { div.innerHTML = `<span style="color:#4a4a5a; font-style:italic;">Staging...</span>`; return div; }
+            if(!racerObj) { div.innerHTML = `<span style="color:#4a4a5a; font-style:italic;">Staging...</span>`; containerRow.appendChild(div); return containerRow; }
             div.innerHTML = `<div class="racer-details"><span class="racer-car">${racerObj.car}</span><span class="racer-driver">Driver: ${racerObj.driver}</span></div>`;
-            if(winnerObj) { div.classList.add(winnerObj === racerObj ? 'winner' : 'loser'); } 
-            else { div.onclick = clickCallback;
+            
+            if(winnerObj) { 
+                div.classList.add(winnerObj === racerObj ? 'winner' : 'loser'); 
+            } else { 
+                div.onclick = clickCallback;
                 let tag = document.createElement('span'); tag.className = 'action-tag'; tag.innerText = 'WIN'; div.appendChild(tag);
             }
-            return div;
+            containerRow.appendChild(div);
+            return containerRow;
         }
 
         function loadLeaderboard() {
