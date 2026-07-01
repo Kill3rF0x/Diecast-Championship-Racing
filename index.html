@@ -624,6 +624,107 @@
         .garage-btn-small.edit:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
         .garage-btn-small.delete:hover { border-color: var(--accent-orange); color: var(--accent-orange); }
 
+        /* HISTORICAL RACES STYLES */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .history-item {
+            background: #141419;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .history-summary-header {
+            background: linear-gradient(90deg, #1a1a24 0%, #111116 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .history-summary-header:hover {
+            background: #1c1c28;
+        }
+        .history-date-box {
+            font-family: var(--font-racing);
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+        .history-winner-preview {
+            color: var(--accent-yellow);
+            font-weight: bold;
+        }
+        .history-toggle-icon {
+            font-family: var(--font-racing);
+            color: #777;
+            font-size: 0.8rem;
+        }
+        .history-collapsible-detail {
+            display: none;
+            padding: 20px;
+            border-top: 1px solid #23232f;
+            background: rgba(0,0,0,0.2);
+        }
+        .history-podium-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .history-podium-badge {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+        .history-podium-badge.p1 { background: rgba(255, 204, 0, 0.1); border-color: var(--accent-yellow); color: var(--accent-yellow); }
+        .history-podium-badge.p2 { background: rgba(224, 224, 224, 0.1); border-color: #e0e0e0; color: #e0e0e0; }
+        .history-podium-badge.p3 { background: rgba(205, 127, 50, 0.1); border-color: #cd7f32; color: #cd7f32; }
+        
+        .history-meta-info {
+            font-size: 0.95rem;
+            color: #aaa;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #222;
+        }
+        .history-split-logs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 768px) {
+            .history-split-logs { grid-template-columns: 1fr; }
+        }
+        .history-log-section h5 {
+            margin: 0 0 8px 0;
+            font-family: var(--font-racing);
+            color: var(--accent-orange);
+            text-transform: uppercase;
+            font-size: 0.95rem;
+        }
+        .history-table-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        .history-table-list li {
+            padding: 4px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            display: flex;
+            justify-content: space-between;
+        }
+        .history-table-list li span.right-val {
+            color: #888;
+            font-style: italic;
+        }
+
         /* CONTACT TAB & SUGGESTION BOX ENGINE */
         .contact-deck {
             max-width: 600px;
@@ -992,6 +1093,7 @@
     <nav class="tabs-nav-bar">
         <button id="nav-tab-home" class="nav-tab-btn active" onclick="switchTab('home')">Home</button>
         <button id="nav-tab-garage" class="nav-tab-btn" onclick="switchTab('garage')">Garage</button>
+        <button id="nav-tab-history" class="nav-tab-btn" onclick="switchTab('history')">Historical Races</button>
         <button id="nav-tab-contact" class="nav-tab-btn" onclick="switchTab('contact')">Contact Us</button>
     </nav>
 
@@ -1118,6 +1220,15 @@
                         <div id="garage-display-grid" class="garage-grid"></div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Historical Races Tab Content View -->
+            <div id="tab-view-history" style="display: none; padding: 10px 0px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; margin: 0; font-size: 1.5rem;">Race Telemetry Logs</h3>
+                    <button class="reset-btn" onclick="clearAllHistory()" style="padding: 6px 15px; font-size: 0.85rem;">Wipe Log History</button>
+                </div>
+                <div id="history-telemetry-zone" class="history-list"></div>
             </div>
 
             <!-- Contact Tab Content View -->
@@ -1268,10 +1379,14 @@
                 const data = docSnap.data();
                 localStorage.setItem('hw_leaderboard_v2', JSON.stringify(data.leaderboard || []));
                 localStorage.setItem('hw_garage_v1', JSON.stringify(data.garage || []));
+                if(data.history) {
+                    localStorage.setItem('hw_history_v1', JSON.stringify(data.history));
+                }
             }
             loadLeaderboard();
             if(window.renderGarageGrid) window.renderGarageGrid();
             if(window.renderSidebarInventory) window.renderSidebarInventory();
+            if(window.renderHistoryLogs) window.renderHistoryLogs();
         }
 
         window.saveChampionToHistory = async function(winnerObj) {
@@ -1296,6 +1411,11 @@
             if(!currentUser) return;
             await setDoc(doc(db, "users", currentUser.uid), { garage: garageArray }, { merge: true });
         }
+
+        window.cloudSaveHistory = async function(historyArray) {
+            if(!currentUser) return;
+            await setDoc(doc(db, "users", currentUser.uid), { history: historyArray }, { merge: true });
+        }
     </script>
 
     <script>
@@ -1316,6 +1436,7 @@
             document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('tab-view-home').style.display = 'none';
             document.getElementById('tab-view-garage').style.display = 'none';
+            document.getElementById('tab-view-history').style.display = 'none';
             document.getElementById('tab-view-contact').style.display = 'none';
 
             const activeTabElement = document.getElementById(`nav-tab-${targetTab}`);
@@ -1328,6 +1449,9 @@
             }
             if(targetTab === 'home') {
                 renderSidebarInventory();
+            }
+            if(targetTab === 'history') {
+                renderHistoryLogs();
             }
         }
         window.switchTab = switchTab;
@@ -1406,7 +1530,7 @@
             }
         }
 
-        /* ONE CLICK QUICK SAVE FROM ROSTER GRID ROW */
+        /* ONE COUCH QUICK SAVE FROM ROSTER GRID ROW */
         function quickSaveRosterCar(rowIndex) {
             const row = document.querySelectorAll('.roster-row')[rowIndex];
             if(!row) return;
@@ -1653,6 +1777,83 @@
             reader.readAsArrayBuffer(file);
         }
 
+        /* HISTORICAL TELEMETRY ENGINE LOGGER & RENDERING */
+        function getHistoryLogs() {
+            return JSON.parse(localStorage.getItem('hw_history_v1')) || [];
+        }
+
+        function renderHistoryLogs() {
+            const historyZone = document.getElementById('history-telemetry-zone');
+            if(!historyZone) return;
+            historyZone.innerHTML = '';
+
+            let logs = getHistoryLogs();
+            if(logs.length === 0) {
+                historyZone.innerHTML = `<p style="color:#666; font-style:italic; text-align:center; padding: 20px;">No historical telemetry found. Complete matches to populate logs.</p>`;
+                return;
+            }
+
+            // Render matching collapsible layouts
+            logs.forEach((log, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                
+                // Building explicit participant list strings
+                let entriesString = log.participants.map(p => `${p.car} (${p.driver})`).join(', ');
+
+                itemDiv.innerHTML = `
+                    <div class="history-summary-header" onclick="toggleHistoryRow(${index})">
+                        <div class="history-date-box">📅 ${log.timestamp}</div>
+                        <div class="history-winner-preview">🏆 Champion: ${log.p1.car}</div>
+                        <div class="history-toggle-icon" id="history-icon-${index}">[ EXPAND ]</div>
+                    </div>
+                    <div class="history-collapsible-detail" id="history-detail-${index}">
+                        <div class="history-meta-info">
+                            <b>Total Track Entries:</b> ${log.entryCount} Vehicles <br>
+                            <span style="font-size:0.85rem; color:#888;"><b>Roster Grid Lineup:</b> ${entriesString}</span>
+                        </div>
+                        <div class="history-podium-grid">
+                            <div class="history-podium-badge p1">🥇 1st Place: <b>${log.p1.car}</b> (${log.p1.driver})</div>
+                            <div class="history-podium-badge p2">🥈 2nd Place: <b>${log.p2.car}</b> (${log.p2.driver})</div>
+                            <div class="history-podium-badge p3">🥉 3rd Place: <b>${log.p3.car}</b> (${log.p3.driver})</div>
+                        </div>
+                        <div class="history-split-logs">
+                            <div class="history-log-section">
+                                <h5>Round-by-Round Breakdown Log</h5>
+                                <ul class="history-table-list">
+                                    ${log.roundsLog.map(rLine => `<li><span>${rLine.match}</span> <span class="right-val">Winner: ${rLine.winner}</span></li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                historyZone.appendChild(itemDiv);
+            });
+        }
+
+        function toggleHistoryRow(index) {
+            const detailPanel = document.getElementById(`history-detail-${index}`);
+            const toggleIcon = document.getElementById(`history-icon-${index}`);
+            if(!detailPanel) return;
+
+            if(detailPanel.style.display === "block") {
+                detailPanel.style.display = "none";
+                toggleIcon.innerText = "[ EXPAND ]";
+            } else {
+                detailPanel.style.display = "block";
+                toggleIcon.innerText = "[ COLLAPSE ]";
+            }
+        }
+
+        function clearAllHistory() {
+            if(!confirm("Are you positive you want to completely flush your historical racing archives?")) return;
+            localStorage.removeItem('hw_history_v1');
+            renderHistoryLogs();
+            if(window.cloudSaveHistory) {
+                window.cloudSaveHistory([]);
+            }
+        }
+
         window.saveGarageEntry = saveGarageEntry;
         window.editGarageEntry = editGarageEntry;
         window.deleteGarageEntry = deleteGarageEntry;
@@ -1661,6 +1862,9 @@
         window.renderSidebarInventory = renderSidebarInventory;
         window.quickSaveRosterCar = quickSaveRosterCar;
         window.importExcelRoster = importExcelRoster;
+        window.renderHistoryLogs = renderHistoryLogs;
+        window.toggleHistoryRow = toggleHistoryRow;
+        window.clearAllHistory = clearAllHistory;
 
         /* TOURNAMENT LOGIC FUNCTIONS */
         function startRaceSequence() {
@@ -1845,6 +2049,9 @@
             let silver = (finalsRound.racer1 === gold) ? finalsRound.racer2 : finalsRound.racer1;
             let bronze = bronzeMatchData.winner || { car: "No Entry", driver: "N/A" };
 
+            // Assemble Comprehensive Telemetry History Package
+            compileAndStoreTelemetry(gold, silver, bronze);
+
             if(window.saveChampionToHistory) window.saveChampionToHistory(gold);
 
             document.getElementById('podium-gold-car').innerText = gold.car;
@@ -1853,6 +2060,55 @@
             document.getElementById('podium-bronze-car').innerText = bronze.car;
             document.getElementById('podium-bronze-driver').innerText = "Driver: " + bronze.driver;
             document.getElementById('podium-modal').style.display = 'flex';
+        }
+
+        function compileAndStoreTelemetry(gold, silver, bronze) {
+            let activeParticipants = [];
+            let roundLogItems = [];
+
+            // 1. Gather all active drivers/cars from starting rows
+            document.querySelectorAll('.roster-row').forEach(row => {
+                let c = row.querySelector('.input-car').value.trim();
+                let d = row.querySelector('.input-driver').value.trim();
+                if(c) activeParticipants.push({car: c, driver: d || "Unknown Driver"});
+            });
+
+            // 2. Map all logged outcomes out of active bracket datasets
+            if(qualifierData.length > 0) {
+                qualifierData[0].forEach((m, idx) => {
+                    if(m.winner) roundLogItems.push({ match: `Knockout Heat #${idx + 1}`, winner: `${m.winner.car} (${m.winner.driver})` });
+                });
+            }
+            mainBracketData.forEach((round, rIdx) => {
+                let label = (rIdx === mainBracketData.length - 1) ? 'Championship Final' : `Main Round ${rIdx + 1}`;
+                round.forEach((m, mIdx) => {
+                    if(m.winner) roundLogItems.push({ match: `${label} - Match ${mIdx + 1}`, winner: `${m.winner.car} (${m.winner.driver})` });
+                });
+            });
+            if(bronzeMatchData && bronzeMatchData.winner) {
+                roundLogItems.push({ match: `Consolation Bronze Duel`, winner: `${bronzeMatchData.winner.car} (${bronzeMatchData.winner.driver})` });
+            }
+
+            // 3. Formulate history payload mapping
+            let currentLogs = JSON.parse(localStorage.getItem('hw_history_v1')) || [];
+            let dateStr = new Date().toLocaleString();
+
+            let historyEntry = {
+                timestamp: dateStr,
+                entryCount: activeParticipants.length,
+                participants: activeParticipants,
+                p1: gold,
+                p2: silver,
+                p3: bronze,
+                roundsLog: roundLogItems
+            };
+
+            currentLogs.unshift(historyEntry); // Push top of stack sorting metrics
+            localStorage.setItem('hw_history_v1', JSON.stringify(currentLogs));
+            
+            if(window.cloudSaveHistory) {
+                window.cloudSaveHistory(currentLogs);
+            }
         }
 
         function renderGrids() {
