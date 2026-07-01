@@ -163,7 +163,7 @@
             display: flex;
             white-space: nowrap;
             padding-left: 100%;
-            animation: ticker-scrolling 25s linear infinite;
+            animation: ticker-scrolling 50s linear infinite;
         }
 
         .ticker-overflow:hover .leaderboard-ticker-track {
@@ -273,7 +273,7 @@
 
         @media(max-width: 900px) {
             .home-split-workspace { flex-direction: column; }
-            .compact-garage-sidebar { width: 100% !important; max-height: 280px !important; }
+            .compact-garage-sidebar { width: 100% !important; max-height: 380px !important; }
         }
 
         /* THEMED GARAGE INVENTORY SIDEBAR */
@@ -305,6 +305,62 @@
             background-size: 100% 1px;
             background-position: bottom center;
             background-repeat: no-repeat;
+        }
+
+        /* SIDEBAR / GARAGE CONTROLS TOOLBAR STYLES */
+        .garage-controls-toolbar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .garage-filter-select {
+            background: #16161f;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            flex: 1;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .garage-filter-select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .view-toggle-btn-group {
+            display: flex;
+            gap: 2px;
+        }
+
+        .view-btn {
+            background: #16161f;
+            border: 1px solid var(--border-color);
+            color: #aaa;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            color: #fff;
+            border-color: #555;
+        }
+
+        .view-btn.active {
+            background: var(--accent-blue);
+            color: #000;
+            border-color: var(--accent-blue);
+            font-weight: bold;
         }
 
         /* CUSTOM THEMED SCROLLBAR ELEMENTS */
@@ -427,6 +483,33 @@
             gap: 20px;
             margin-top: 15px;
         }
+        
+        /* LIST VIEW MODIFICATIONS FOR STYLED STORES INVENTORY */
+        .garage-grid.list-layout-active {
+            grid-template-columns: 1fr !important;
+            gap: 10px;
+        }
+
+        .garage-grid.list-layout-active .garage-card {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            gap: 15px;
+        }
+
+        .garage-grid.list-layout-active .garage-line {
+            font-size: 1.05rem;
+            margin-bottom: 0;
+        }
+
+        .garage-grid.list-layout-active .garage-actions {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
         .garage-card {
             background: #16161f;
             border: 1px solid var(--border-color);
@@ -884,6 +967,18 @@
                     <!-- COMPACT SIDEBAR FOR DRAGGING VEHICLES -->
                     <div class="compact-garage-sidebar" id="home-garage-sidebar">
                         <h3>Garage Inventory</h3>
+                        
+                        <!-- Side Inventory Sync Filter Operations Dropdown Toolbar -->
+                        <div class="garage-controls-toolbar" id="sidebar-filter-toolbar" style="display: none; margin-bottom: 10px;">
+                            <select id="sidebar-inventory-filter" class="garage-filter-select" onchange="renderSidebarInventory()">
+                                <option value="default">Default Order</option>
+                                <option value="most-used">Most Used (Wins)</option>
+                                <option value="az">Alphabetical A-Z</option>
+                                <option value="za">Alphabetical Z-A</option>
+                                <option value="driver">By Driver Name</option>
+                            </select>
+                        </div>
+
                         <div class="sidebar-scroll-zone" id="sidebar-inventory-list">
                             <p style="color:#555469; font-style:italic; text-align:center; font-size:0.95rem; padding:15px; line-height: 1.4;">Sign in to drag your custom fleet to the roster grid.</p>
                         </div>
@@ -945,7 +1040,25 @@
                     </div>
 
                     <div>
-                        <h3 style="font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; margin-bottom: 15px; font-size: 1.3rem;">Stored Inventory</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                            <h3 style="font-family: var(--font-racing); color: var(--accent-orange); text-transform: uppercase; margin-bottom: 0; font-size: 1.3rem;">Stored Inventory</h3>
+                            
+                            <!-- Garage View & Sort Filters Toolbar Container -->
+                            <div class="garage-controls-toolbar" style="max-width: 400px; margin-bottom: 0;">
+                                <select id="garage-inventory-filter" class="garage-filter-select" onchange="renderGarageGrid()" style="margin-right: 8px;">
+                                    <option value="default">Default Order</option>
+                                    <option value="most-used">Most Used (Wins)</option>
+                                    <option value="az">Alphabetical A-Z</option>
+                                    <option value="za">Alphabetical Z-A</option>
+                                    <option value="driver">By Driver Name</option>
+                                </select>
+                                <div class="view-toggle-btn-group">
+                                    <button id="view-cards-btn" class="view-btn active" onclick="setGarageViewMode('cards')">Cards</button>
+                                    <button id="view-list-btn" class="view-btn" onclick="setGarageViewMode('list')">List</button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div id="garage-display-grid" class="garage-grid"></div>
                     </div>
                 </div>
@@ -1132,6 +1245,7 @@
     <script>
         let mainBracketData = [];
         let qualifierData = []; let qualifierWinnersTargetMap = []; let bronzeMatchData = null;
+        let garageViewMode = "cards"; // Tracking view layout state for garage ('cards' or 'list')
         const revAudio = new Audio('rev.mp3');
         const defaultCars = ["Bone Shaker", "Twin Mill", "Rodger Dodger", "Deora II", "Night Shifter", "Rip Rod", "Muscle Bound", "Sling Shot"];
         const defaultDrivers = ["Ace", "Blaze", "Crash", "Dash", "Nitro", "Rocket", "Shadow", "Viper"];
@@ -1161,6 +1275,36 @@
             }
         }
         window.switchTab = switchTab;
+
+        /* GARAGE VIEW MODE LAYOUT SWITCHER FUNCTION */
+        function setGarageViewMode(mode) {
+            garageViewMode = mode;
+            document.getElementById('view-cards-btn').classList.toggle('active', mode === 'cards');
+            document.getElementById('view-list-btn').classList.toggle('active', mode === 'list');
+            renderGarageGrid();
+        }
+        window.setGarageViewMode = setGarageViewMode;
+
+        /* UNIFIED INVENTORY SORT FILTER IMPLEMENTATION EXTRACTION ENGINE */
+        function getFilteredInventory(inventoryData, filterValue) {
+            let sortedArr = [...inventoryData];
+            let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
+
+            if (filterValue === "most-used") {
+                sortedArr.sort((a, b) => {
+                    let winsA = scores.find(s => s.car.toLowerCase() === a.car.toLowerCase() && s.driver.toLowerCase() === a.driver.toLowerCase())?.wins || 0;
+                    let winsB = scores.find(s => s.car.toLowerCase() === b.car.toLowerCase() && s.driver.toLowerCase() === b.driver.toLowerCase())?.wins || 0;
+                    return winsB - winsA; // Descending placement by usage metrics
+                });
+            } else if (filterValue === "az") {
+                sortedArr.sort((a, b) => a.car.localeCompare(b.car));
+            } else if (filterValue === "za") {
+                sortedArr.sort((a, b) => b.car.localeCompare(a.car));
+            } else if (filterValue === "driver") {
+                sortedArr.sort((a, b) => a.driver.localeCompare(b.driver));
+            }
+            return sortedArr;
+        }
 
         /* GARAGE MANAGEMENT OPERATIONS Engine */
         function getGarageData() {
@@ -1300,6 +1444,13 @@
             if(!displayGrid) return;
             displayGrid.innerHTML = '';
 
+            // Toggle visual class modifiers depending on layout choice context
+            if (garageViewMode === "list") {
+                displayGrid.classList.add('list-layout-active');
+            } else {
+                displayGrid.classList.remove('list-layout-active');
+            }
+
             let inventory = getGarageData();
             let scores = JSON.parse(localStorage.getItem('hw_leaderboard_v2')) || [];
 
@@ -1308,7 +1459,12 @@
                 return;
             }
 
-            inventory.forEach(item => {
+            // Route execution query through automated sort filter block extraction
+            const filterElement = document.getElementById('garage-inventory-filter');
+            const selectedFilter = filterElement ? filterElement.value : 'default';
+            let processedInventory = getFilteredInventory(inventory, selectedFilter);
+
+            processedInventory.forEach(item => {
                 let matchedScore = scores.find(s => s.car.toLowerCase() === item.car.toLowerCase() && s.driver.toLowerCase() === item.driver.toLowerCase());
                 let hasTrophy = !!matchedScore;
                 
@@ -1343,24 +1499,34 @@
         /* COMPACT SIDEBAR RENDER & DRAG DATA BINDING */
         function renderSidebarInventory() {
             const listZone = document.getElementById('sidebar-inventory-list');
+            const toolbarZone = document.getElementById('sidebar-filter-toolbar');
             if(!listZone) return;
 
             const authBtn = document.getElementById('nav-auth-btn');
             const isGuest = authBtn && authBtn.innerText.includes("Team Login");
 
             if(isGuest) {
+                if(toolbarZone) toolbarZone.style.display = "none";
                 listZone.innerHTML = `<p style="color:#555469; font-style:italic; text-align:center; font-size:0.95rem; padding:15px; line-height:1.4;">Sign in to drag your custom fleet to the roster grid.</p>`;
                 return;
             }
 
             let inventory = getGarageData();
             if(inventory.length === 0) {
+                if(toolbarZone) toolbarZone.style.display = "none";
                 listZone.innerHTML = `<p style="color:#888; font-style:italic; text-align:center; font-size:0.9rem; padding:10px;">Your garage is empty. Add vehicles under the Garage tab!</p>`;
                 return;
             }
 
+            // Show filtering tools if inventory tracks items safely
+            if(toolbarZone) toolbarZone.style.display = "flex";
+
+            const filterElement = document.getElementById('sidebar-inventory-filter');
+            const selectedFilter = filterElement ? filterElement.value : 'default';
+            let processedInventory = getFilteredInventory(inventory, selectedFilter);
+
             listZone.innerHTML = '';
-            inventory.forEach(item => {
+            processedInventory.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'compact-drag-item';
                 div.setAttribute('draggable', 'true');
