@@ -363,6 +363,50 @@
             font-weight: bold;
         }
 
+        /* EXCEL IMPORT INTERFACE */
+        .excel-import-deck {
+            background: rgba(15, 15, 20, 0.8);
+            border: 1px dashed var(--accent-blue);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .excel-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .excel-file-label {
+            display: block;
+            background: #161622;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-racing);
+            font-size: 0.9rem;
+            color: var(--accent-blue);
+            transition: all 0.2s;
+        }
+
+        .excel-file-label:hover {
+            border-color: var(--accent-blue);
+            background: #1c1c2b;
+        }
+
+        .excel-hidden-input {
+            position: absolute;
+            left: 0; top: 0; opacity: 0;
+            width: 100%; height: 100%;
+            cursor: pointer;
+        }
+
         /* CUSTOM THEMED SCROLLBAR ELEMENTS */
         .sidebar-scroll-zone {
             overflow-y: auto;
@@ -882,6 +926,8 @@
         .instagram-link { font-family: var(--font-racing); color: #aaa; text-decoration: none; background: rgba(20, 20, 25, 0.6); padding: 10px 24px; border-radius: 30px; border: 1px solid var(--border-color); }
         .reset-btn { background: #2a2a30; border: 1px solid var(--border-color); color: white; padding: 10px 20px; font-family: var(--font-racing); cursor: pointer; border-radius: 4px;}
     </style>
+    <!-- Include SheetJS (XLSX) parser library -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -986,6 +1032,16 @@
 
                     <div class="home-main-staging">
                         <div id="setup-phase" class="setup-section">
+                            
+                            <!-- EXCEL IMPORT COMPONENT -->
+                            <div class="excel-import-deck">
+                                <label>Import Fleet via Excel SpreadSheet (.xlsx):</label>
+                                <div class="excel-input-wrapper">
+                                    <span class="excel-file-label" id="excel-label-text">📂 Choose Excel File</span>
+                                    <input type="file" id="excel-roster-file" class="excel-hidden-input" accept=".xlsx, .xls" onchange="importExcelRoster(event)">
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label for="car-count">1. Number of Racing Entries:</label>
                                 <input type="number" id="car-count" value="6" min="2" max="64" oninput="generateRosterInputs()">
@@ -1544,6 +1600,59 @@
             });
         }
 
+        /* EXCEL ROSTER ENGINE IMPLEMENTATION */
+        function importExcelRoster(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Update UI feedback text
+            document.getElementById('excel-label-text').innerText = `📊 Loaded: ${file.name}`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Parse rows to raw JSON structure maps
+                    const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    if (jsonRows.length === 0) {
+                        alert("The selected Excel sheet appears to be empty!");
+                        return;
+                    }
+
+                    // Dynamically set entry count to match file count safely
+                    const countInput = document.getElementById('car-count');
+                    countInput.value = jsonRows.length;
+                    
+                    // Trigger structural roster inputs generation lifecycle
+                    generateRosterInputs();
+
+                    // Map fields onto DOM input indices
+                    const rowsDOM = document.querySelectorAll('.roster-row');
+                    jsonRows.forEach((row, i) => {
+                        if (i >= rowsDOM.length) return;
+                        
+                        // Extract by expected structural key tags
+                        const carNameValue = row['Car Name'] || row['car name'] || '';
+                        const driverNameValue = row['Driver Name'] || row['driver name'] || 'Unknown Driver';
+
+                        if (carNameValue) {
+                            rowsDOM[i].querySelector('.input-car').value = carNameValue;
+                            rowsDOM[i].querySelector('.input-driver').value = driverNameValue;
+                        }
+                    });
+                } catch (err) {
+                    alert("Failed to safely process Excel file structure. Verify format schema criteria.");
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
         window.saveGarageEntry = saveGarageEntry;
         window.editGarageEntry = editGarageEntry;
         window.deleteGarageEntry = deleteGarageEntry;
@@ -1551,6 +1660,7 @@
         window.renderGarageGrid = renderGarageGrid;
         window.renderSidebarInventory = renderSidebarInventory;
         window.quickSaveRosterCar = quickSaveRosterCar;
+        window.importExcelRoster = importExcelRoster;
 
         /* TOURNAMENT LOGIC FUNCTIONS */
         function startRaceSequence() {
@@ -1851,6 +1961,8 @@
             document.getElementById('tournament-phase').style.display = 'none'; 
             document.getElementById('setup-phase').style.display = 'flex'; 
             document.getElementById('home-garage-sidebar').style.display = 'flex';
+            document.getElementById('excel-label-text').innerText = "📂 Choose Excel File";
+            document.getElementById('excel-roster-file').value = "";
             renderSidebarInventory();
         }
 
